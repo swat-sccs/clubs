@@ -1,0 +1,1814 @@
+[
+  {
+    "name": "AJA",
+    "description": "Swarthmore's affinity space for Black women and non-binary students.",
+    "tags": [
+      "Cultural",
+      "Social",
+      "Special Interest"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Alpha Omega",
+    "description": "Swarthmore's weekly Bible study and community service fellowship.",
+    "tags": [
+      "Religious/Spiritual",
+      "Community Service"
+    ],
+    "affiliation": "Spiritual & Religious Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": false,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "American Lung Cancer Screening Initiative",
+    "description": "Swarthmore's chapter of a national lung cancer screening advocacy network.",
+    "tags": [
+      "Health",
+      "Community Service",
+      "Advocacy"
+    ],
+    "affiliation": "Health & Wellness Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "American Society of Civil Engineers (ASCE)",
+    "description": "Swarthmore's chapter of the national civil engineering professional society.",
+    "tags": [
+      "Engineering",
+      "Pre-professional"
+    ],
+    "affiliation": "Pre-Professional & Academic Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Amos J. Peaslee Debate Society",
+    "description": "Swarthmore's only competitive collegiate debate team.",
+    "tags": [
+      "Public speaking",
+      "Competitive"
+    ],
+    "affiliation": "Pre-Professional & Academic Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Application and Interview Required",
+    "recruitingCycle": "Fall Semester"
+  },
+  {
+    "name": "ANALOG",
+    "description": "Swarthmore's hub for film photography and darkroom workshops.",
+    "tags": [
+      "Arts",
+      "Special Interest"
+    ],
+    "affiliation": "Performing & Visual Arts Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Anime Club",
+    "description": "Swarthmore's community for anime, manga, and light novel fans.",
+    "tags": [
+      "Special Interest",
+      "Social"
+    ],
+    "affiliation": "Special Interest & Recreation Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Archery Club",
+    "description": "Swarthmore's recreational club for learning archery.",
+    "tags": [
+      "Club Sports",
+      "Recreation"
+    ],
+    "affiliation": "Club Sports Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "ASL Club",
+    "description": "Swarthmore's platform for Deaf culture and American Sign Language.",
+    "tags": [
+      "Special Interest",
+      "Advocacy",
+      "Cultural"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Badminton",
+    "description": "Swarthmore's competitive club badminton team.",
+    "tags": [
+      "Club Sports",
+      "Competitive"
+    ],
+    "affiliation": "Club Sports Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Tryout Required",
+    "recruitingCycle": "Both Semesters"
+  },
+  {
+    "name": "Biomedical Engineering Society",
+    "description": "Swarthmore's community for students interested in biomedical engineering.",
+    "tags": [
+      "Engineering",
+      "Science",
+      "Pre-professional"
+    ],
+    "affiliation": "Pre-Professional & Academic Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Bird Club",
+    "description": "Swarthmore's low-stakes club for birdwatching and nature trips.",
+    "tags": [
+      "Outdoors",
+      "Special Interest"
+    ],
+    "affiliation": "Special Interest & Recreation Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Bowling Club",
+    "description": "Swarthmore's club for beginner and amateur bowlers.",
+    "tags": [
+      "Club Sports",
+      "Recreation"
+    ],
+    "affiliation": "Club Sports Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Boxing Club",
+    "description": "Swarthmore's club for boxing training and fitness.",
+    "tags": [
+      "Club Sports",
+      "Recreation"
+    ],
+    "affiliation": "Club Sports Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Boy Meets Tractor",
+    "description": "Swarthmore's student-run sketch comedy troupe.",
+    "tags": [
+      "Comedy",
+      "Performing Arts"
+    ],
+    "affiliation": "Performing & Visual Arts Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Audition Required",
+    "recruitingCycle": "Fall Semester"
+  },
+  {
+    "name": "CASA",
+    "description": "Swarthmore's community for Latinx women and non-binary students.",
+    "tags": [
+      "Cultural",
+      "Social",
+      "Special Interest"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Chess Club",
+    "description": "Swarthmore's club for casual and competitive chess players.",
+    "tags": [
+      "Competitive",
+      "Special Interest"
+    ],
+    "affiliation": "Special Interest & Recreation Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "C4",
+    "description": "Swarthmore's chapter organizing against environmental racism in Chester.",
+    "tags": [
+      "Advocacy",
+      "Civic engagement",
+      "Environmental"
+    ],
+    "affiliation": "Political & Advocacy Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Cinema Club",
+    "description": "Swarthmore's club supporting student film projects and screenings.",
+    "tags": [
+      "Arts",
+      "Media"
+    ],
+    "affiliation": "Performing & Visual Arts Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Co-Ed Club Volleyball",
+    "description": "Swarthmore's coed competitive club volleyball team.",
+    "tags": [
+      "Club Sports",
+      "Recreation"
+    ],
+    "affiliation": "Club Sports Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "College Democrats",
+    "description": "Swarthmore's chapter promoting Democratic civic engagement.",
+    "tags": [
+      "Politics",
+      "Civic engagement",
+      "Advocacy"
+    ],
+    "affiliation": "Political & Advocacy Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "COLORS",
+    "description": "Swarthmore's community for queer and trans people of color.",
+    "tags": [
+      "LGBTQ+",
+      "Cultural",
+      "Special Interest"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Drama Board",
+    "description": "Swarthmore's funding and support board for student theater.",
+    "tags": [
+      "Performing Arts",
+      "Student Governance"
+    ],
+    "affiliation": "Performing & Visual Arts Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": false,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "East Asian Calligraphy",
+    "description": "Swarthmore's club for East Asian calligraphy and tea culture.",
+    "tags": [
+      "Arts",
+      "Cultural"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Ember Dance Company (EDC)",
+    "description": "Swarthmore's student-run ballet and contemporary dance company.",
+    "tags": [
+      "Dance",
+      "Performing Arts"
+    ],
+    "affiliation": "Performing & Visual Arts Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Audition Required",
+    "recruitingCycle": "Fall Semester"
+  },
+  {
+    "name": "Engineers Without Borders",
+    "description": "Swarthmore's chapter designing sustainable engineering solutions abroad.",
+    "tags": [
+      "Engineering",
+      "Community Service",
+      "Global affairs"
+    ],
+    "affiliation": "Pre-Professional & Academic Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "ENLACE",
+    "description": "Swarthmore's community for pan-ethnic Latine and Latin American students.",
+    "tags": [
+      "Cultural",
+      "Civic engagement",
+      "Advocacy"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Ethiopian Eritrean Student Association (EESA)",
+    "description": "Swarthmore's community for Ethiopian and Eritrean students.",
+    "tags": [
+      "Cultural"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "FLI Council",
+    "description": "Swarthmore's advocacy council for first-generation, low-income students.",
+    "tags": [
+      "First Generation Low Income (FGLI)",
+      "Advocacy",
+      "Student Governance"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": false,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "G7 Jazz Club",
+    "description": "Swarthmore's student-run jazz combo and jam session club.",
+    "tags": [
+      "Music",
+      "Performing Arts"
+    ],
+    "affiliation": "Performing & Visual Arts Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Audition Required",
+    "recruitingCycle": "Fall Semester"
+  },
+  {
+    "name": "Gender Minorities in Mathematics and Statistics (GeMs)",
+    "description": "Swarthmore's space for gender minorities in math and statistics.",
+    "tags": [
+      "Academic",
+      "Science",
+      "Special Interest"
+    ],
+    "affiliation": "Pre-Professional & Academic Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Girls Into VC at Swarthmore",
+    "description": "Swarthmore's first venture capital network for female-identifying students.",
+    "tags": [
+      "Entrepreneurship",
+      "Business",
+      "Pre-professional"
+    ],
+    "affiliation": "Pre-Professional & Academic Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Application and Interview Required",
+    "recruitingCycle": "Fall Semester"
+  },
+  {
+    "name": "Good Food Project",
+    "description": "Swarthmore's student-run garden and sustainable food club.",
+    "tags": [
+      "Environmental",
+      "Food",
+      "Community Service"
+    ],
+    "affiliation": "Community Service & Outreach Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Grapevine",
+    "description": "Swarthmore's longest-running a cappella group, welcoming gender minorities.",
+    "tags": [
+      "A Cappella",
+      "Performing Arts",
+      "LGBTQ+"
+    ],
+    "affiliation": "Performing & Visual Arts Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Audition Required",
+    "recruitingCycle": "Fall Semester"
+  },
+  {
+    "name": "Golf Club",
+    "description": "Swarthmore's club for casual and recreational golf.",
+    "tags": [
+      "Club Sports",
+      "Recreation"
+    ],
+    "affiliation": "Club Sports Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "HAN",
+    "description": "Swarthmore's club for Korean and Korean American culture.",
+    "tags": [
+      "Cultural",
+      "Social",
+      "Food"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Herbivores",
+    "description": "Swarthmore's inclusive club for plant-based living.",
+    "tags": [
+      "Food",
+      "Health",
+      "Environmental"
+    ],
+    "affiliation": "Special Interest & Recreation Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "i20",
+    "description": "Swarthmore's club supporting international students' transition to campus life.",
+    "tags": [
+      "Global affairs",
+      "Social",
+      "Cultural"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Jewish Voice for Peace (JVP)",
+    "description": "Swarthmore's chapter organizing for Palestinian rights and justice.",
+    "tags": [
+      "Advocacy",
+      "Politics",
+      "Religious/Spiritual"
+    ],
+    "affiliation": "Political & Advocacy Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Kapatiran: Filipino Student Association",
+    "description": "Swarthmore's community for Filipino students and culture.",
+    "tags": [
+      "Cultural"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Kehilah",
+    "description": "Swarthmore's religious and cultural home for Jewish students.",
+    "tags": [
+      "Religious/Spiritual",
+      "Cultural"
+    ],
+    "affiliation": "Spiritual & Religious Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Kitao",
+    "description": "Swarthmore's only student-run art gallery and arts collective.",
+    "tags": [
+      "Arts",
+      "Special Interest"
+    ],
+    "affiliation": "Performing & Visual Arts Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Kizuna",
+    "description": "Swarthmore's club for Japanese food, culture, and events.",
+    "tags": [
+      "Cultural",
+      "Food"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "LaunchDeck",
+    "description": "Swarthmore's club for entrepreneurship and business development.",
+    "tags": [
+      "Entrepreneurship",
+      "Business",
+      "Pre-professional"
+    ],
+    "affiliation": "Pre-Professional & Academic Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Application and Interview Required",
+    "recruitingCycle": "Fall Semester"
+  },
+  {
+    "name": "Little Dragons",
+    "description": "Swarthmore's bridge to the Chinese immigrant community in Philadelphia.",
+    "tags": [
+      "Cultural",
+      "Community Service"
+    ],
+    "affiliation": "Community Service & Outreach Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Middle Eastern and North African Student Association (MENA)",
+    "description": "Swarthmore's community for Middle Eastern and North African culture.",
+    "tags": [
+      "Cultural",
+      "Advocacy"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Men's Club Soccer",
+    "description": "Swarthmore's coed, non-varsity competitive soccer club.",
+    "tags": [
+      "Club Sports",
+      "Recreation"
+    ],
+    "affiliation": "Club Sports Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Men's Rugby",
+    "description": "Swarthmore's club rugby team for all experience levels.",
+    "tags": [
+      "Club Sports",
+      "Competitive"
+    ],
+    "affiliation": "Club Sports Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Tryout Required",
+    "recruitingCycle": "Both Semesters"
+  },
+  {
+    "name": "Mixed Company",
+    "description": "Swarthmore's first co-ed a cappella group.",
+    "tags": [
+      "A Cappella",
+      "Performing Arts"
+    ],
+    "affiliation": "Performing & Visual Arts Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Audition Required",
+    "recruitingCycle": "Fall Semester"
+  },
+  {
+    "name": "Mock Trial",
+    "description": "Swarthmore's competitive courtroom simulation team.",
+    "tags": [
+      "Law",
+      "Competitive",
+      "Public speaking"
+    ],
+    "affiliation": "Pre-Professional & Academic Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Application and Interview Required",
+    "recruitingCycle": "Fall Semester"
+  },
+  {
+    "name": "Motherpuckers",
+    "description": "Swarthmore's casual student ice hockey pickup club.",
+    "tags": [
+      "Club Sports",
+      "Recreation"
+    ],
+    "affiliation": "Club Sports Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Muslim Student Association",
+    "description": "Swarthmore's community for Muslim students and Islamic life.",
+    "tags": [
+      "Religious/Spiritual",
+      "Cultural"
+    ],
+    "affiliation": "Spiritual & Religious Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "National Society of Black Engineers (NSBE)",
+    "description": "Swarthmore's chapter supporting Black students in engineering.",
+    "tags": [
+      "Engineering",
+      "Cultural",
+      "Pre-professional"
+    ],
+    "affiliation": "Pre-Professional & Academic Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Olde Club",
+    "description": "Swarthmore's student-run live music performance venue.",
+    "tags": [
+      "Music",
+      "Performing Arts",
+      "Special Interest"
+    ],
+    "affiliation": "Performing & Visual Arts Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Organizing to Redefine \"Asian\" Activism (ORAA)",
+    "description": "Swarthmore's socio-political group for Asian American activism.",
+    "tags": [
+      "Advocacy",
+      "Cultural",
+      "Politics"
+    ],
+    "affiliation": "Political & Advocacy Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Our Arts Spoken In Soul (O.A.S.I.S)",
+    "description": "Swarthmore's spoken word poetry and creative writing club.",
+    "tags": [
+      "Writing",
+      "Performing Arts",
+      "Arts"
+    ],
+    "affiliation": "Performing & Visual Arts Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Outsiders",
+    "description": "Swarthmore's student-run outdoors and backpacking club.",
+    "tags": [
+      "Outdoors",
+      "Recreation"
+    ],
+    "affiliation": "Special Interest & Recreation Council",
+    "size": "50 to 100 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Petey Greene Club",
+    "description": "Swarthmore's chapter tutoring incarcerated individuals.",
+    "tags": [
+      "Community Service",
+      "Advocacy"
+    ],
+    "affiliation": "Community Service & Outreach Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "PsiPhi (Not a Frat)",
+    "description": "Swarthmore's social club for fantasy and sci-fi fans.",
+    "tags": [
+      "Special Interest",
+      "Social"
+    ],
+    "affiliation": "Special Interest & Recreation Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "QuestBridge",
+    "description": "Swarthmore's chapter supporting QuestBridge Scholars and FLI students.",
+    "tags": [
+      "First Generation Low Income (FGLI)",
+      "Mentorship",
+      "Advocacy"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Rhythm N' Motion (RnM)",
+    "description": "Swarthmore's dance company rooted in the African Diaspora.",
+    "tags": [
+      "Dance",
+      "Performing Arts",
+      "Cultural"
+    ],
+    "affiliation": "Performing & Visual Arts Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Audition Required",
+    "recruitingCycle": "Fall Semester"
+  },
+  {
+    "name": "Salsa Con Sabor",
+    "description": "Swarthmore's club for weekly salsa and bachata lessons.",
+    "tags": [
+      "Dance",
+      "Social",
+      "Cultural"
+    ],
+    "affiliation": "Performing & Visual Arts Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "SASA",
+    "description": "Swarthmore's community for African and Black diasporic students.",
+    "tags": [
+      "Cultural"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "SASS",
+    "description": "Swarthmore's organization for Black students, by Black students.",
+    "tags": [
+      "Cultural",
+      "Advocacy",
+      "Community Service"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Sewing, Up-cycling, Crocheting, and Knitting Club (SUCK)",
+    "description": "Swarthmore's community of fiber artists and needleworkers.",
+    "tags": [
+      "Special Interest",
+      "Arts"
+    ],
+    "affiliation": "Special Interest & Recreation Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Sexual Health Advocates (SHA)",
+    "description": "Swarthmore's peer-led group for sexual health education.",
+    "tags": [
+      "Health",
+      "Peer Education",
+      "Advocacy"
+    ],
+    "affiliation": "Health & Wellness Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Application Required",
+    "recruitingCycle": "Fall Semester"
+  },
+  {
+    "name": "Sixteen Feet",
+    "description": "Swarthmore's lower-voices a cappella ensemble, open to all genders.",
+    "tags": [
+      "A Cappella",
+      "Performing Arts"
+    ],
+    "affiliation": "Performing & Visual Arts Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Audition Required",
+    "recruitingCycle": "Fall Semester"
+  },
+  {
+    "name": "Ski Club",
+    "description": "Swarthmore's club for accessible winter sports trips.",
+    "tags": [
+      "Outdoors",
+      "Club Sports",
+      "Recreation"
+    ],
+    "affiliation": "Club Sports Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Society of Asian Scientists and Engineers (SASE)",
+    "description": "Swarthmore's chapter supporting Asian students in STEM.",
+    "tags": [
+      "Engineering",
+      "Science",
+      "Pre-professional",
+      "Cultural"
+    ],
+    "affiliation": "Pre-Professional & Academic Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Society of Women Engineers (SWE)",
+    "description": "Swarthmore's chapter empowering marginalized genders in engineering.",
+    "tags": [
+      "Engineering",
+      "Special Interest",
+      "Pre-professional"
+    ],
+    "affiliation": "Pre-Professional & Academic Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "SOSA",
+    "description": "Swarthmore's club celebrating South Asian culture and festivals.",
+    "tags": [
+      "Cultural",
+      "Food",
+      "Social"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Small Town, Rural, and Remote Club (STARRS)",
+    "description": "Swarthmore's community for small-town and rural students.",
+    "tags": [
+      "Special Interest",
+      "Social",
+      "Advising"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Society of Hispanic Professional Engineers (SHPE)",
+    "description": "Swarthmore's chapter for Hispanic and Latinx students in engineering.",
+    "tags": [
+      "Engineering",
+      "Cultural",
+      "Pre-professional"
+    ],
+    "affiliation": "Pre-Professional & Academic Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Speak2Swatties",
+    "description": "Swarthmore's student-run mental health organization.",
+    "tags": [
+      "Health",
+      "Peer Education",
+      "Advocacy"
+    ],
+    "affiliation": "Health & Wellness Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Squash",
+    "description": "Swarthmore's co-ed club squash team.",
+    "tags": [
+      "Club Sports",
+      "Competitive",
+      "Recreation"
+    ],
+    "affiliation": "Club Sports Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Tryout Required",
+    "recruitingCycle": "Both Semesters"
+  },
+  {
+    "name": "Students of Caribbean Ancestry (SOCA)",
+    "description": "Swarthmore's organization celebrating Caribbean culture and identity.",
+    "tags": [
+      "Cultural"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "SwatAI",
+    "description": "Swarthmore's community exploring AI's applications and ethics.",
+    "tags": [
+      "Technology",
+      "Science",
+      "Special Interest"
+    ],
+    "affiliation": "Pre-Professional & Academic Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Swarthmore Actuarial Science Club",
+    "description": "Swarthmore's club exploring actuarial science and risk management.",
+    "tags": [
+      "Business",
+      "Pre-professional",
+      "Academic"
+    ],
+    "affiliation": "Pre-Professional & Academic Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Swarthmore Barbell Club",
+    "description": "Swarthmore's club for powerlifting and Olympic weightlifting.",
+    "tags": [
+      "Club Sports",
+      "Recreation",
+      "Health"
+    ],
+    "affiliation": "Club Sports Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Swarthmore Capoeira",
+    "description": "Swarthmore's club for Afro-Brazilian martial arts and dance.",
+    "tags": [
+      "Dance",
+      "Cultural",
+      "Club Sports"
+    ],
+    "affiliation": "Performing & Visual Arts Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Swarthmore Chabad",
+    "description": "Swarthmore's Jewish home for tradition, food, and community.",
+    "tags": [
+      "Religious/Spiritual",
+      "Cultural"
+    ],
+    "affiliation": "Spiritual & Religious Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Swarthmore Chinese Society",
+    "description": "Swarthmore's club connecting students with Chinese culture.",
+    "tags": [
+      "Cultural"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "SwatCircus",
+    "description": "Swarthmore's club for circus arts and aerial skills.",
+    "tags": [
+      "Performing Arts",
+      "Special Interest",
+      "Recreation"
+    ],
+    "affiliation": "Performing & Visual Arts Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Audition Required",
+    "recruitingCycle": "Fall Semester"
+  },
+  {
+    "name": "Swarthmore College Chinese Journal",
+    "description": "Swarthmore's bilingual journal for Chinese-English cultural exchange.",
+    "tags": [
+      "Publication",
+      "Cultural",
+      "Writing"
+    ],
+    "affiliation": "Publications & Media Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Application Required",
+    "recruitingCycle": "Fall Semester"
+  },
+  {
+    "name": "Swarthmore Conservative Studies (ISI)",
+    "description": "Swarthmore's coalition for conservative thought and debate.",
+    "tags": [
+      "Politics",
+      "Advocacy"
+    ],
+    "affiliation": "Political & Advocacy Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "SwatCooks",
+    "description": "Swarthmore's inclusive club for cooking and culinary skills.",
+    "tags": [
+      "Food",
+      "Special Interest",
+      "Social"
+    ],
+    "affiliation": "Special Interest & Recreation Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Swarthmore Deutsch Club",
+    "description": "Swarthmore's club for German language and culture.",
+    "tags": [
+      "Cultural",
+      "Global affairs"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Swarthmore Disability Association (SDA)",
+    "description": "Swarthmore's community for disability advocacy and accessibility.",
+    "tags": [
+      "Advocacy",
+      "Special Interest",
+      "Health"
+    ],
+    "affiliation": "Political & Advocacy Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "SwatDoulas",
+    "description": "Swarthmore's organization training student birth doulas.",
+    "tags": [
+      "Health",
+      "Advocacy",
+      "Mentorship"
+    ],
+    "affiliation": "Health & Wellness Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Application Required",
+    "recruitingCycle": "Fall Semester"
+  },
+  {
+    "name": "Swarthmore GCC Family Group",
+    "description": "Swarthmore's non-denominational Christian campus fellowship.",
+    "tags": [
+      "Religious/Spiritual",
+      "Social"
+    ],
+    "affiliation": "Spiritual & Religious Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Swarthmore Fencing Club",
+    "description": "Swarthmore's competitive modern fencing team.",
+    "tags": [
+      "Club Sports",
+      "Competitive"
+    ],
+    "affiliation": "Club Sports Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Tryout Required",
+    "recruitingCycle": "Both Semesters"
+  },
+  {
+    "name": "Swarthmore Health Humanities (SHH)",
+    "description": "Swarthmore's chapter exploring the humanities in healthcare.",
+    "tags": [
+      "Health",
+      "Publication",
+      "Arts"
+    ],
+    "affiliation": "Health & Wellness Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Application Required",
+    "recruitingCycle": "Fall Semester"
+  },
+  {
+    "name": "Swarthmore Health Society (SHS)",
+    "description": "Swarthmore's community for pre-health students.",
+    "tags": [
+      "Health",
+      "Mentorship",
+      "Pre-professional"
+    ],
+    "affiliation": "Health & Wellness Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Swatties for Immigrant Rights (SIR)",
+    "description": "Swarthmore's advocacy group for undocumented students and allies.",
+    "tags": [
+      "Advocacy",
+      "Civic engagement"
+    ],
+    "affiliation": "Political & Advocacy Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Swarthmore Indigenous Student Association (SISA)",
+    "description": "Swarthmore's community for Indigenous students and culture.",
+    "tags": [
+      "Cultural"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Swarthmore International Relations Club",
+    "description": "Swarthmore's club for global affairs discussion and debate.",
+    "tags": [
+      "Global affairs",
+      "Politics",
+      "Public speaking"
+    ],
+    "affiliation": "Pre-Professional & Academic Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Swarthmore Judo",
+    "description": "Swarthmore's club for practicing competitive Judo.",
+    "tags": [
+      "Club Sports",
+      "Competitive"
+    ],
+    "affiliation": "Club Sports Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Tryout Required",
+    "recruitingCycle": "Both Semesters"
+  },
+  {
+    "name": "Swarthmore K-Pop Club",
+    "description": "Swarthmore's club for K-pop fans and Korean pop culture.",
+    "tags": [
+      "Cultural",
+      "Music",
+      "Social"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Swarthmore Magic the Gathering Club",
+    "description": "Swarthmore's club for playing Magic: The Gathering.",
+    "tags": [
+      "Special Interest",
+      "Competitive",
+      "Social"
+    ],
+    "affiliation": "Special Interest & Recreation Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Swarthmore Pan-Asian Association (SPAA)",
+    "description": "Swarthmore's umbrella organization for Pan-Asian affinity groups.",
+    "tags": [
+      "Cultural",
+      "Umbrella Organization"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": false,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Swarthmore Physics Club",
+    "description": "Swarthmore's club for physics enthusiasts of all majors.",
+    "tags": [
+      "Science",
+      "Academic",
+      "Special Interest"
+    ],
+    "affiliation": "Pre-Professional & Academic Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Swarthmore Pre-Law Society (SPLS)",
+    "description": "Swarthmore's resource hub for pre-law students.",
+    "tags": [
+      "Law",
+      "Pre-professional",
+      "Advising"
+    ],
+    "affiliation": "Pre-Professional & Academic Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Application Required",
+    "recruitingCycle": "Fall Semester"
+  },
+  {
+    "name": "Swarthmore Printmaking Society",
+    "description": "Swarthmore's collective for printmaking and visual arts.",
+    "tags": [
+      "Arts",
+      "Design"
+    ],
+    "affiliation": "Performing & Visual Arts Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Swarthmore Project for Eastern European Relations (SPEER)",
+    "description": "Swarthmore's club celebrating Eastern European and Eurasian cultures.",
+    "tags": [
+      "Cultural",
+      "Global affairs"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Swarthmore College Computer Society (SCCS)",
+    "description": "Swarthmore's student-run computing services organization since 1991.",
+    "tags": [
+      "Technology",
+      "Programming",
+      "Instructional"
+    ],
+    "affiliation": "Pre-Professional & Academic Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Swarthmore Robotics Club",
+    "description": "Swarthmore's small, flexible club for robotics projects.",
+    "tags": [
+      "Engineering",
+      "Technology",
+      "Special Interest"
+    ],
+    "affiliation": "Pre-Professional & Academic Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Swarthmore Shell Eco-Marathon Team",
+    "description": "Swarthmore's team building a hydrogen fuel cell race vehicle.",
+    "tags": [
+      "Engineering",
+      "Environmental",
+      "Competitive"
+    ],
+    "affiliation": "Pre-Professional & Academic Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Swat Thai",
+    "description": "Swarthmore's club for Thai culture, food, and language.",
+    "tags": [
+      "Cultural",
+      "Food"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Swarthmore Quizbowl",
+    "description": "Swarthmore's competitive trivia and quizbowl team.",
+    "tags": [
+      "Competitive",
+      "Academic"
+    ],
+    "affiliation": "Pre-Professional & Academic Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Application and Interview Required",
+    "recruitingCycle": "Fall Semester"
+  },
+  {
+    "name": "Swat Sangha",
+    "description": "Swarthmore's group for Buddhist meditation and teachings.",
+    "tags": [
+      "Religious/Spiritual",
+      "Special Interest"
+    ],
+    "affiliation": "Spiritual & Religious Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Swarthmore Southeast Asian Student Association (SEASA)",
+    "description": "Swarthmore's club for Southeast Asian culture and community.",
+    "tags": [
+      "Cultural"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "SwaTango",
+    "description": "Swarthmore's club for Argentine Tango dance.",
+    "tags": [
+      "Dance",
+      "Social",
+      "Cultural"
+    ],
+    "affiliation": "Performing & Visual Arts Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Swarthmore Taiwanese Association",
+    "description": "Swarthmore's club promoting Taiwanese culture and identity.",
+    "tags": [
+      "Cultural",
+      "Politics"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Swarthmore Tennis Club",
+    "description": "Swarthmore's club for non-varsity recreational tennis.",
+    "tags": [
+      "Club Sports",
+      "Recreation"
+    ],
+    "affiliation": "Club Sports Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Swarthmore Urbanists",
+    "description": "Swarthmore's community for urban planning and design enthusiasts.",
+    "tags": [
+      "Civic engagement",
+      "Environmental",
+      "Special Interest"
+    ],
+    "affiliation": "Political & Advocacy Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "SwatVotes",
+    "description": "Swarthmore's nonpartisan voter education and registration campaign.",
+    "tags": [
+      "Civic engagement",
+      "Advocacy",
+      "Politics"
+    ],
+    "affiliation": "Political & Advocacy Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Swing Club",
+    "description": "Swarthmore's club for swing dance lessons and socials.",
+    "tags": [
+      "Dance",
+      "Social",
+      "Recreation"
+    ],
+    "affiliation": "Performing & Visual Arts Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "The First Page",
+    "description": "Swarthmore's Tri-Co creative writing workshop club.",
+    "tags": [
+      "Writing",
+      "Special Interest"
+    ],
+    "affiliation": "Publications & Media Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "The Orpheus Review",
+    "description": "Swarthmore's first music-centered student publication.",
+    "tags": [
+      "Publication",
+      "Music",
+      "Media"
+    ],
+    "affiliation": "Publications & Media Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Application Required",
+    "recruitingCycle": "Fall Semester"
+  },
+  {
+    "name": "The Phoenix",
+    "description": "Swarthmore's independent, student-run newspaper.",
+    "tags": [
+      "Journalism",
+      "Publication",
+      "Media"
+    ],
+    "affiliation": "Publications & Media Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Application Required",
+    "recruitingCycle": "Fall Semester"
+  },
+  {
+    "name": "Trans at Swat",
+    "description": "Swarthmore's community supporting trans students.",
+    "tags": [
+      "LGBTQ+",
+      "Advocacy",
+      "Special Interest"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Transfer Student Organization",
+    "description": "Swarthmore's support network for transfer students.",
+    "tags": [
+      "Mentorship",
+      "Advising",
+      "Social"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "The Tri-Co Law Review",
+    "description": "Swarthmore's Tri-Co publication analyzing law and society.",
+    "tags": [
+      "Law",
+      "Publication",
+      "Writing"
+    ],
+    "affiliation": "Publications & Media Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Application Required",
+    "recruitingCycle": "Fall Semester"
+  },
+  {
+    "name": "The Review",
+    "description": "Swarthmore's literary and culture magazine.",
+    "tags": [
+      "Publication",
+      "Writing",
+      "Arts"
+    ],
+    "affiliation": "Publications & Media Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Application Required",
+    "recruitingCycle": "Fall Semester"
+  },
+  {
+    "name": "The Earthworms (Men's Ultimate Frisbee)",
+    "description": "Swarthmore's open division Ultimate Frisbee team.",
+    "tags": [
+      "Club Sports",
+      "Competitive",
+      "Recreation"
+    ],
+    "affiliation": "Club Sports Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Tryout Required",
+    "recruitingCycle": "Both Semesters"
+  },
+  {
+    "name": "Vertigo-go",
+    "description": "Swarthmore's only improvisational comedy group.",
+    "tags": [
+      "Comedy",
+      "Performing Arts"
+    ],
+    "affiliation": "Performing & Visual Arts Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Audition Required",
+    "recruitingCycle": "Fall Semester"
+  },
+  {
+    "name": "Voices",
+    "description": "Swarthmore's daily student-run news and media publication.",
+    "tags": [
+      "Journalism",
+      "Media",
+      "Publication"
+    ],
+    "affiliation": "Publications & Media Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Application Required",
+    "recruitingCycle": "Fall Semester"
+  },
+  {
+    "name": "Women and Gender-nonconforming Economics Students (WAGES)",
+    "description": "Swarthmore's community for underrepresented genders in economics.",
+    "tags": [
+      "Special Interest",
+      "Mentorship",
+      "Business"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Women's Ultimate Frisbee (Warmothers)",
+    "description": "Swarthmore's women's division Ultimate Frisbee team.",
+    "tags": [
+      "Club Sports",
+      "Competitive",
+      "Recreation"
+    ],
+    "affiliation": "Club Sports Council",
+    "size": "20 to 50 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Tryout Required",
+    "recruitingCycle": "Both Semesters"
+  },
+  {
+    "name": "Women+ in Computer Science (W+ICS)",
+    "description": "Swarthmore's community for women and female-identifying CS students.",
+    "tags": [
+      "Technology",
+      "Special Interest",
+      "Mentorship"
+    ],
+    "affiliation": "Identity & Cultural Affairs Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "WSRN",
+    "description": "Swarthmore's FCC-licensed student radio station.",
+    "tags": [
+      "Media",
+      "Music",
+      "Special Interest"
+    ],
+    "affiliation": "Publications & Media Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Youth for Innocence",
+    "description": "Swarthmore's chapter advocating against wrongful convictions.",
+    "tags": [
+      "Advocacy",
+      "Law",
+      "Community Service"
+    ],
+    "affiliation": "Political & Advocacy Council",
+    "size": "less than 10 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "Young Democratic Socialists of America (YDSA)",
+    "description": "Swarthmore's chapter promoting socialist activism and learning.",
+    "tags": [
+      "Politics",
+      "Advocacy",
+      "Civic engagement"
+    ],
+    "affiliation": "Political & Advocacy Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Open Membership",
+    "recruitingCycle": "Open"
+  },
+  {
+    "name": "180 Degrees Consulting",
+    "description": "Swarthmore's chapter providing pro bono consulting to nonprofits.",
+    "tags": [
+      "Consulting",
+      "Business",
+      "Pre-professional"
+    ],
+    "affiliation": "Pre-Professional & Academic Council",
+    "size": "less than 20 members",
+    "isAcceptingMembers": true,
+    "membershipProcess": "Application and Interview Required",
+    "recruitingCycle": "Fall Semester"
+  }
+]
