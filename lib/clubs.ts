@@ -31,7 +31,7 @@ export const MEMBERSHIP_PROCESSES = [
   "Tryout Required",
   "Audition Required",
   "Application Required",
-  "Application and Interview Required",
+  "Application & Interview Required",
 ] as const;
 
 export type MembershipProcess = (typeof MEMBERSHIP_PROCESSES)[number];
