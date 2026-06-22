@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Roboto, Noto_Sans } from "next/font/google";
+import { Geist, Geist_Mono, Roboto, Fraunces } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import Header from "@/components/Header";
 
-const notoSansHeading = Noto_Sans({
+const fraunces = Fraunces({
   subsets: ["latin"],
   variable: "--font-heading",
+  axes: ["SOFT", "WONK"],
 });
 
 const roboto = Roboto({ subsets: ["latin"], variable: "--font-sans" });
@@ -41,7 +42,7 @@ export default function RootLayout({
         geistMono.variable,
         "font-sans",
         roboto.variable,
-        notoSansHeading.variable,
+        fraunces.variable,
       )}
     >
       <body className="min-h-full flex flex-col">
