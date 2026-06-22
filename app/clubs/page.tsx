@@ -26,6 +26,7 @@ function toggleInSet<T>(set: Set<T>, value: T): Set<T> {
 }
 
 export default function ClubsPage() {
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<Set<Tag>>(new Set());
   const [selectedAffiliations, setSelectedAffiliations] = useState<
     Set<SwarthmoreAffiliation>
@@ -58,7 +59,13 @@ export default function ClubsPage() {
   }
 
   const filteredClubs = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
     const matches = CLUBS.filter((club) => {
+      const matchesSearch =
+        query.length === 0 ||
+        club.name.toLowerCase().includes(query) ||
+        club.description.toLowerCase().includes(query) ||
+        club.tags.some((tag) => tag.toLowerCase().includes(query));
       const matchesTags =
         selectedTags.size === 0 ||
         [...selectedTags].every((tag) => club.tags.includes(tag));
@@ -76,6 +83,7 @@ export default function ClubsPage() {
       const matchesAccepting =
         !acceptingMembersOnly || club.isAcceptingMembers;
       return (
+        matchesSearch &&
         matchesTags &&
         matchesAffiliation &&
         matchesSize &&
@@ -98,6 +106,7 @@ export default function ClubsPage() {
     }
     return matches;
   }, [
+    searchQuery,
     selectedTags,
     selectedAffiliations,
     selectedSizes,
@@ -181,8 +190,10 @@ export default function ClubsPage() {
   }
 
   return (
-    <div className="flex items-start gap-10 px-8 py-14">
+    <div className="flex items-start gap-10 px-8 py-8">
       <Navbar
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
         selectedTags={selectedTags}
         onToggleTag={(tag) =>
           setSelectedTags((prev) => toggleInSet(prev, tag as Tag))
@@ -218,7 +229,7 @@ export default function ClubsPage() {
           )
         }
       />
-      <div className="flex-1">
+      <div className="flex-1 max-w-[65.6rem] ml-auto">
         <h1 className="font-heading text-4xl font-bold text-foreground">
           Find your community
         </h1>

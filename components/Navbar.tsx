@@ -278,6 +278,8 @@ function FilterSearchDropdown({
 }
 
 type NavbarProps = {
+  searchQuery: string;
+  onSearchChange: (value: string) => void;
   selectedTags: Set<TagValue>;
   onToggleTag: (tag: string) => void;
   onClearTags: () => void;
@@ -299,6 +301,8 @@ type NavbarProps = {
 export type ClubOrdering = "default" | "alphabetical" | "bookmarks";
 
 const Navbar = ({
+  searchQuery,
+  onSearchChange,
   selectedTags,
   onToggleTag,
   onClearTags,
@@ -380,7 +384,12 @@ const Navbar = ({
   return (
     <aside className="flex w-full max-w-60 flex-col gap-5">
       <InputGroup className="h-10">
-        <InputGroupInput placeholder="Search" className="text-base" />
+        <InputGroupInput
+          placeholder="Search"
+          className="text-base"
+          value={searchQuery}
+          onChange={(event) => onSearchChange(event.target.value)}
+        />
         <InputGroupAddon align="inline-end">
           <Search className="size-5" />
         </InputGroupAddon>
