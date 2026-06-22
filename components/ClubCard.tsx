@@ -39,7 +39,7 @@ function ClubCard({
         {club.tags.map((tag) => (
           <span
             key={tag}
-            className="rounded-full bg-sccs/10 px-3 py-1 text-sm font-medium text-sccs"
+            className="rounded-full bg-orange-500/10 px-3 py-1 text-sm font-medium text-orange-600 dark:bg-orange-500/15 dark:text-orange-400"
           >
             {tag}
           </span>
@@ -56,12 +56,12 @@ function ClubCard({
           </span>
           <span>{club.membershipProcess}</span>
           {club.isAcceptingMembers ? (
-            <span className="flex items-center gap-1.5 text-sccs-orange">
+            <span className="flex items-center gap-1.5 text-green-600 dark:text-green-400">
               <CheckCircle2 className="size-4" />
               Taking Members
             </span>
           ) : (
-            <span className="flex items-center gap-1.5">
+            <span className="flex items-center gap-1.5 text-red-600 dark:text-red-400">
               <XCircle className="size-4" />
               Not Taking Members
             </span>
