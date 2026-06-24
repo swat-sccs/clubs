@@ -32,7 +32,7 @@ export default function FAQPage() {
             How can I provide feedback?
           </h2>
           <p className="mt-2 text-base leading-7 text-foreground/90">
-            We're so excited to let everyone at Swarthmore contribute to the
+            We&apos;re so excited to let everyone at Swarthmore contribute to the
             development of Swat Clubs! Your feedback is incredibly important
             to us. Have any questions or comments? Found any bugs?{" "}
             <a
@@ -57,18 +57,18 @@ export default function FAQPage() {
           <ul className="mt-3 list-disc space-y-2 pl-6 text-base leading-7 text-foreground/90">
             <li>
               When you bookmark a club, it will be saved to your bookmarked
-              list. You can use this to keep track of clubs you're interested
+              list. You can use this to keep track of clubs you&apos;re interested
               in, or a part of.
             </li>
             <li>
-              When you subscribe to a club, you'll receive notifications
+              When you subscribe to a club, you&apos;ll receive notifications
               about that club. The club will also be able to add you to
               their mailing lists.
             </li>
-            <li>You'll be able to see events that clubs post to Swat Clubs.</li>
+            <li>You&apos;ll be able to see events that clubs post to Swat Clubs.</li>
             <li>You can also be invited to join club member lists.</li>
             <li>
-              Finally, you'll need to log in if you want to use your
+              Finally, you&apos;ll need to log in if you want to use your
               administrator permissions to edit a club page.
             </li>
           </ul>
