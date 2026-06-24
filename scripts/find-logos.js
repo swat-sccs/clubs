@@ -22,7 +22,7 @@ function extractImageUrls() {
               function extractUrls(obj) {
                 if (typeof obj === 'object' && obj !== null) {
                   for (const key in obj) {
-                    if (key === 'ou' || key === 'mu' || key === 'ou') {
+                    if (key === 'ou' || key === 'mu') {
                       if (typeof obj[key] === 'string' && obj[key].startsWith('http')) {
                         urls.push(obj[key]);
                       }
@@ -35,7 +35,7 @@ function extractImageUrls() {
               extractUrls(data);
               results.push(...urls);
             }
-          } catch (e) {
+          } catch {
             // Ignore parse errors
           }
         }
