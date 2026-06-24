@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { X } from "lucide-react";
 import Navbar, { type ClubOrdering } from "@/components/Navbar";
 import ClubCard from "@/components/ClubCard";
@@ -41,11 +41,19 @@ export default function ClubsPage() {
   >(new Set());
   const [acceptingMembersOnly, setAcceptingMembersOnly] = useState(false);
   const [ordering, setOrdering] = useState<ClubOrdering>("default");
-  const [bookmarkedClubs, setBookmarkedClubs] = useState<Set<string>>(() => {
-    if (typeof window === "undefined") return new Set();
+  const [bookmarkedClubs, setBookmarkedClubs] = useState<Set<string>>(
+    new Set()
+  );
+
+  useEffect(() => {
+    // Read persisted bookmarks after mount to avoid a hydration mismatch
+    // (localStorage is unavailable during SSR).
     const stored = localStorage.getItem(BOOKMARKS_STORAGE_KEY);
-    return stored ? new Set(JSON.parse(stored)) : new Set();
-  });
+    if (stored) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setBookmarkedClubs(new Set(JSON.parse(stored)));
+    }
+  }, []);
 
   function toggleBookmark(clubName: string) {
     setBookmarkedClubs((prev) => {
