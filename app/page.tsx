@@ -1,6 +1,7 @@
 import Link from "next/link";
 import HeroNetwork from "@/components/HeroNetwork";
 import WordRoll from "@/components/WordRoll";
+import { CROWD } from "@/components/crowd";
 import {
   CLUBS,
   SWARTHMORE_AFFILIATIONS,
@@ -35,9 +36,15 @@ function SectionLabel({ label }: { label: string }) {
 
 export default function Home() {
   const acceptingCount = getAcceptingMembersCount();
-  const tagIndex = Array.from(getTagCounts())
+  const tagCounts = getTagCounts();
+  const tagIndex = Array.from(tagCounts)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 14);
+  const crowdNodes = CROWD.map(({ label, tag }) => ({
+    label,
+    tag,
+    count: tagCounts.get(tag) ?? 0,
+  })).filter(({ count }) => count > 0);
 
   return (
     <main className="flex flex-1 flex-col">
@@ -84,7 +91,10 @@ export default function Home() {
         {/* The campus web, breathing */}
         <aside className="animate-fade-rise animation-delay-300 lg:self-center">
           <figure>
-            <HeroNetwork className="h-80 w-full touch-none sm:h-96 lg:h-[26rem]" />
+            <HeroNetwork
+              nodes={crowdNodes}
+              className="h-80 w-full touch-none sm:h-96 lg:h-[26rem]"
+            />
             <figcaption className="mt-2 text-center font-heading text-lg italic text-foreground/75">
               Somewhere in here, your people.
             </figcaption>
