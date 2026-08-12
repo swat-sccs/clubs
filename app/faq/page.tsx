@@ -258,10 +258,6 @@ export default function FAQPage() {
           </div>
         </section>
       </div>
-
-      <p className="mt-16 text-center text-sm text-muted-foreground">
-        Made with ❤️ by SCCS
-      </p>
     </div>
   );
 }

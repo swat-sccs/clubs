@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Fraunces } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -24,7 +25,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Swat Clubs",
   description:
-    "Discover student organizations at Swarthmore College: browse, search, and bookmark clubs.",
+    "Discover student organizations at Swarthmore College — browse, search, and bookmark clubs.",
 };
 
 export const viewport: Viewport = {
@@ -50,7 +51,8 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <Header />
-        {children}
+        <div className="flex flex-1 flex-col">{children}</div>
+        <Footer />
       </body>
     </html>
   );
