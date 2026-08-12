@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono, Roboto, Fraunces } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Geist, Geist_Mono, Fraunces } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import Header from "@/components/Header";
@@ -7,10 +7,9 @@ import Header from "@/components/Header";
 const fraunces = Fraunces({
   subsets: ["latin"],
   variable: "--font-heading",
+  style: ["normal", "italic"],
   axes: ["SOFT", "WONK"],
 });
-
-const roboto = Roboto({ subsets: ["latin"], variable: "--font-sans" });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,7 +24,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Swat Clubs",
   description:
-    "Discover student organizations at Swarthmore College — browse, search, and bookmark clubs.",
+    "Discover student organizations at Swarthmore College: browse, search, and bookmark clubs.",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#faf6ef",
 };
 
 export default function RootLayout({
@@ -42,7 +45,6 @@ export default function RootLayout({
         geistSans.variable,
         geistMono.variable,
         "font-sans",
-        roboto.variable,
         fraunces.variable,
       )}
     >
