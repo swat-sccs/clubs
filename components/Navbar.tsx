@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Bookmark, Check, ChevronDown, ChevronUp, List, Search, Star, Tag, X } from "lucide-react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { Bookmark, Check, ChevronDown, List, Search, Star, Tag, X } from "lucide-react";
 import {
   getAcceptingMembersCount,
   getAffiliationCounts,
@@ -63,15 +63,16 @@ function FilterSection({
 
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
-      <CollapsibleTrigger className="flex w-full cursor-pointer items-center justify-between text-left">
-        <span className="font-heading text-lg font-semibold text-foreground">
+      <CollapsibleTrigger className="group/section flex w-full cursor-pointer items-center justify-between rounded-lg text-left transition-colors hover:text-sccs">
+        <span className="font-heading text-lg font-semibold text-foreground transition-colors group-hover/section:text-sccs">
           {title}
         </span>
-        {open ? (
-          <ChevronUp className="size-5 text-muted-foreground" />
-        ) : (
-          <ChevronDown className="size-5 text-muted-foreground" />
-        )}
+        <ChevronDown
+          className={cn(
+            "size-5 text-muted-foreground transition-transform duration-200",
+            open && "rotate-180",
+          )}
+        />
       </CollapsibleTrigger>
       <CollapsibleContent className="mt-3">{children}</CollapsibleContent>
     </Collapsible>
@@ -86,9 +87,12 @@ function CheckboxFilterGroup({
 }: {
   legend: string;
   options: CountOption[];
-  selected: Set<string>;
+  selected: ReadonlySet<string>;
   onToggle: (value: string) => void;
 }) {
+  // Unique per instance: the filter rail can be mounted twice (desktop rail +
+  // mobile drawer), and checkbox ids must not collide across the copies.
+  const instanceId = useId();
   return (
     <FieldSet>
       <FieldLegend variant="label" className="sr-only">
@@ -96,7 +100,7 @@ function CheckboxFilterGroup({
       </FieldLegend>
       <FieldGroup data-slot="checkbox-group">
         {options.map((option) => {
-          const id = `${slugify(legend)}-${slugify(option.value)}`;
+          const id = `${instanceId}-${slugify(legend)}-${slugify(option.value)}`;
           return (
             <Field key={id} orientation="horizontal" className="gap-3">
               <Checkbox
@@ -125,8 +129,37 @@ function CheckboxFilterGroup({
 type CountOption = {
   value: string;
   label: string;
+  labelLower: string;
   count: number;
 };
+
+function toCountOptions(counts: ReadonlyMap<string, number>): CountOption[] {
+  return Array.from(counts, ([value, count]) => ({
+    value,
+    label: value,
+    labelLower: value.toLowerCase(),
+    count,
+  }));
+}
+
+// The club data never changes at runtime, so every option list is built once
+// at module scope instead of per mount (the filter rail mounts twice: desktop
+// rail + mobile drawer).
+const TAG_OPTIONS = toCountOptions(getTagCounts());
+const AFFILIATION_OPTIONS = toCountOptions(getAffiliationCounts());
+const SIZE_OPTIONS = toCountOptions(getSizeCounts());
+const MEMBERSHIP_PROCESS_OPTIONS = toCountOptions(getMembershipProcessCounts());
+const RECRUITING_CYCLE_OPTIONS = toCountOptions(getRecruitingCycleCounts());
+const ACCEPTING_MEMBERS_OPTIONS: CountOption[] = [
+  {
+    value: "true",
+    label: "Is Accepting Members",
+    labelLower: "is accepting members",
+    count: getAcceptingMembersCount(),
+  },
+];
+const ACCEPTING_SELECTED: ReadonlySet<string> = new Set(["true"]);
+const NONE_SELECTED: ReadonlySet<string> = new Set();
 
 function FilterSearchDropdown({
   placeholder,
@@ -140,7 +173,7 @@ function FilterSearchDropdown({
   placeholder: string;
   allLabel: string;
   options: CountOption[];
-  selected: Set<string>;
+  selected: ReadonlySet<string>;
   onToggle: (value: string) => void;
   onClear: () => void;
   variant?: "list" | "checkbox";
@@ -163,7 +196,7 @@ function FilterSearchDropdown({
   const filteredOptions = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return options;
-    return options.filter((option) => option.label.toLowerCase().includes(q));
+    return options.filter((option) => option.labelLower.includes(q));
   }, [options, query]);
 
   const selectedOptions = useMemo(
@@ -320,69 +353,8 @@ const Navbar = ({
   selectedRecruitingCycles,
   onToggleRecruitingCycle,
 }: NavbarProps) => {
-  const tagOptions = useMemo<CountOption[]>(
-    () =>
-      Array.from(getTagCounts(), ([value, count]) => ({
-        value,
-        label: value,
-        count,
-      })),
-    []
-  );
-
-  const affiliationOptions = useMemo<CountOption[]>(
-    () =>
-      Array.from(getAffiliationCounts(), ([value, count]) => ({
-        value,
-        label: value,
-        count,
-      })),
-    []
-  );
-
-  const sizeOptions = useMemo<CountOption[]>(
-    () =>
-      Array.from(getSizeCounts(), ([value, count]) => ({
-        value,
-        label: value,
-        count,
-      })),
-    []
-  );
-
-  const membershipProcessOptions = useMemo<CountOption[]>(
-    () =>
-      Array.from(getMembershipProcessCounts(), ([value, count]) => ({
-        value,
-        label: value,
-        count,
-      })),
-    []
-  );
-
-  const recruitingCycleOptions = useMemo<CountOption[]>(
-    () =>
-      Array.from(getRecruitingCycleCounts(), ([value, count]) => ({
-        value,
-        label: value,
-        count,
-      })),
-    []
-  );
-
-  const acceptingMembersOptions = useMemo<CountOption[]>(
-    () => [
-      {
-        value: "true",
-        label: "Is Accepting Members",
-        count: getAcceptingMembersCount(),
-      },
-    ],
-    []
-  );
-
   return (
-    <aside className="flex w-full max-w-60 flex-col gap-5">
+    <div className="flex w-full flex-col gap-5">
       <InputGroup className="h-10">
         <InputGroupInput
           placeholder="Search"
@@ -401,7 +373,7 @@ const Navbar = ({
         <FilterSearchDropdown
           placeholder="Search for tags"
           allLabel="All Tags"
-          options={tagOptions}
+          options={TAG_OPTIONS}
           selected={selectedTags}
           onToggle={onToggleTag}
           onClear={onClearTags}
@@ -415,7 +387,7 @@ const Navbar = ({
         <FilterSearchDropdown
           placeholder="Search for affiliations"
           allLabel="All Affiliations"
-          options={affiliationOptions}
+          options={AFFILIATION_OPTIONS}
           selected={selectedAffiliations}
           onToggle={onToggleAffiliation}
           onClear={onClearAffiliations}
@@ -452,7 +424,7 @@ const Navbar = ({
       <FilterSection title="General Membership Process">
         <CheckboxFilterGroup
           legend="General Membership Process"
-          options={membershipProcessOptions}
+          options={MEMBERSHIP_PROCESS_OPTIONS}
           selected={selectedMembershipProcesses}
           onToggle={onToggleMembershipProcess}
         />
@@ -463,7 +435,7 @@ const Navbar = ({
       <FilterSection title="Size">
         <CheckboxFilterGroup
           legend="Size"
-          options={sizeOptions}
+          options={SIZE_OPTIONS}
           selected={selectedSizes}
           onToggle={onToggleSize}
         />
@@ -474,8 +446,8 @@ const Navbar = ({
       <FilterSection title="Accepting Members">
         <CheckboxFilterGroup
           legend="Accepting Members"
-          options={acceptingMembersOptions}
-          selected={acceptingMembersOnly ? new Set(["true"]) : new Set()}
+          options={ACCEPTING_MEMBERS_OPTIONS}
+          selected={acceptingMembersOnly ? ACCEPTING_SELECTED : NONE_SELECTED}
           onToggle={onToggleAcceptingMembers}
         />
       </FilterSection>
@@ -485,12 +457,12 @@ const Navbar = ({
       <FilterSection title="Recruiting Cycle">
         <CheckboxFilterGroup
           legend="Recruiting Cycle"
-          options={recruitingCycleOptions}
+          options={RECRUITING_CYCLE_OPTIONS}
           selected={selectedRecruitingCycles}
           onToggle={onToggleRecruitingCycle}
         />
       </FilterSection>
-    </aside>
+    </div>
   );
 };
 
