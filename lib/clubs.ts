@@ -59,54 +59,95 @@ export type Club = {
 
 export const CLUBS: Club[] = clubsData as Club[];
 
-export function getTagCounts(): Map<Tag, number> {
-  const counts = new Map<Tag, number>(TAGS.map((tag) => [tag, 0]));
-  for (const club of CLUBS) {
-    for (const tag of club.tags) {
-      counts.set(tag, (counts.get(tag) ?? 0) + 1);
-    }
-  }
-  return counts;
-}
+// The club list is static for the lifetime of the module, so every count and
+// index below is computed exactly once at load time. The getters keep their
+// original signatures but are now O(1).
 
-export function getAffiliationCounts(): Map<SwarthmoreAffiliation, number> {
-  const counts = new Map<SwarthmoreAffiliation, number>(
-    SWARTHMORE_AFFILIATIONS.map((affiliation) => [affiliation, 0])
+const tagCounts = new Map<Tag, number>(TAGS.map((tag) => [tag, 0]));
+const affiliationCounts = new Map<SwarthmoreAffiliation, number>(
+  SWARTHMORE_AFFILIATIONS.map((affiliation) => [affiliation, 0])
+);
+const sizeCounts = new Map<ClubSize, number>(
+  CLUB_SIZES.map((size) => [size, 0])
+);
+const membershipProcessCounts = new Map<MembershipProcess, number>(
+  MEMBERSHIP_PROCESSES.map((process) => [process, 0])
+);
+const recruitingCycleCounts = new Map<RecruitingCycle, number>(
+  RECRUITING_CYCLES.map((cycle) => [cycle, 0])
+);
+let acceptingMembersCount = 0;
+
+for (const club of CLUBS) {
+  for (const tag of club.tags) {
+    tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+  }
+  affiliationCounts.set(
+    club.affiliation,
+    (affiliationCounts.get(club.affiliation) ?? 0) + 1
   );
-  for (const club of CLUBS) {
-    counts.set(club.affiliation, (counts.get(club.affiliation) ?? 0) + 1);
-  }
-  return counts;
-}
-
-export function getSizeCounts(): Map<ClubSize, number> {
-  const counts = new Map<ClubSize, number>(CLUB_SIZES.map((size) => [size, 0]));
-  for (const club of CLUBS) {
-    counts.set(club.size, (counts.get(club.size) ?? 0) + 1);
-  }
-  return counts;
-}
-
-export function getMembershipProcessCounts(): Map<MembershipProcess, number> {
-  const counts = new Map<MembershipProcess, number>(
-    MEMBERSHIP_PROCESSES.map((process) => [process, 0])
+  sizeCounts.set(club.size, (sizeCounts.get(club.size) ?? 0) + 1);
+  membershipProcessCounts.set(
+    club.membershipProcess,
+    (membershipProcessCounts.get(club.membershipProcess) ?? 0) + 1
   );
-  for (const club of CLUBS) {
-    counts.set(club.membershipProcess, (counts.get(club.membershipProcess) ?? 0) + 1);
-  }
-  return counts;
+  recruitingCycleCounts.set(
+    club.recruitingCycle,
+    (recruitingCycleCounts.get(club.recruitingCycle) ?? 0) + 1
+  );
+  if (club.isAcceptingMembers) acceptingMembersCount++;
 }
 
-export function getRecruitingCycleCounts(): Map<RecruitingCycle, number> {
-  const counts = new Map<RecruitingCycle, number>(
-    RECRUITING_CYCLES.map((cycle) => [cycle, 0])
-  );
-  for (const club of CLUBS) {
-    counts.set(club.recruitingCycle, (counts.get(club.recruitingCycle) ?? 0) + 1);
-  }
-  return counts;
+export function getTagCounts(): ReadonlyMap<Tag, number> {
+  return tagCounts;
+}
+
+export function getAffiliationCounts(): ReadonlyMap<SwarthmoreAffiliation, number> {
+  return affiliationCounts;
+}
+
+export function getSizeCounts(): ReadonlyMap<ClubSize, number> {
+  return sizeCounts;
+}
+
+export function getMembershipProcessCounts(): ReadonlyMap<MembershipProcess, number> {
+  return membershipProcessCounts;
+}
+
+export function getRecruitingCycleCounts(): ReadonlyMap<RecruitingCycle, number> {
+  return recruitingCycleCounts;
 }
 
 export function getAcceptingMembersCount(): number {
-  return CLUBS.filter((club) => club.isAcceptingMembers).length;
+  return acceptingMembersCount;
 }
+
+export type ClubSearchEntry = {
+  club: Club;
+  /**
+   * Name, description, and tags lowercased once, newline-joined so a query
+   * can never match across field boundaries.
+   */
+  searchText: string;
+  tagSet: ReadonlySet<Tag>;
+};
+
+function toSearchEntry(club: Club): ClubSearchEntry {
+  return {
+    club,
+    searchText: [club.name, club.description, ...club.tags]
+      .join("\n")
+      .toLowerCase(),
+    tagSet: new Set(club.tags),
+  };
+}
+
+export const CLUB_SEARCH_INDEX: ClubSearchEntry[] = CLUBS.map(toSearchEntry);
+
+const nameCollator = new Intl.Collator();
+
+/** Same entries as CLUB_SEARCH_INDEX, pre-sorted by club name so ordered
+ *  views only pay for a filter, never a sort. */
+export const CLUB_SEARCH_INDEX_ALPHABETICAL: ClubSearchEntry[] = [
+  ...CLUB_SEARCH_INDEX,
+].sort((a, b) => nameCollator.compare(a.club.name, b.club.name));
