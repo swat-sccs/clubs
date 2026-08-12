@@ -25,7 +25,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Swat Clubs",
   description:
-    "Discover student organizations at Swarthmore College — browse, search, and bookmark clubs.",
+    "Discover student organizations at Swarthmore College: browse, search, and bookmark clubs.",
 };
 
 export const viewport: Viewport = {

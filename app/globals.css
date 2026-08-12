@@ -174,7 +174,7 @@
 }
 
 @layer components {
-  /* Display serif with Fraunces' soft/wonky axes turned up — display only */
+  /* Display serif with Fraunces' soft/wonky axes turned up (display only) */
   .display-wonk {
     font-variation-settings:
       "SOFT" 60,

@@ -386,7 +386,7 @@ function ClubsPageContent() {
               No clubs match your filters
             </p>
             <p className="text-muted-foreground">
-              Try removing a filter or two — your people are in here somewhere.
+              Try removing a filter or two. Your people are in here somewhere.
             </p>
             {activeFilters.length > 0 && (
               <button
