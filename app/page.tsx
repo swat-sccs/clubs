@@ -49,7 +49,7 @@ export default function Home() {
   return (
     <main className="flex flex-1 flex-col">
       {/* ---------- Hero ---------- */}
-      <section className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-x-16 gap-y-14 px-4 pb-16 pt-10 sm:px-6 md:pb-24 md:pt-16 lg:grid-cols-[1fr_24rem] lg:px-8">
+      <section className="mx-auto grid min-h-[calc(100svh-4rem)] w-full max-w-7xl grid-cols-1 content-center gap-x-16 gap-y-14 px-4 py-10 sm:px-6 md:min-h-[calc(100svh-4.5rem)] md:py-12 lg:grid-cols-[1fr_24rem] lg:px-8">
         <div className="max-w-[46rem]">
           <p className="animate-fade-rise text-[0.8rem] font-semibold tracking-[0.18em] text-foreground uppercase">
             Swarthmore College · {CLUBS.length} student organizations
@@ -103,9 +103,9 @@ export default function Home() {
       </section>
 
       {/* ---------- Index of interests ---------- */}
-      <section className="mx-auto w-full max-w-7xl px-4 pb-16 sm:px-6 md:pb-24 lg:px-8">
+      <section className="mx-auto flex min-h-[calc(100svh-4rem)] w-full max-w-7xl flex-col px-4 pb-16 sm:px-6 md:min-h-[calc(100svh-4.5rem)] md:pb-24 lg:px-8">
         <SectionLabel label="Index of interests" />
-        <div className="mt-8 grid grid-cols-1 gap-x-16 gap-y-8 lg:grid-cols-[minmax(0,24rem)_1fr]">
+        <div className="mt-8 grid flex-1 grid-cols-1 content-center gap-x-16 gap-y-8 lg:grid-cols-[minmax(0,24rem)_1fr]">
           <div>
             <h2 className="font-heading text-3xl font-semibold text-foreground md:text-4xl [text-wrap:balance]">
               Browse by interest
@@ -152,20 +152,22 @@ export default function Home() {
       </section>
 
       {/* ---------- Features ---------- */}
-      <section className="mx-auto w-full max-w-7xl px-4 pb-16 sm:px-6 md:pb-24 lg:px-8">
+      <section className="mx-auto flex min-h-[calc(100svh-4rem)] w-full max-w-7xl flex-col px-4 pb-16 sm:px-6 md:min-h-[calc(100svh-4.5rem)] md:pb-24 lg:px-8">
         <SectionLabel label="How it works" />
-        <h2 className="mt-8 font-heading text-3xl font-semibold text-foreground md:text-4xl">
-          Made for club hunting
-        </h2>
-        <div className="mt-8 grid grid-cols-1 gap-x-12 gap-y-8 md:grid-cols-3">
-          {features.map(({ title, body }) => (
-            <div key={title} className="border-t border-foreground/60 pt-4">
-              <h3 className="font-heading text-xl font-semibold text-foreground">
-                {title}
-              </h3>
-              <p className="mt-2.5 leading-[1.6] text-foreground/75">{body}</p>
-            </div>
-          ))}
+        <div className="flex flex-1 flex-col justify-center pb-8">
+          <h2 className="font-heading text-3xl font-semibold text-foreground md:text-4xl">
+            Made for club hunting
+          </h2>
+          <div className="mt-8 grid grid-cols-1 gap-x-12 gap-y-8 md:grid-cols-3">
+            {features.map(({ title, body }) => (
+              <div key={title} className="border-t border-foreground/60 pt-4">
+                <h3 className="font-heading text-xl font-semibold text-foreground">
+                  {title}
+                </h3>
+                <p className="mt-2.5 leading-[1.6] text-foreground/75">{body}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
