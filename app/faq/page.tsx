@@ -8,17 +8,20 @@ export const metadata: Metadata = {
 
 export default function FAQPage() {
   return (
-    <div className="mx-auto w-full max-w-3xl px-8 py-16">
-      <h1 className="font-heading text-4xl font-bold text-foreground">
+    <div className="mx-auto w-full max-w-3xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
+      <p className="animate-fade-rise text-sm font-medium tracking-[0.18em] text-sccs-ember uppercase">
+        Good questions
+      </p>
+      <h1 className="display-wonk mt-3 animate-fade-rise font-heading text-4xl font-bold text-foreground animation-delay-100 md:text-5xl [text-wrap:balance]">
         Frequently Asked Questions
       </h1>
 
-      <div className="mt-10 flex flex-col gap-10">
+      <div className="mt-12 flex flex-col gap-12">
         <section>
-          <h2 className="font-heading text-xl font-semibold text-sccs">
+          <h2 className="font-heading text-2xl font-semibold text-sccs [text-wrap:balance]">
             What is Swat Clubs?
           </h2>
-          <p className="mt-2 text-base leading-7 text-foreground/90">
+          <p className="mt-3 text-base leading-7 text-foreground/85">
             Swat Clubs is meant to be your central source of information
             about student organizations at Swarthmore College. Keep
             discovering new clubs throughout the year, not just at the
@@ -28,16 +31,16 @@ export default function FAQPage() {
         </section>
 
         <section>
-          <h2 className="font-heading text-xl font-semibold text-sccs">
+          <h2 className="font-heading text-2xl font-semibold text-sccs [text-wrap:balance]">
             How can I provide feedback?
           </h2>
-          <p className="mt-2 text-base leading-7 text-foreground/90">
+          <p className="mt-3 text-base leading-7 text-foreground/85">
             We&apos;re so excited to let everyone at Swarthmore contribute to the
             development of Swat Clubs! Your feedback is incredibly important
             to us. Have any questions or comments? Found any bugs?{" "}
             <a
               href="mailto:sccs@sccs.swarthmore.edu"
-              className="font-medium text-sccs underline"
+              className="font-medium text-sccs underline decoration-sccs-orange/50 decoration-2 underline-offset-4 transition-colors hover:decoration-sccs-orange"
             >
               Please let us know.
             </a>
@@ -47,10 +50,10 @@ export default function FAQPage() {
         <hr className="border-border" />
 
         <section>
-          <h2 className="font-heading text-xl font-semibold text-sccs">
+          <h2 className="font-heading text-2xl font-semibold text-sccs [text-wrap:balance]">
             Why do I have to log in?
           </h2>
-          <p className="mt-2 text-base leading-7 text-foreground/90">
+          <p className="mt-3 text-base leading-7 text-foreground/85">
             Logging in allows us to create an account for you on Swat Clubs.
             This gives you access to many useful features!
           </p>
@@ -75,10 +78,10 @@ export default function FAQPage() {
         </section>
 
         <section>
-          <h2 className="font-heading text-xl font-semibold text-sccs">
+          <h2 className="font-heading text-2xl font-semibold text-sccs [text-wrap:balance]">
             How do I use this site?
           </h2>
-          <p className="mt-2 text-base leading-7 text-foreground/90">
+          <p className="mt-3 text-base leading-7 text-foreground/85">
             The #1 way to use this site is to browse clubs at Swarthmore
             College! You can:
           </p>
@@ -102,10 +105,10 @@ export default function FAQPage() {
         </section>
 
         <section>
-          <h2 className="font-heading text-xl font-semibold text-sccs">
+          <h2 className="font-heading text-2xl font-semibold text-sccs [text-wrap:balance]">
             How do I edit an organization&apos;s profile?
           </h2>
-          <p className="mt-2 text-base leading-7 text-foreground/90">
+          <p className="mt-3 text-base leading-7 text-foreground/85">
             You&apos;ll need to have administrator permission for that
             organization. We originally invited people as administrators
             based on information submitted by clubs to Student Council
@@ -117,7 +120,7 @@ export default function FAQPage() {
               believe you should have, let us know at{" "}
               <a
                 href="mailto:studentorgs@swarthmore.edu"
-                className="font-medium text-sccs underline"
+                className="font-medium text-sccs underline decoration-sccs-orange/50 decoration-2 underline-offset-4 transition-colors hover:decoration-sccs-orange"
               >
                 studentorgs@swarthmore.edu
               </a>{" "}
@@ -130,7 +133,7 @@ export default function FAQPage() {
               can also email us at{" "}
               <a
                 href="mailto:studentorgs@swarthmore.edu"
-                className="font-medium text-sccs underline"
+                className="font-medium text-sccs underline decoration-sccs-orange/50 decoration-2 underline-offset-4 transition-colors hover:decoration-sccs-orange"
               >
                 studentorgs@swarthmore.edu
               </a>{" "}
@@ -146,10 +149,10 @@ export default function FAQPage() {
         </section>
 
         <section>
-          <h2 className="font-heading text-xl font-semibold text-sccs">
+          <h2 className="font-heading text-2xl font-semibold text-sccs [text-wrap:balance]">
             Why can&apos;t I find an organization on Swat Clubs?
           </h2>
-          <p className="mt-2 text-base leading-7 text-foreground/90">
+          <p className="mt-3 text-base leading-7 text-foreground/85">
             Sorry about that! We&apos;re in the process of making Swat Clubs
             as comprehensive as possible, creating the first complete
             directory of student organizations at Swarthmore College.
@@ -169,7 +172,7 @@ export default function FAQPage() {
               <strong>already exists</strong> on Swat Clubs, email{" "}
               <a
                 href="mailto:studentorgs@swarthmore.edu"
-                className="font-medium text-sccs underline"
+                className="font-medium text-sccs underline decoration-sccs-orange/50 decoration-2 underline-offset-4 transition-colors hover:decoration-sccs-orange"
               >
                 studentorgs@swarthmore.edu
               </a>{" "}
@@ -181,7 +184,7 @@ export default function FAQPage() {
               email{" "}
               <a
                 href="mailto:studentorgs@swarthmore.edu"
-                className="font-medium text-sccs underline"
+                className="font-medium text-sccs underline decoration-sccs-orange/50 decoration-2 underline-offset-4 transition-colors hover:decoration-sccs-orange"
               >
                 studentorgs@swarthmore.edu
               </a>
@@ -193,7 +196,7 @@ export default function FAQPage() {
             email{" "}
             <a
               href="mailto:studentorgs@swarthmore.edu"
-              className="font-medium text-sccs underline"
+              className="font-medium text-sccs underline decoration-sccs-orange/50 decoration-2 underline-offset-4 transition-colors hover:decoration-sccs-orange"
             >
               studentorgs@swarthmore.edu
             </a>
@@ -202,10 +205,10 @@ export default function FAQPage() {
         </section>
 
         <section>
-          <h2 className="font-heading text-xl font-semibold text-sccs">
+          <h2 className="font-heading text-2xl font-semibold text-sccs [text-wrap:balance]">
             Who is responsible for approving clubs on Swat Clubs?
           </h2>
-          <p className="mt-2 text-base leading-7 text-foreground/90">
+          <p className="mt-3 text-base leading-7 text-foreground/85">
             Newly created clubs require approval from the Office of Student
             Engagement in order to comply with college guidelines. When your
             club requires review, it will be added to a queue that is
@@ -215,10 +218,10 @@ export default function FAQPage() {
         </section>
 
         <section>
-          <h2 className="font-heading text-xl font-semibold text-sccs">
+          <h2 className="font-heading text-2xl font-semibold text-sccs [text-wrap:balance]">
             How are clubs ordered on Swat Clubs?
           </h2>
-          <p className="mt-2 text-base leading-7 text-foreground/90">
+          <p className="mt-3 text-base leading-7 text-foreground/85">
             By default, clubs are shown in our recommended order. You can
             switch to alphabetical order, or sort by your bookmarks, using
             the Ordering filter on the Clubs page.
@@ -226,13 +229,13 @@ export default function FAQPage() {
         </section>
 
         <section>
-          <h2 className="font-heading text-lg font-semibold text-foreground">
+          <h2 className="font-heading text-2xl font-semibold text-sccs [text-wrap:balance]">
             I have another question!
           </h2>
-          <p className="mt-2 text-base leading-7 text-foreground/90">
+          <p className="mt-3 text-base leading-7 text-foreground/85">
             <a
               href="mailto:sccs@sccs.swarthmore.edu"
-              className="font-medium text-sccs underline"
+              className="font-medium text-sccs underline decoration-sccs-orange/50 decoration-2 underline-offset-4 transition-colors hover:decoration-sccs-orange"
             >
               Please let us know :)
             </a>
@@ -242,19 +245,28 @@ export default function FAQPage() {
         <hr className="border-border" />
 
         <section>
-          <h2 className="font-heading text-lg font-semibold text-foreground">
+          <h2 className="font-heading text-2xl font-semibold text-sccs [text-wrap:balance]">
             Special Thanks
           </h2>
-          <p className="mt-2 text-base leading-7 text-foreground/90">
+          <p className="mt-3 text-base leading-7 text-foreground/85">
             Thank you to the organizations below for their support in
             launching Swat Clubs! We&apos;re excited to continue building
             this valuable resource together.
           </p>
-          <div className="mt-6 flex flex-wrap items-center gap-x-10 gap-y-4 text-sm font-semibold tracking-wide text-muted-foreground uppercase">
-            <span>Student Council</span>
-            <span>SCCS</span>
-            <span>Office of Student Engagement</span>
-            <span>Student Activities Committee</span>
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            {[
+              "Student Council",
+              "SCCS",
+              "Office of Student Engagement",
+              "Student Activities Committee",
+            ].map((org) => (
+              <span
+                key={org}
+                className="rounded-full border border-border bg-card px-4 py-1.5 text-sm font-medium text-sccs"
+              >
+                {org}
+              </span>
+            ))}
           </div>
         </section>
       </div>
