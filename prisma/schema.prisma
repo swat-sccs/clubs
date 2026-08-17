@@ -30,4 +30,17 @@ model Club {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  embedding ClubEmbedding?
+}
+
+// Written and read by the Go matcher service (matcher/), which embeds each
+// club via TEI and re-embeds whenever the club row is newer than this one.
+model ClubEmbedding {
+  clubId    String   @id
+  model     String
+  vector    Float[]
+  updatedAt DateTime @default(now())
+
+  club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
 }

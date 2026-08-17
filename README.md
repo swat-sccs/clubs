@@ -14,12 +14,16 @@ Built and run by [SCCS](https://sccs.swarthmore.edu). Live at
 - Anyone with an SCCS account can add their club at `/clubs/new`. Login goes
   through SCCS Keycloak and nothing else; there are no passwords to manage
   here. Every club records who added it and who last touched it.
+- `/match` takes a free-text description of what you're into and ranks clubs
+  by cosine similarity between your text and each club's profile, embedded
+  with `gte-modernbert-base` on SCCS's TEI server.
 
 ## Stack
 
 Next.js 16 (App Router), React 19, Tailwind 4, Auth.js with Keycloak,
-Prisma on Postgres 16. Bun for package management. Runs in Docker behind
-SCCS's Traefik.
+Prisma on Postgres 16. Club matching is a small Go service (`matcher/`) that
+caches club embeddings in Postgres and ranks by cosine similarity. Bun for
+package management. Runs in Docker behind SCCS's Traefik.
 
 The club table is seeded once from `lib/clubs.json` on first boot against an
 empty database, then the database is the source of truth. Deploys never
@@ -65,7 +69,8 @@ the Traefik route, and DNS.
 
 | Path | What's there |
 | --- | --- |
-| `app/` | Routes: home, `/clubs`, `/clubs/new`, `/login`, `/faq` |
+| `app/` | Routes: home, `/clubs`, `/clubs/new`, `/match`, `/login`, `/faq` |
+| `matcher/` | Go service: embeds clubs via TEI, serves cosine-ranked matches |
 | `components/` | UI, including the filter rail (`Navbar`) and `ClubsExplorer` |
 | `lib/clubs.ts` | Club types, tag/council constants, search index builders |
 | `lib/data.ts` | Database reads |

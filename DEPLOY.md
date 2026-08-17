@@ -11,6 +11,12 @@ goes through SCCS Keycloak.
   port 3000). Runs `prisma migrate deploy` on boot, then seeds the club table
   from `lib/clubs.json` if it is empty.
 - `clubs-db` container: Postgres 16, data in the named volume `clubs-dbdata`.
+- `clubs-matcher` container: Go service for `/match`. Embeds club profiles via
+  the TEI server on loon (`EMBEDDINGS_URL`, campus network only) and caches
+  the vectors in the `ClubEmbedding` table. The app reaches it at
+  `MATCHER_URL` (`http://clubs-matcher:8080` inside compose). If it or TEI is
+  down, `/match` degrades to a friendly error; the rest of the site is
+  unaffected.
 - Auth: Auth.js (NextAuth v5) with Keycloak as the only provider. No local
   accounts. Every club row records who created and last edited it
   (`createdBy`/`createdById`/`updatedBy`/`updatedById` = Keycloak name/subject).
