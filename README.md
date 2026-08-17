@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Swat Clubs
 
-## Getting Started
+The Swarthmore club directory: every club, team, publication, and society on
+campus, searchable and filterable. The Activities Fair, open all year.
 
-First, run the development server:
+Built and run by [SCCS](https://sccs.swarthmore.edu). Live at
+[clubs.sccs.swarthmore.edu](https://clubs.sccs.swarthmore.edu).
+
+## What it does
+
+- Browse and search all ~130 student organizations, filter by tag, council,
+  size, membership process, and recruiting cycle. Bookmark the ones you like;
+  bookmarks stay in your browser.
+- Anyone with an SCCS account can add their club at `/clubs/new`. Login goes
+  through SCCS Keycloak and nothing else; there are no passwords to manage
+  here. Every club records who added it and who last touched it.
+
+## Stack
+
+Next.js 16 (App Router), React 19, Tailwind 4, Auth.js with Keycloak,
+Prisma on Postgres 16. Bun for package management. Runs in Docker behind
+SCCS's Traefik.
+
+The club table is seeded once from `lib/clubs.json` on first boot against an
+empty database, then the database is the source of truth. Deploys never
+re-seed over user submissions.
+
+## Development
+
+You need [Bun](https://bun.sh) and Docker (for the dev database).
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+bun install
+docker compose -f docker-compose.dev.yml up -d
+cp .env.example .env.local
+# set DATABASE_URL=postgresql://clubs:clubs@localhost:5432/clubs
+bunx prisma migrate deploy
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+That gives you the full site at [localhost:3000](http://localhost:3000) with
+the directory seeded. Logging in locally requires access to the SCCS Keycloak
+client (ask on the SCCS Slack, or see `DEPLOY.md`); everything except adding a
+club works without it.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Before opening a PR: `bun run lint` and `bun run build` should both pass.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Changing the schema
 
-## Learn More
+Edit `prisma/schema.prisma`, then generate a migration and the client:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+bunx prisma migrate dev --name what-you-changed
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Migrations run automatically on deploy.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deployment
 
-## Deploy on Vercel
+Docker compose on the SCCS `eagle` VM, routed through Traefik on `gull`.
+`DEPLOY.md` has the full runbook: environment variables, the Keycloak client,
+the Traefik route, and DNS.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Repo tour
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Path | What's there |
+| --- | --- |
+| `app/` | Routes: home, `/clubs`, `/clubs/new`, `/login`, `/faq` |
+| `components/` | UI, including the filter rail (`Navbar`) and `ClubsExplorer` |
+| `lib/clubs.ts` | Club types, tag/council constants, search index builders |
+| `lib/data.ts` | Database reads |
+| `app/clubs/new/actions.ts` | The server action that creates clubs |
+| `prisma/` | Schema and migrations |
+| `lib/clubs.json` | The original scraped directory, now just seed data |
