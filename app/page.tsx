@@ -2,12 +2,11 @@ import Link from "next/link";
 import HeroNetwork from "@/components/HeroNetwork";
 import WordRoll from "@/components/WordRoll";
 import { CROWD } from "@/components/crowd";
-import {
-  CLUBS,
-  SWARTHMORE_AFFILIATIONS,
-  getAcceptingMembersCount,
-  getTagCounts,
-} from "@/lib/clubs";
+import { SWARTHMORE_AFFILIATIONS, buildClubStats } from "@/lib/clubs";
+import { getClubs } from "@/lib/data";
+
+// Club counts come from Postgres, so this page renders per request.
+export const dynamic = "force-dynamic";
 
 const features = [
   {
@@ -34,9 +33,10 @@ function SectionLabel({ label }: { label: string }) {
   );
 }
 
-export default function Home() {
-  const acceptingCount = getAcceptingMembersCount();
-  const tagCounts = getTagCounts();
+export default async function Home() {
+  const clubs = await getClubs();
+  const { acceptingMembersCount: acceptingCount, tagCounts } =
+    buildClubStats(clubs);
   const tagIndex = Array.from(tagCounts)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 14);
@@ -52,7 +52,7 @@ export default function Home() {
       <section className="mx-auto grid min-h-[calc(100svh-4rem)] w-full max-w-7xl grid-cols-1 content-center gap-x-16 gap-y-14 px-4 py-10 sm:px-6 md:min-h-[calc(100svh-4.5rem)] md:py-12 lg:grid-cols-[1fr_24rem] lg:px-8">
         <div className="max-w-[46rem]">
           <p className="animate-fade-rise text-[0.8rem] font-semibold tracking-[0.18em] text-foreground uppercase">
-            Swarthmore College · {CLUBS.length} student organizations
+            Swarthmore College · {clubs.length} student organizations
           </p>
 
           <h1 className="display-wonk mt-6 animate-fade-rise font-heading text-[clamp(4rem,9vw,8rem)] font-semibold leading-[0.95] tracking-[-0.02em] text-foreground animation-delay-100">
@@ -65,7 +65,7 @@ export default function Home() {
           </p>
 
           <p className="mt-8 flex max-w-xl animate-fade-rise flex-wrap gap-x-3 gap-y-1 border-y border-border py-2.5 text-[0.85rem] font-medium tracking-[0.14em] text-muted-foreground uppercase animation-delay-300 tabular-nums">
-            <span>{CLUBS.length} clubs</span>
+            <span>{clubs.length} clubs</span>
             <span aria-hidden="true">·</span>
             <span>{SWARTHMORE_AFFILIATIONS.length} councils</span>
             <span aria-hidden="true">·</span>

@@ -2,15 +2,9 @@
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { Bookmark, Check, ChevronDown, List, Search, Star, Tag, X } from "lucide-react";
-import {
-  getAcceptingMembersCount,
-  getAffiliationCounts,
-  getMembershipProcessCounts,
-  getRecruitingCycleCounts,
-  getSizeCounts,
-  getTagCounts,
-} from "@/lib/clubs";
+import { buildClubStats } from "@/lib/clubs";
 import type {
+  Club,
   ClubSize,
   MembershipProcess,
   RecruitingCycle,
@@ -142,22 +136,37 @@ function toCountOptions(counts: ReadonlyMap<string, number>): CountOption[] {
   }));
 }
 
-// The club data never changes at runtime, so every option list is built once
-// at module scope instead of per mount (the filter rail mounts twice: desktop
-// rail + mobile drawer).
-const TAG_OPTIONS = toCountOptions(getTagCounts());
-const AFFILIATION_OPTIONS = toCountOptions(getAffiliationCounts());
-const SIZE_OPTIONS = toCountOptions(getSizeCounts());
-const MEMBERSHIP_PROCESS_OPTIONS = toCountOptions(getMembershipProcessCounts());
-const RECRUITING_CYCLE_OPTIONS = toCountOptions(getRecruitingCycleCounts());
-const ACCEPTING_MEMBERS_OPTIONS: CountOption[] = [
-  {
-    value: "true",
-    label: "Is Accepting Members",
-    labelLower: "is accepting members",
-    count: getAcceptingMembersCount(),
-  },
-];
+export type NavbarOptions = {
+  tags: CountOption[];
+  affiliations: CountOption[];
+  sizes: CountOption[];
+  membershipProcesses: CountOption[];
+  recruitingCycles: CountOption[];
+  acceptingMembers: CountOption[];
+};
+
+/** Club data comes from the database per request, so the option lists are a
+ *  function of the fetched clubs. Callers memoize this once and pass it to
+ *  both Navbar mounts (desktop rail + mobile drawer). */
+export function buildNavbarOptions(clubs: readonly Club[]): NavbarOptions {
+  const stats = buildClubStats(clubs);
+  return {
+    tags: toCountOptions(stats.tagCounts),
+    affiliations: toCountOptions(stats.affiliationCounts),
+    sizes: toCountOptions(stats.sizeCounts),
+    membershipProcesses: toCountOptions(stats.membershipProcessCounts),
+    recruitingCycles: toCountOptions(stats.recruitingCycleCounts),
+    acceptingMembers: [
+      {
+        value: "true",
+        label: "Is Accepting Members",
+        labelLower: "is accepting members",
+        count: stats.acceptingMembersCount,
+      },
+    ],
+  };
+}
+
 const ACCEPTING_SELECTED: ReadonlySet<string> = new Set(["true"]);
 const NONE_SELECTED: ReadonlySet<string> = new Set();
 
@@ -311,6 +320,7 @@ function FilterSearchDropdown({
 }
 
 type NavbarProps = {
+  options: NavbarOptions;
   searchQuery: string;
   onSearchChange: (value: string) => void;
   selectedTags: Set<TagValue>;
@@ -334,6 +344,7 @@ type NavbarProps = {
 export type ClubOrdering = "default" | "alphabetical" | "bookmarks";
 
 const Navbar = ({
+  options,
   searchQuery,
   onSearchChange,
   selectedTags,
@@ -373,7 +384,7 @@ const Navbar = ({
         <FilterSearchDropdown
           placeholder="Search for tags"
           allLabel="All Tags"
-          options={TAG_OPTIONS}
+          options={options.tags}
           selected={selectedTags}
           onToggle={onToggleTag}
           onClear={onClearTags}
@@ -387,7 +398,7 @@ const Navbar = ({
         <FilterSearchDropdown
           placeholder="Search for affiliations"
           allLabel="All Affiliations"
-          options={AFFILIATION_OPTIONS}
+          options={options.affiliations}
           selected={selectedAffiliations}
           onToggle={onToggleAffiliation}
           onClear={onClearAffiliations}
@@ -424,7 +435,7 @@ const Navbar = ({
       <FilterSection title="General Membership Process">
         <CheckboxFilterGroup
           legend="General Membership Process"
-          options={MEMBERSHIP_PROCESS_OPTIONS}
+          options={options.membershipProcesses}
           selected={selectedMembershipProcesses}
           onToggle={onToggleMembershipProcess}
         />
@@ -435,7 +446,7 @@ const Navbar = ({
       <FilterSection title="Size">
         <CheckboxFilterGroup
           legend="Size"
-          options={SIZE_OPTIONS}
+          options={options.sizes}
           selected={selectedSizes}
           onToggle={onToggleSize}
         />
@@ -446,7 +457,7 @@ const Navbar = ({
       <FilterSection title="Accepting Members">
         <CheckboxFilterGroup
           legend="Accepting Members"
-          options={ACCEPTING_MEMBERS_OPTIONS}
+          options={options.acceptingMembers}
           selected={acceptingMembersOnly ? ACCEPTING_SELECTED : NONE_SELECTED}
           onToggle={onToggleAcceptingMembers}
         />
@@ -457,7 +468,7 @@ const Navbar = ({
       <FilterSection title="Recruiting Cycle">
         <CheckboxFilterGroup
           legend="Recruiting Cycle"
-          options={RECRUITING_CYCLE_OPTIONS}
+          options={options.recruitingCycles}
           selected={selectedRecruitingCycles}
           onToggle={onToggleRecruitingCycle}
         />

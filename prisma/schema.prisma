@@ -1,0 +1,33 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Club {
+  id                 String   @id @default(cuid())
+  // Display order: seed order for imported clubs, insertion order after that.
+  position           Int      @default(autoincrement())
+  name               String   @unique
+  description        String
+  tags               String[]
+  affiliation        String
+  size               String
+  isAcceptingMembers Boolean
+  membershipProcess  String
+  recruitingCycle    String
+
+  // Keycloak subject / email / display name of the SCCS account that
+  // created or last edited the club. Null for seeded rows.
+  createdById String?
+  createdBy   String?
+  updatedById String?
+  updatedBy   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

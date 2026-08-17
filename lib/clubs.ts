@@ -1,4 +1,3 @@
-import clubsData from "./clubs.json";
 import { TAGS, type Tag } from "./tags";
 
 export const SWARTHMORE_AFFILIATIONS = [
@@ -57,69 +56,63 @@ export type Club = {
   recruitingCycle: RecruitingCycle;
 };
 
-export const CLUBS: Club[] = clubsData as Club[];
+// Clubs now live in Postgres (see lib/data.ts), so nothing here can be
+// precomputed at module load. Everything below is a pure function of a club
+// list; callers memoize per data fetch.
 
-// The club list is static for the lifetime of the module, so every count and
-// index below is computed exactly once at load time. The getters keep their
-// original signatures but are now O(1).
+export type ClubStats = {
+  tagCounts: ReadonlyMap<Tag, number>;
+  affiliationCounts: ReadonlyMap<SwarthmoreAffiliation, number>;
+  sizeCounts: ReadonlyMap<ClubSize, number>;
+  membershipProcessCounts: ReadonlyMap<MembershipProcess, number>;
+  recruitingCycleCounts: ReadonlyMap<RecruitingCycle, number>;
+  acceptingMembersCount: number;
+};
 
-const tagCounts = new Map<Tag, number>(TAGS.map((tag) => [tag, 0]));
-const affiliationCounts = new Map<SwarthmoreAffiliation, number>(
-  SWARTHMORE_AFFILIATIONS.map((affiliation) => [affiliation, 0])
-);
-const sizeCounts = new Map<ClubSize, number>(
-  CLUB_SIZES.map((size) => [size, 0])
-);
-const membershipProcessCounts = new Map<MembershipProcess, number>(
-  MEMBERSHIP_PROCESSES.map((process) => [process, 0])
-);
-const recruitingCycleCounts = new Map<RecruitingCycle, number>(
-  RECRUITING_CYCLES.map((cycle) => [cycle, 0])
-);
-let acceptingMembersCount = 0;
+export function buildClubStats(clubs: readonly Club[]): ClubStats {
+  const tagCounts = new Map<Tag, number>(TAGS.map((tag) => [tag, 0]));
+  const affiliationCounts = new Map<SwarthmoreAffiliation, number>(
+    SWARTHMORE_AFFILIATIONS.map((affiliation) => [affiliation, 0])
+  );
+  const sizeCounts = new Map<ClubSize, number>(
+    CLUB_SIZES.map((size) => [size, 0])
+  );
+  const membershipProcessCounts = new Map<MembershipProcess, number>(
+    MEMBERSHIP_PROCESSES.map((process) => [process, 0])
+  );
+  const recruitingCycleCounts = new Map<RecruitingCycle, number>(
+    RECRUITING_CYCLES.map((cycle) => [cycle, 0])
+  );
+  let acceptingMembersCount = 0;
 
-for (const club of CLUBS) {
-  for (const tag of club.tags) {
-    tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+  for (const club of clubs) {
+    for (const tag of club.tags) {
+      tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+    }
+    affiliationCounts.set(
+      club.affiliation,
+      (affiliationCounts.get(club.affiliation) ?? 0) + 1
+    );
+    sizeCounts.set(club.size, (sizeCounts.get(club.size) ?? 0) + 1);
+    membershipProcessCounts.set(
+      club.membershipProcess,
+      (membershipProcessCounts.get(club.membershipProcess) ?? 0) + 1
+    );
+    recruitingCycleCounts.set(
+      club.recruitingCycle,
+      (recruitingCycleCounts.get(club.recruitingCycle) ?? 0) + 1
+    );
+    if (club.isAcceptingMembers) acceptingMembersCount++;
   }
-  affiliationCounts.set(
-    club.affiliation,
-    (affiliationCounts.get(club.affiliation) ?? 0) + 1
-  );
-  sizeCounts.set(club.size, (sizeCounts.get(club.size) ?? 0) + 1);
-  membershipProcessCounts.set(
-    club.membershipProcess,
-    (membershipProcessCounts.get(club.membershipProcess) ?? 0) + 1
-  );
-  recruitingCycleCounts.set(
-    club.recruitingCycle,
-    (recruitingCycleCounts.get(club.recruitingCycle) ?? 0) + 1
-  );
-  if (club.isAcceptingMembers) acceptingMembersCount++;
-}
 
-export function getTagCounts(): ReadonlyMap<Tag, number> {
-  return tagCounts;
-}
-
-export function getAffiliationCounts(): ReadonlyMap<SwarthmoreAffiliation, number> {
-  return affiliationCounts;
-}
-
-export function getSizeCounts(): ReadonlyMap<ClubSize, number> {
-  return sizeCounts;
-}
-
-export function getMembershipProcessCounts(): ReadonlyMap<MembershipProcess, number> {
-  return membershipProcessCounts;
-}
-
-export function getRecruitingCycleCounts(): ReadonlyMap<RecruitingCycle, number> {
-  return recruitingCycleCounts;
-}
-
-export function getAcceptingMembersCount(): number {
-  return acceptingMembersCount;
+  return {
+    tagCounts,
+    affiliationCounts,
+    sizeCounts,
+    membershipProcessCounts,
+    recruitingCycleCounts,
+    acceptingMembersCount,
+  };
 }
 
 export type ClubSearchEntry = {
@@ -142,12 +135,18 @@ function toSearchEntry(club: Club): ClubSearchEntry {
   };
 }
 
-export const CLUB_SEARCH_INDEX: ClubSearchEntry[] = CLUBS.map(toSearchEntry);
+export function buildSearchIndex(clubs: readonly Club[]): ClubSearchEntry[] {
+  return clubs.map(toSearchEntry);
+}
 
 const nameCollator = new Intl.Collator();
 
-/** Same entries as CLUB_SEARCH_INDEX, pre-sorted by club name so ordered
- *  views only pay for a filter, never a sort. */
-export const CLUB_SEARCH_INDEX_ALPHABETICAL: ClubSearchEntry[] = [
-  ...CLUB_SEARCH_INDEX,
-].sort((a, b) => nameCollator.compare(a.club.name, b.club.name));
+/** Same entries pre-sorted by club name so ordered views only pay for a
+ *  filter, never a sort. */
+export function sortSearchIndexByName(
+  index: readonly ClubSearchEntry[]
+): ClubSearchEntry[] {
+  return [...index].sort((a, b) =>
+    nameCollator.compare(a.club.name, b.club.name)
+  );
+}

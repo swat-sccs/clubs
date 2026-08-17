@@ -12,7 +12,7 @@ const navLinks = [
   { href: "/faq", label: "FAQ" },
 ];
 
-const Header = () => {
+const Header = ({ userName }: { userName: string | null }) => {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -66,7 +66,7 @@ const Header = () => {
             href="/login"
             className="flex h-9 items-center rounded-[3px] bg-sccs-orange px-5 text-[0.95rem] font-semibold text-sccs-ink transition-colors hover:bg-sccs-orange/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
           >
-            Login
+            {userName ?? "Login"}
           </Link>
         </div>
 
@@ -130,7 +130,7 @@ const Header = () => {
               href="/login"
               className="mb-3 mt-4 flex h-11 items-center justify-center rounded-[3px] bg-sccs-orange text-lg font-semibold text-sccs-ink transition-colors hover:bg-sccs-orange/85"
             >
-              Login
+              {userName ?? "Login"}
             </Link>
           </div>
         </div>
