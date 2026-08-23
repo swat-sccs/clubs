@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Plus, Search, SlidersHorizontal, X } from "lucide-react";
 import { Dialog } from "radix-ui";
 import Navbar, {
@@ -11,6 +11,7 @@ import Navbar, {
 } from "@/components/Navbar";
 import ClubCard from "@/components/ClubCard";
 import {
+  SWARTHMORE_AFFILIATIONS,
   buildSearchIndex,
   sortSearchIndexByName,
   type Club,
@@ -31,6 +32,12 @@ const BOOKMARKS_STORAGE_KEY = "sccs-club-bookmarks";
 const TAG_BY_LOWER = new Map<string, Tag>(
   TAGS.map((tag) => [tag.toLowerCase(), tag])
 );
+const AFFILIATION_BY_LOWER = new Map<string, SwarthmoreAffiliation>(
+  SWARTHMORE_AFFILIATIONS.map((affiliation) => [
+    affiliation.toLowerCase(),
+    affiliation,
+  ])
+);
 
 /** Parse ?tags=Club+Sports (repeatable, comma-separable, case-insensitive)
  *  into the set of known tags. */
@@ -45,6 +52,91 @@ function tagsFromParams(params: URLSearchParams): Set<Tag> {
   return tags;
 }
 
+function affiliationsFromParams(
+  params: URLSearchParams
+): Set<SwarthmoreAffiliation> {
+  const affiliations = new Set<SwarthmoreAffiliation>();
+  for (const raw of [
+    ...params.getAll("affiliation"),
+    ...params.getAll("affiliations"),
+  ]) {
+    for (const part of raw.split(",")) {
+      const affiliation = AFFILIATION_BY_LOWER.get(part.trim().toLowerCase());
+      if (affiliation) affiliations.add(affiliation);
+    }
+  }
+  return affiliations;
+}
+
+function searchFromParams(params: URLSearchParams): string {
+  return params.get("q") ?? params.get("search") ?? "";
+}
+
+function acceptingFromParams(params: URLSearchParams): boolean {
+  const raw = params.get("accepting");
+  return raw === "1" || raw === "true" || raw === "yes";
+}
+
+function sortedJoin(values: Iterable<string>): string {
+  return [...values].sort().join("\0");
+}
+
+function explorerStateKey(
+  searchQuery: string,
+  tags: ReadonlySet<string>,
+  affiliations: ReadonlySet<string>,
+  accepting: boolean
+): string {
+  return [
+    searchQuery.trim(),
+    sortedJoin(tags),
+    sortedJoin(affiliations),
+    accepting ? "1" : "0",
+  ].join("|");
+}
+
+function explorerParamsKey(params: URLSearchParams): string {
+  return explorerStateKey(
+    searchFromParams(params),
+    tagsFromParams(params),
+    affiliationsFromParams(params),
+    acceptingFromParams(params)
+  );
+}
+
+function buildExplorerParams(
+  searchQuery: string,
+  tags: ReadonlySet<Tag>,
+  affiliations: ReadonlySet<SwarthmoreAffiliation>,
+  accepting: boolean
+): URLSearchParams {
+  const params = new URLSearchParams();
+  const query = searchQuery.trim();
+  if (query) params.set("q", query);
+  for (const tag of tags) params.append("tags", tag);
+  for (const affiliation of affiliations) {
+    params.append("affiliation", affiliation);
+  }
+  if (accepting) params.set("accepting", "1");
+  return params;
+}
+
+function readBookmarks(): Set<string> {
+  try {
+    const stored = localStorage.getItem(BOOKMARKS_STORAGE_KEY);
+    if (!stored) return new Set();
+    const parsed = JSON.parse(stored) as unknown;
+    if (!Array.isArray(parsed)) return new Set();
+    return new Set(parsed.filter((value) => typeof value === "string"));
+  } catch {
+    return new Set();
+  }
+}
+
+function isClubBookmarked(club: Club, bookmarks: ReadonlySet<string>): boolean {
+  return bookmarks.has(club.slug) || bookmarks.has(club.name);
+}
+
 function toggleInSet<T>(set: Set<T>, value: T): Set<T> {
   const next = new Set(set);
   if (next.has(value)) {
@@ -57,13 +149,17 @@ function toggleInSet<T>(set: Set<T>, value: T): Set<T> {
 
 function ClubsExplorerContent({ clubs }: { clubs: Club[] }) {
   const searchParams = useSearchParams();
-  const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
+  const pathname = usePathname();
+  const [searchQuery, setSearchQuery] = useState(() =>
+    searchFromParams(searchParams)
+  );
   const [selectedTags, setSelectedTags] = useState<Set<Tag>>(() =>
     tagsFromParams(searchParams)
   );
   const [selectedAffiliations, setSelectedAffiliations] = useState<
     Set<SwarthmoreAffiliation>
-  >(new Set());
+  >(() => affiliationsFromParams(searchParams));
   const [selectedSizes, setSelectedSizes] = useState<Set<ClubSize>>(
     new Set()
   );
@@ -72,7 +168,9 @@ function ClubsExplorerContent({ clubs }: { clubs: Club[] }) {
   const [selectedRecruitingCycles, setSelectedRecruitingCycles] = useState<
     Set<RecruitingCycle>
   >(new Set());
-  const [acceptingMembersOnly, setAcceptingMembersOnly] = useState(false);
+  const [acceptingMembersOnly, setAcceptingMembersOnly] = useState(() =>
+    acceptingFromParams(searchParams)
+  );
   const [ordering, setOrdering] = useState<ClubOrdering>("default");
   const [bookmarkedClubs, setBookmarkedClubs] = useState<Set<string>>(
     new Set()
@@ -86,26 +184,52 @@ function ClubsExplorerContent({ clubs }: { clubs: Club[] }) {
   );
   const navbarOptions = useMemo(() => buildNavbarOptions(clubs), [clubs]);
 
+  function writeExplorerParams(
+    nextSearch: string,
+    nextTags: Set<Tag>,
+    nextAffiliations: Set<SwarthmoreAffiliation>,
+    nextAccepting: boolean
+  ) {
+    const params = buildExplorerParams(
+      nextSearch,
+      nextTags,
+      nextAffiliations,
+      nextAccepting
+    );
+    const query = params.toString();
+    const href = query ? `${pathname}?${query}` : pathname;
+    if (
+      explorerParamsKey(new URLSearchParams(query)) ===
+      explorerParamsKey(searchParams)
+    ) {
+      return;
+    }
+    router.replace(href, { scroll: false });
+  }
+
   useEffect(() => {
-    // Re-apply tags when a navigation changes the query while this page is
-    // already mounted (e.g. homepage tag link → back → another tag link).
+    // Homepage tag links and back/forward update the query while mounted.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setSelectedTags(tagsFromParams(searchParams));
+    setSelectedAffiliations(affiliationsFromParams(searchParams));
+    setAcceptingMembersOnly(acceptingFromParams(searchParams));
+    setSearchQuery(searchFromParams(searchParams));
   }, [searchParams]);
 
   useEffect(() => {
     // Read persisted bookmarks after mount to avoid a hydration mismatch
     // (localStorage is unavailable during SSR).
-    const stored = localStorage.getItem(BOOKMARKS_STORAGE_KEY);
-    if (stored) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setBookmarkedClubs(new Set(JSON.parse(stored)));
-    }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setBookmarkedClubs(readBookmarks());
   }, []);
 
-  function toggleBookmark(clubName: string) {
+  function toggleBookmark(club: Club) {
     setBookmarkedClubs((prev) => {
-      const next = toggleInSet(prev, clubName);
+      const wasOn = isClubBookmarked(club, prev);
+      const next = new Set(prev);
+      next.delete(club.name);
+      if (wasOn) next.delete(club.slug);
+      else next.add(club.slug);
       localStorage.setItem(
         BOOKMARKS_STORAGE_KEY,
         JSON.stringify(Array.from(next))
@@ -150,7 +274,9 @@ function ClubsExplorerContent({ clubs }: { clubs: Club[] }) {
       const bookmarked: Club[] = [];
       const rest: Club[] = [];
       for (const club of matches) {
-        (bookmarkedClubs.has(club.name) ? bookmarked : rest).push(club);
+        (isClubBookmarked(club, bookmarkedClubs) ? bookmarked : rest).push(
+          club
+        );
       }
       return bookmarked.concat(rest);
     }
@@ -212,11 +338,21 @@ function ClubsExplorerContent({ clubs }: { clubs: Club[] }) {
 
   function removeFilter(kind: FilterKind, value: string) {
     if (kind === "tag") {
-      setSelectedTags((prev) => toggleInSet(prev, value as Tag));
-    } else if (kind === "affiliation") {
-      setSelectedAffiliations((prev) =>
-        toggleInSet(prev, value as SwarthmoreAffiliation)
+      const next = toggleInSet(selectedTags, value as Tag);
+      setSelectedTags(next);
+      writeExplorerParams(
+        searchQuery,
+        next,
+        selectedAffiliations,
+        acceptingMembersOnly
       );
+    } else if (kind === "affiliation") {
+      const next = toggleInSet(
+        selectedAffiliations,
+        value as SwarthmoreAffiliation
+      );
+      setSelectedAffiliations(next);
+      writeExplorerParams(searchQuery, selectedTags, next, acceptingMembersOnly);
     } else if (kind === "size") {
       setSelectedSizes((prev) => toggleInSet(prev, value as ClubSize));
     } else if (kind === "membershipProcess") {
@@ -229,32 +365,69 @@ function ClubsExplorerContent({ clubs }: { clubs: Club[] }) {
       );
     } else {
       setAcceptingMembersOnly(false);
+      writeExplorerParams(searchQuery, selectedTags, selectedAffiliations, false);
     }
   }
 
   function clearAll() {
-    setSelectedTags(new Set());
-    setSelectedAffiliations(new Set());
+    const emptyTags = new Set<Tag>();
+    const emptyAffiliations = new Set<SwarthmoreAffiliation>();
+    setSelectedTags(emptyTags);
+    setSelectedAffiliations(emptyAffiliations);
     setSelectedSizes(new Set());
     setSelectedMembershipProcesses(new Set());
     setSelectedRecruitingCycles(new Set());
     setAcceptingMembersOnly(false);
+    writeExplorerParams(searchQuery, emptyTags, emptyAffiliations, false);
   }
 
   const filterProps = {
     options: navbarOptions,
     searchQuery,
-    onSearchChange: setSearchQuery,
+    onSearchChange: (value: string) => {
+      setSearchQuery(value);
+      writeExplorerParams(
+        value,
+        selectedTags,
+        selectedAffiliations,
+        acceptingMembersOnly
+      );
+    },
     selectedTags,
-    onToggleTag: (tag: string) =>
-      setSelectedTags((prev) => toggleInSet(prev, tag as Tag)),
-    onClearTags: () => setSelectedTags(new Set<Tag>()),
+    onToggleTag: (tag: string) => {
+      const next = toggleInSet(selectedTags, tag as Tag);
+      setSelectedTags(next);
+      writeExplorerParams(
+        searchQuery,
+        next,
+        selectedAffiliations,
+        acceptingMembersOnly
+      );
+    },
+    onClearTags: () => {
+      const next = new Set<Tag>();
+      setSelectedTags(next);
+      writeExplorerParams(
+        searchQuery,
+        next,
+        selectedAffiliations,
+        acceptingMembersOnly
+      );
+    },
     selectedAffiliations,
-    onToggleAffiliation: (affiliation: string) =>
-      setSelectedAffiliations((prev) =>
-        toggleInSet(prev, affiliation as SwarthmoreAffiliation)
-      ),
-    onClearAffiliations: () => setSelectedAffiliations(new Set<SwarthmoreAffiliation>()),
+    onToggleAffiliation: (affiliation: string) => {
+      const next = toggleInSet(
+        selectedAffiliations,
+        affiliation as SwarthmoreAffiliation
+      );
+      setSelectedAffiliations(next);
+      writeExplorerParams(searchQuery, selectedTags, next, acceptingMembersOnly);
+    },
+    onClearAffiliations: () => {
+      const next = new Set<SwarthmoreAffiliation>();
+      setSelectedAffiliations(next);
+      writeExplorerParams(searchQuery, selectedTags, next, acceptingMembersOnly);
+    },
     ordering,
     onOrderingChange: setOrdering,
     selectedSizes,
@@ -266,7 +439,16 @@ function ClubsExplorerContent({ clubs }: { clubs: Club[] }) {
         toggleInSet(prev, process as MembershipProcess)
       ),
     acceptingMembersOnly,
-    onToggleAcceptingMembers: () => setAcceptingMembersOnly((prev) => !prev),
+    onToggleAcceptingMembers: () => {
+      const next = !acceptingMembersOnly;
+      setAcceptingMembersOnly(next);
+      writeExplorerParams(
+        searchQuery,
+        selectedTags,
+        selectedAffiliations,
+        next
+      );
+    },
     selectedRecruitingCycles,
     onToggleRecruitingCycle: (cycle: string) =>
       setSelectedRecruitingCycles((prev) =>
@@ -309,7 +491,16 @@ function ClubsExplorerContent({ clubs }: { clubs: Club[] }) {
               placeholder="Search clubs"
               className="text-base"
               value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
+              onChange={(event) => {
+                const value = event.target.value;
+                setSearchQuery(value);
+                writeExplorerParams(
+                  value,
+                  selectedTags,
+                  selectedAffiliations,
+                  acceptingMembersOnly
+                );
+              }}
             />
             <InputGroupAddon align="inline-end">
               <Search className="size-5" />
@@ -425,10 +616,10 @@ function ClubsExplorerContent({ clubs }: { clubs: Club[] }) {
           <div className="mt-4 grid grid-cols-1 gap-4 sm:gap-6 xl:grid-cols-2">
             {filteredClubs.map((club) => (
               <ClubCard
-                key={club.name}
+                key={club.slug}
                 club={club}
-                isBookmarked={bookmarkedClubs.has(club.name)}
-                onToggleBookmark={() => toggleBookmark(club.name)}
+                isBookmarked={isClubBookmarked(club, bookmarkedClubs)}
+                onToggleBookmark={() => toggleBookmark(club)}
               />
             ))}
           </div>
