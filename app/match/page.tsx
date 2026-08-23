@@ -17,7 +17,12 @@ function MatchCard({ match }: { match: ClubMatch }) {
     <div className="rounded-2xl border border-border bg-card p-6">
       <div className="flex items-baseline justify-between gap-4">
         <h2 className="font-heading text-xl font-semibold text-foreground">
-          {club.name}
+          <Link
+            href={`/clubs/${club.slug}`}
+            className="underline-offset-4 hover:underline"
+          >
+            {club.name}
+          </Link>
         </h2>
         <span className="shrink-0 text-sm font-semibold text-sccs tabular-nums">
           {percent}% match

@@ -142,6 +142,48 @@ export default function ClubForm() {
         options={RECRUITING_CYCLES}
       />
 
+      <Field>
+        <FieldLabel htmlFor="club-meeting">When and where you meet (optional)</FieldLabel>
+        <Input
+          id="club-meeting"
+          name="meetingInfo"
+          maxLength={400}
+          placeholder="Tuesdays 8pm, Kohlberg 116"
+          className="h-11 text-base"
+        />
+      </Field>
+      <Field>
+        <FieldLabel htmlFor="club-email">Contact email (optional)</FieldLabel>
+        <Input
+          id="club-email"
+          name="email"
+          type="email"
+          maxLength={120}
+          placeholder="yourclub@sccs.swarthmore.edu"
+          className="h-11 text-base"
+        />
+      </Field>
+      <Field>
+        <FieldLabel htmlFor="club-instagram">Instagram (optional)</FieldLabel>
+        <Input
+          id="club-instagram"
+          name="instagram"
+          maxLength={80}
+          placeholder="@yourclub"
+          className="h-11 text-base"
+        />
+      </Field>
+      <Field>
+        <FieldLabel htmlFor="club-website">Website (optional)</FieldLabel>
+        <Input
+          id="club-website"
+          name="website"
+          maxLength={200}
+          placeholder="https://"
+          className="h-11 text-base"
+        />
+      </Field>
+
       <Field orientation="horizontal" className="gap-3">
         <Checkbox
           id="accepting-members"

@@ -69,7 +69,7 @@ the Traefik route, and DNS.
 
 | Path | What's there |
 | --- | --- |
-| `app/` | Routes: home, `/clubs`, `/clubs/new`, `/match`, `/login`, `/faq` |
+| `app/` | Routes: home, `/clubs`, `/clubs/[slug]`, `/clubs/new`, `/match`, `/login`, `/faq` |
 | `matcher/` | Go service: embeds clubs via TEI, serves cosine-ranked matches |
 | `components/` | UI, including the filter rail (`Navbar`) and `ClubsExplorer` |
 | `lib/clubs.ts` | Club types, tag/council constants, search index builders |

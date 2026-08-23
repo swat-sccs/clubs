@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { Prisma } from "@prisma/client";
 import { auth } from "@/lib/auth";
+import { isLikelyEmail } from "@/lib/contact";
 import { prisma } from "@/lib/db";
 import {
   CLUB_SIZES,
@@ -11,6 +12,7 @@ import {
   RECRUITING_CYCLES,
   SWARTHMORE_AFFILIATIONS,
 } from "@/lib/clubs";
+import { uniquifySlug } from "@/lib/slug";
 import { TAGS, type Tag } from "@/lib/tags";
 
 export type CreateClubState = {
@@ -22,6 +24,16 @@ function oneOf<T extends string>(
   raw: FormDataEntryValue | null
 ): T | null {
   return values.includes(raw as T) ? (raw as T) : null;
+}
+
+function optionalField(
+  raw: FormDataEntryValue | null,
+  max: number
+): { value: string | null; tooLong: boolean } {
+  const value = String(raw ?? "").trim();
+  if (!value) return { value: null, tooLong: false };
+  if (value.length > max) return { value: null, tooLong: true };
+  return { value, tooLong: false };
 }
 
 export async function createClub(
@@ -50,6 +62,11 @@ export async function createClub(
   );
   const isAcceptingMembers = formData.get("isAcceptingMembers") === "on";
 
+  const instagram = optionalField(formData.get("instagram"), 80);
+  const email = optionalField(formData.get("email"), 120);
+  const website = optionalField(formData.get("website"), 200);
+  const meetingInfo = optionalField(formData.get("meetingInfo"), 400);
+
   if (name.length < 2 || name.length > 120) {
     return { error: "Club name must be between 2 and 120 characters." };
   }
@@ -62,11 +79,30 @@ export async function createClub(
   if (!affiliation || !size || !membershipProcess || !recruitingCycle) {
     return { error: "Please fill in every dropdown." };
   }
+  if (instagram.tooLong || email.tooLong || website.tooLong || meetingInfo.tooLong) {
+    return { error: "One of the contact fields is too long." };
+  }
+  if (email.value && !isLikelyEmail(email.value)) {
+    return { error: "That email address does not look valid." };
+  }
+  if (website.value && /\s/.test(website.value)) {
+    return { error: "Website should be a URL, without spaces." };
+  }
+
+  const taken = new Set(
+    (
+      await prisma.club.findMany({
+        select: { slug: true },
+      })
+    ).map((row) => row.slug)
+  );
+  const slug = uniquifySlug(name, taken);
 
   const editor = session.user.name ?? session.user.email ?? "unknown";
   try {
     await prisma.club.create({
       data: {
+        slug,
         name,
         description,
         tags,
@@ -75,6 +111,10 @@ export async function createClub(
         isAcceptingMembers,
         membershipProcess,
         recruitingCycle,
+        instagram: instagram.value,
+        email: email.value,
+        website: website.value,
+        meetingInfo: meetingInfo.value,
         createdById: session.user.id,
         createdBy: editor,
         updatedById: session.user.id,
@@ -93,5 +133,6 @@ export async function createClub(
 
   revalidatePath("/");
   revalidatePath("/clubs");
-  redirect("/clubs");
+  revalidatePath(`/clubs/${slug}`);
+  redirect(`/clubs/${slug}`);
 }
