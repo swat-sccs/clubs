@@ -46,6 +46,7 @@ export const RECRUITING_CYCLES = [
 export type RecruitingCycle = (typeof RECRUITING_CYCLES)[number];
 
 export type Club = {
+  slug: string;
   name: string;
   description: string;
   tags: Tag[];
@@ -54,7 +55,17 @@ export type Club = {
   isAcceptingMembers: boolean;
   membershipProcess: MembershipProcess;
   recruitingCycle: RecruitingCycle;
+  instagram: string | null;
+  email: string | null;
+  website: string | null;
+  meetingInfo: string | null;
 };
+
+/** Shape of the original seed JSON (no slug or contact fields). */
+export type SeedClub = Omit<
+  Club,
+  "slug" | "instagram" | "email" | "website" | "meetingInfo"
+>;
 
 // Clubs now live in Postgres (see lib/data.ts), so nothing here can be
 // precomputed at module load. Everything below is a pure function of a club
@@ -128,7 +139,14 @@ export type ClubSearchEntry = {
 function toSearchEntry(club: Club): ClubSearchEntry {
   return {
     club,
-    searchText: [club.name, club.description, ...club.tags]
+    searchText: [
+      club.name,
+      club.description,
+      club.affiliation,
+      club.meetingInfo,
+      ...club.tags,
+    ]
+      .filter((part): part is string => Boolean(part))
       .join("\n")
       .toLowerCase(),
     tagSet: new Set(club.tags),

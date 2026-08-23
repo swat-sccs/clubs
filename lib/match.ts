@@ -46,6 +46,7 @@ export async function matchClubs(
     if (!row) continue;
     result.push({
       club: {
+        slug: row.slug,
         name: row.name,
         description: row.description,
         tags: row.tags,
@@ -54,6 +55,10 @@ export async function matchClubs(
         isAcceptingMembers: row.isAcceptingMembers,
         membershipProcess: row.membershipProcess,
         recruitingCycle: row.recruitingCycle,
+        instagram: row.instagram,
+        email: row.email,
+        website: row.website,
+        meetingInfo: row.meetingInfo,
       } as Club,
       score: m.score,
     });

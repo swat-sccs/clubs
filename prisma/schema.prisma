@@ -12,6 +12,7 @@ model Club {
   id                 String   @id @default(cuid())
   // Display order: seed order for imported clubs, insertion order after that.
   position           Int      @default(autoincrement())
+  slug               String   @unique
   name               String   @unique
   description        String
   tags               String[]
@@ -20,6 +21,11 @@ model Club {
   isAcceptingMembers Boolean
   membershipProcess  String
   recruitingCycle    String
+
+  instagram   String?
+  email       String?
+  website     String?
+  meetingInfo String?
 
   // Keycloak subject / email / display name of the SCCS account that
   // created or last edited the club. Null for seeded rows.
