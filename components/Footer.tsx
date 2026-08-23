@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const footerLinks = [
   { href: "/clubs", label: "Clubs" },
-  { href: "/events", label: "Events" },
+  { href: "/match", label: "Match" },
   { href: "/faq", label: "FAQ" },
 ];
 

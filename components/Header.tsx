@@ -9,9 +9,15 @@ import { cn } from "@/lib/utils";
 const navLinks = [
   { href: "/clubs", label: "Clubs" },
   { href: "/match", label: "Match" },
-  { href: "/events", label: "Events" },
   { href: "/faq", label: "FAQ" },
 ];
+
+function linkIsActive(pathname: string, href: string) {
+  if (href === "/clubs") {
+    return pathname === "/clubs" || pathname.startsWith("/clubs/");
+  }
+  return pathname === href;
+}
 
 const Header = ({ userName }: { userName: string | null }) => {
   const pathname = usePathname();
@@ -46,7 +52,7 @@ const Header = ({ userName }: { userName: string | null }) => {
         {/* Desktop nav */}
         <div className="hidden items-center gap-8 md:flex">
           {navLinks.map(({ href, label }) => {
-            const isActive = pathname === href;
+            const isActive = linkIsActive(pathname, href);
             return (
               <Link
                 key={href}
@@ -111,7 +117,7 @@ const Header = ({ userName }: { userName: string | null }) => {
         >
           <div className="mx-auto flex max-w-7xl flex-col px-4 py-2 sm:px-6">
             {navLinks.map(({ href, label }) => {
-              const isActive = pathname === href;
+              const isActive = linkIsActive(pathname, href);
               return (
                 <Link
                   key={href}
