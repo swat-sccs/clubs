@@ -1,15 +1,12 @@
 import Link from "next/link";
 import { auth, signIn, signOut } from "@/lib/auth";
+import { safeRelativePath } from "@/lib/redirect";
 
 export const dynamic = "force-dynamic";
 
 export default async function LoginPage(props: PageProps<"/login">) {
   const searchParams = await props.searchParams;
-  const rawNext = Array.isArray(searchParams.next)
-    ? searchParams.next[0]
-    : searchParams.next;
-  // Only allow same-site relative redirect targets.
-  const next = rawNext?.startsWith("/") ? rawNext : "/clubs";
+  const next = safeRelativePath(searchParams.next, "/clubs");
   const session = await auth();
 
   return (
