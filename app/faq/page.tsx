@@ -22,11 +22,131 @@ export default function FAQPage() {
             What is Swat Clubs?
           </h2>
           <p className="mt-3 text-base leading-7 text-foreground/85">
-            Swat Clubs is meant to be your central source of information
-            about student organizations at Swarthmore College. Keep
-            discovering new clubs throughout the year, not just at the
-            Activities Fair. If you are looking for official college support
-            resources, check out the Office of Student Engagement.
+            Swat Clubs is the student organization directory for Swarthmore
+            College: every club, team, publication, and society we know about,
+            searchable and filterable. Discovery should not end when the
+            Activities Fair tables fold up. For official college support, see
+            the Office of Student Engagement.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="font-heading text-2xl font-semibold text-sccs [text-wrap:balance]">
+            How do I use this site?
+          </h2>
+          <ul className="mt-3 list-disc space-y-2 pl-6 text-base leading-7 text-foreground/90">
+            <li>
+              Browse the{" "}
+              <Link href="/clubs" className="font-medium text-sccs underline">
+                full directory
+              </Link>
+              . Search by name, and filter by tags, council, size, membership
+              process, and recruiting cycle.
+            </li>
+            <li>
+              Open a club&apos;s page for its full profile, including meeting
+              info and contact when the club has listed them.
+            </li>
+            <li>
+              Bookmark clubs you want to remember. Bookmarks stay in this
+              browser; they are not tied to your SCCS login.
+            </li>
+            <li>
+              On{" "}
+              <Link href="/match" className="font-medium text-sccs underline">
+                Match
+              </Link>
+              , describe what you&apos;re into in your own words. We rank clubs
+              by how close their profiles are to that description.
+            </li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 className="font-heading text-2xl font-semibold text-sccs [text-wrap:balance]">
+            Why do I have to log in?
+          </h2>
+          <p className="mt-3 text-base leading-7 text-foreground/85">
+            You don&apos;t, unless you want to add a club. Browsing, search,
+            bookmarks, and matching all work signed out. Login is your SCCS
+            account through Keycloak; there are no separate passwords here.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="font-heading text-2xl font-semibold text-sccs [text-wrap:balance]">
+            How do I add a club?
+          </h2>
+          <p className="mt-3 text-base leading-7 text-foreground/85">
+            Anyone with an SCCS account can{" "}
+            <Link
+              href="/clubs/new"
+              className="font-medium text-sccs underline"
+            >
+              add a club
+            </Link>
+            . It is listed under your name, so keep it honest. If the club
+            already has a page, don&apos;t create a second one; email{" "}
+            <a
+              href="mailto:sccs@sccs.swarthmore.edu"
+              className="font-medium text-sccs underline decoration-sccs-orange/50 decoration-2 underline-offset-4 transition-colors hover:decoration-sccs-orange"
+            >
+              sccs@sccs.swarthmore.edu
+            </a>{" "}
+            and we&apos;ll help get the existing page updated.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="font-heading text-2xl font-semibold text-sccs [text-wrap:balance]">
+            How do I edit a club page?
+          </h2>
+          <p className="mt-3 text-base leading-7 text-foreground/85">
+            In-app editing is not available yet. If you run a club and the
+            description, tags, or contact info is wrong, email{" "}
+            <a
+              href="mailto:sccs@sccs.swarthmore.edu"
+              className="font-medium text-sccs underline decoration-sccs-orange/50 decoration-2 underline-offset-4 transition-colors hover:decoration-sccs-orange"
+            >
+              sccs@sccs.swarthmore.edu
+            </a>
+            .
+          </p>
+        </section>
+
+        <section>
+          <h2 className="font-heading text-2xl font-semibold text-sccs [text-wrap:balance]">
+            Why can&apos;t I find an organization?
+          </h2>
+          <p className="mt-3 text-base leading-7 text-foreground/85">
+            We&apos;re working toward a complete directory, but some groups are
+            still missing or listed under a name you wouldn&apos;t search for.
+            If you run the club,{" "}
+            <Link
+              href="/clubs/new"
+              className="font-medium text-sccs underline"
+            >
+              add it here
+            </Link>
+            . Otherwise, tell us at{" "}
+            <a
+              href="mailto:sccs@sccs.swarthmore.edu"
+              className="font-medium text-sccs underline decoration-sccs-orange/50 decoration-2 underline-offset-4 transition-colors hover:decoration-sccs-orange"
+            >
+              sccs@sccs.swarthmore.edu
+            </a>
+            .
+          </p>
+        </section>
+
+        <section>
+          <h2 className="font-heading text-2xl font-semibold text-sccs [text-wrap:balance]">
+            How are clubs ordered?
+          </h2>
+          <p className="mt-3 text-base leading-7 text-foreground/85">
+            By default, clubs are shown in our recommended order. You can
+            switch to alphabetical order, or sort bookmarked clubs first, using
+            the Ordering filter on the Clubs page.
           </p>
         </section>
 
@@ -35,210 +155,14 @@ export default function FAQPage() {
             How can I provide feedback?
           </h2>
           <p className="mt-3 text-base leading-7 text-foreground/85">
-            We&apos;re so excited to let everyone at Swarthmore contribute to the
-            development of Swat Clubs! Your feedback is incredibly important
-            to us. Have any questions or comments? Found any bugs?{" "}
+            Questions, corrections, and bugs are welcome.{" "}
             <a
               href="mailto:sccs@sccs.swarthmore.edu"
               className="font-medium text-sccs underline decoration-sccs-orange/50 decoration-2 underline-offset-4 transition-colors hover:decoration-sccs-orange"
             >
-              Please let us know.
-            </a>
-          </p>
-        </section>
-
-        <hr className="border-border" />
-
-        <section>
-          <h2 className="font-heading text-2xl font-semibold text-sccs [text-wrap:balance]">
-            Why do I have to log in?
-          </h2>
-          <p className="mt-3 text-base leading-7 text-foreground/85">
-            Logging in allows us to create an account for you on Swat Clubs.
-            This gives you access to many useful features!
-          </p>
-          <ul className="mt-3 list-disc space-y-2 pl-6 text-base leading-7 text-foreground/90">
-            <li>
-              When you bookmark a club, it will be saved to your bookmarked
-              list. You can use this to keep track of clubs you&apos;re interested
-              in, or a part of.
-            </li>
-            <li>
-              When you subscribe to a club, you&apos;ll receive notifications
-              about that club. The club will also be able to add you to
-              their mailing lists.
-            </li>
-            <li>You&apos;ll be able to see events that clubs post to Swat Clubs.</li>
-            <li>You can also be invited to join club member lists.</li>
-            <li>
-              Finally, you&apos;ll need to log in if you want to use your
-              administrator permissions to edit a club page.
-            </li>
-          </ul>
-        </section>
-
-        <section>
-          <h2 className="font-heading text-2xl font-semibold text-sccs [text-wrap:balance]">
-            How do I use this site?
-          </h2>
-          <p className="mt-3 text-base leading-7 text-foreground/85">
-            The #1 way to use this site is to browse clubs at Swarthmore
-            College! You can:
-          </p>
-          <ul className="mt-3 list-disc space-y-2 pl-6 text-base leading-7 text-foreground/90">
-            <li>
-              Search for clubs by name, and use filters like Tags,
-              Affiliation, Size, General Membership Process, and Recruiting
-              Cycle.
-            </li>
-            <li>Bookmark clubs to keep track of them.</li>
-            <li>
-              Browse information that clubs post: description, how to get
-              involved, or services that are offered.
-            </li>
-          </ul>
-          <p className="mt-3 text-base leading-7 text-foreground/90">
-            If you run a club, make sure your club has a page on Swat Clubs!
-            This lets other students find out about your organization and
-            how to get involved.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="font-heading text-2xl font-semibold text-sccs [text-wrap:balance]">
-            How do I edit an organization&apos;s profile?
-          </h2>
-          <p className="mt-3 text-base leading-7 text-foreground/85">
-            You&apos;ll need to have administrator permission for that
-            organization. We originally invited people as administrators
-            based on information submitted by clubs to Student Council
-            during Fall 2025.
-          </p>
-          <ul className="mt-3 list-disc space-y-2 pl-6 text-base leading-7 text-foreground/90">
-            <li>
-              If you did not receive administrator permission and you
-              believe you should have, let us know at{" "}
-              <a
-                href="mailto:studentorgs@swarthmore.edu"
-                className="font-medium text-sccs underline decoration-sccs-orange/50 decoration-2 underline-offset-4 transition-colors hover:decoration-sccs-orange"
-              >
-                studentorgs@swarthmore.edu
-              </a>{" "}
-              and we will work with you to verify your request.
-            </li>
-            <li>
-              If your club did not submit this information previously,
-              we&apos;ve been contacting clubs by their listed email to ask
-              for the names of people who need administrator permission. You
-              can also email us at{" "}
-              <a
-                href="mailto:studentorgs@swarthmore.edu"
-                className="font-medium text-sccs underline decoration-sccs-orange/50 decoration-2 underline-offset-4 transition-colors hover:decoration-sccs-orange"
-              >
-                studentorgs@swarthmore.edu
-              </a>{" "}
-              and we will work with you to verify your request.
-            </li>
-          </ul>
-          <p className="mt-3 text-base leading-7 text-foreground/90">
-            Note that there are 2 levels of administrators: Officers and
-            Owners. Officers are able to edit the page, invite other members,
-            and grant administrator permissions. In addition to those
-            abilities, Owners are able to deactivate or delete the club page.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="font-heading text-2xl font-semibold text-sccs [text-wrap:balance]">
-            Why can&apos;t I find an organization on Swat Clubs?
-          </h2>
-          <p className="mt-3 text-base leading-7 text-foreground/85">
-            Sorry about that! We&apos;re in the process of making Swat Clubs
-            as comprehensive as possible, creating the first complete
-            directory of student organizations at Swarthmore College.
-          </p>
-          <ul className="mt-3 list-disc space-y-2 pl-6 text-base leading-7 text-foreground/90">
-            <li>
-              If you&apos;re an administrator of a club and it{" "}
-              <strong>does not exist</strong> on Swat Clubs, you can add your
-              club using the form found{" "}
-              <Link href="/clubs" className="font-medium text-sccs underline">
-                here
-              </Link>
-              .
-            </li>
-            <li>
-              If you&apos;re an administrator of a club and it{" "}
-              <strong>already exists</strong> on Swat Clubs, email{" "}
-              <a
-                href="mailto:studentorgs@swarthmore.edu"
-                className="font-medium text-sccs underline decoration-sccs-orange/50 decoration-2 underline-offset-4 transition-colors hover:decoration-sccs-orange"
-              >
-                studentorgs@swarthmore.edu
-              </a>{" "}
-              to gain edit access for your club.
-            </li>
-            <li>
-              Otherwise, if you&apos;re not the administrator of the club but
-              would still like for it to be added to Swat Clubs, please
-              email{" "}
-              <a
-                href="mailto:studentorgs@swarthmore.edu"
-                className="font-medium text-sccs underline decoration-sccs-orange/50 decoration-2 underline-offset-4 transition-colors hover:decoration-sccs-orange"
-              >
-                studentorgs@swarthmore.edu
-              </a>
-              .
-            </li>
-          </ul>
-          <p className="mt-3 text-base leading-7 text-foreground/90">
-            If you have any questions about the club creation process, please
-            email{" "}
-            <a
-              href="mailto:studentorgs@swarthmore.edu"
-              className="font-medium text-sccs underline decoration-sccs-orange/50 decoration-2 underline-offset-4 transition-colors hover:decoration-sccs-orange"
-            >
-              studentorgs@swarthmore.edu
+              Email SCCS
             </a>
             .
-          </p>
-        </section>
-
-        <section>
-          <h2 className="font-heading text-2xl font-semibold text-sccs [text-wrap:balance]">
-            Who is responsible for approving clubs on Swat Clubs?
-          </h2>
-          <p className="mt-3 text-base leading-7 text-foreground/85">
-            Newly created clubs require approval from the Office of Student
-            Engagement in order to comply with college guidelines. When your
-            club requires review, it will be added to a queue that is
-            periodically checked by the Office of Student Engagement. You
-            will be notified via email when your club has been reviewed.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="font-heading text-2xl font-semibold text-sccs [text-wrap:balance]">
-            How are clubs ordered on Swat Clubs?
-          </h2>
-          <p className="mt-3 text-base leading-7 text-foreground/85">
-            By default, clubs are shown in our recommended order. You can
-            switch to alphabetical order, or sort by your bookmarks, using
-            the Ordering filter on the Clubs page.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="font-heading text-2xl font-semibold text-sccs [text-wrap:balance]">
-            I have another question!
-          </h2>
-          <p className="mt-3 text-base leading-7 text-foreground/85">
-            <a
-              href="mailto:sccs@sccs.swarthmore.edu"
-              className="font-medium text-sccs underline decoration-sccs-orange/50 decoration-2 underline-offset-4 transition-colors hover:decoration-sccs-orange"
-            >
-              Please let us know :)
-            </a>
           </p>
         </section>
 
@@ -249,9 +173,8 @@ export default function FAQPage() {
             Special Thanks
           </h2>
           <p className="mt-3 text-base leading-7 text-foreground/85">
-            Thank you to the organizations below for their support in
-            launching Swat Clubs! We&apos;re excited to continue building
-            this valuable resource together.
+            Thank you to the organizations below for their support in launching
+            Swat Clubs.
           </p>
           <div className="mt-6 flex flex-wrap items-center gap-3">
             {[
