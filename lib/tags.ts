@@ -54,13 +54,4 @@ export const TAGS = [
   "Youth",
 ] as const;
 
-export const AFFILIATIONS = [
-  "ESAC",
-  "SAC",
-  "SCC",
-  "Wharton Council",
-  "PAC",
-] as const;
-
 export type Tag = (typeof TAGS)[number];
-export type Affiliation = (typeof AFFILIATIONS)[number];
