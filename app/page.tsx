@@ -25,7 +25,7 @@ const features = [
 
 function SectionLabel({ label }: { label: string }) {
   return (
-    <div className="rule-double pt-4">
+    <div className="rule-accent pt-4">
       <span className="text-[0.8rem] font-semibold tracking-[0.18em] text-foreground uppercase">
         {label}
       </span>
@@ -49,57 +49,59 @@ export default async function Home() {
   return (
     <main className="flex flex-1 flex-col">
       {/* ---------- Hero ---------- */}
-      <section className="mx-auto grid min-h-[calc(100svh-4rem)] w-full max-w-7xl grid-cols-1 content-center gap-x-16 gap-y-14 px-4 py-10 sm:px-6 md:min-h-[calc(100svh-4.5rem)] md:py-12 lg:grid-cols-[1fr_24rem] lg:px-8">
-        <div className="max-w-[46rem]">
-          <p className="animate-fade-rise text-[0.8rem] font-semibold tracking-[0.18em] text-foreground uppercase">
-            Swarthmore College · {clubs.length} student organizations
-          </p>
+      <section className="hero-aurora border-b border-border">
+        <div className="mx-auto grid min-h-[calc(100svh-4rem)] w-full max-w-7xl grid-cols-1 content-center gap-x-16 gap-y-14 px-4 py-10 sm:px-6 md:min-h-[calc(100svh-4.5rem)] md:py-12 lg:grid-cols-[1fr_24rem] lg:px-8">
+          <div className="max-w-[46rem]">
+            <p className="animate-fade-rise text-[0.8rem] font-semibold tracking-[0.18em] text-foreground uppercase">
+              Swarthmore College · {clubs.length} student organizations
+            </p>
 
-          <h1 className="display-wonk mt-6 animate-fade-rise font-heading text-[clamp(4rem,9vw,8rem)] font-semibold leading-[0.95] tracking-[-0.02em] text-foreground animation-delay-100">
-            Find your <em>people</em>.
-          </h1>
+            <h1 className="display-wonk mt-6 animate-fade-rise font-heading text-[clamp(4rem,9vw,8rem)] font-semibold leading-[0.95] tracking-[-0.02em] text-foreground animation-delay-100">
+              Find your <em className="underline-highlight">people</em>.
+            </h1>
 
-          <p className="mt-8 max-w-xl animate-fade-rise text-lg leading-[1.6] text-foreground/80 animation-delay-200">
-            Every club, team, publication, and society on campus: searchable,
-            filterable, and bookmarkable. The Activities Fair, open all year.
-          </p>
+            <p className="mt-8 max-w-xl animate-fade-rise text-lg leading-[1.6] text-foreground/80 animation-delay-200">
+              Every club, team, publication, and society on campus: searchable,
+              filterable, and bookmarkable. The Activities Fair, open all year.
+            </p>
 
-          <p className="mt-8 flex max-w-xl animate-fade-rise flex-wrap gap-x-3 gap-y-1 border-y border-border py-2.5 text-[0.85rem] font-medium tracking-[0.14em] text-muted-foreground uppercase animation-delay-300 tabular-nums">
-            <span>{clubs.length} clubs</span>
-            <span aria-hidden="true">·</span>
-            <span>{SWARTHMORE_AFFILIATIONS.length} councils</span>
-            <span aria-hidden="true">·</span>
-            <span>{acceptingCount} taking members</span>
-          </p>
+            <p className="mt-8 flex max-w-xl animate-fade-rise flex-wrap gap-x-3 gap-y-1 border-y border-border py-2.5 text-[0.85rem] font-medium tracking-[0.14em] text-muted-foreground uppercase animation-delay-300 tabular-nums">
+              <span>{clubs.length} clubs</span>
+              <span aria-hidden="true">·</span>
+              <span>{SWARTHMORE_AFFILIATIONS.length} councils</span>
+              <span aria-hidden="true">·</span>
+              <span>{acceptingCount} taking members</span>
+            </p>
 
-          <div className="mt-9 flex animate-fade-rise flex-col gap-3 animation-delay-300 sm:flex-row sm:items-center">
-            <Link
-              href="/clubs"
-              className="inline-flex h-12 items-center justify-center rounded-[3px] bg-sccs-orange px-8 text-base font-semibold text-sccs-ink transition-colors hover:bg-sccs-orange/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
-            >
-              Browse all clubs
-            </Link>
-            <Link
-              href="/faq"
-              className="inline-flex h-12 items-center justify-center rounded-[3px] border border-foreground px-8 text-base font-medium text-foreground transition-colors hover:bg-foreground hover:text-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
-            >
-              How it works
-            </Link>
+            <div className="mt-9 flex animate-fade-rise flex-col gap-3 animation-delay-300 sm:flex-row sm:items-center">
+              <Link
+                href="/clubs"
+                className="inline-flex h-12 items-center justify-center rounded-[3px] bg-sccs-orange px-8 text-base font-semibold text-sccs-ink transition-colors hover:bg-sccs-orange/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+              >
+                Browse all clubs
+              </Link>
+              <Link
+                href="/faq"
+                className="inline-flex h-12 items-center justify-center rounded-[3px] border border-foreground px-8 text-base font-medium text-foreground transition-colors hover:bg-foreground hover:text-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+              >
+                How it works
+              </Link>
+            </div>
           </div>
-        </div>
 
-        {/* The campus web, breathing */}
-        <aside className="animate-fade-rise animation-delay-300 lg:self-center">
-          <figure>
-            <HeroNetwork
-              nodes={crowdNodes}
-              className="h-80 w-full touch-none sm:h-96 lg:h-[26rem]"
-            />
-            <figcaption className="mt-2 text-center font-heading text-lg italic text-foreground/75">
-              Somewhere in here, your people.
-            </figcaption>
-          </figure>
-        </aside>
+          {/* The campus web, breathing */}
+          <aside className="animate-fade-rise animation-delay-300 lg:self-center">
+            <figure>
+              <HeroNetwork
+                nodes={crowdNodes}
+                className="h-80 w-full touch-none sm:h-96 lg:h-[26rem]"
+              />
+              <figcaption className="mt-2 text-center font-heading text-lg italic text-foreground/75">
+                Somewhere in here, your people.
+              </figcaption>
+            </figure>
+          </aside>
+        </div>
       </section>
 
       {/* ---------- Index of interests ---------- */}
@@ -160,11 +162,13 @@ export default async function Home() {
           </h2>
           <div className="mt-8 grid grid-cols-1 gap-x-12 gap-y-8 md:grid-cols-3">
             {features.map(({ title, body }) => (
-              <div key={title} className="border-t border-foreground/60 pt-4">
+              <div key={title} className="border-t border-border pt-4">
                 <h3 className="font-heading text-xl font-semibold text-foreground">
                   {title}
                 </h3>
-                <p className="mt-2.5 leading-[1.6] text-foreground/75">{body}</p>
+                <p className="mt-2.5 leading-[1.6] text-foreground/75">
+                  {body}
+                </p>
               </div>
             ))}
           </div>
@@ -173,11 +177,11 @@ export default async function Home() {
 
       {/* ---------- CTA ---------- */}
       <section className="mx-auto w-full max-w-7xl px-4 pb-20 sm:px-6 md:pb-28 lg:px-8">
-        <div className="rule-double" />
+        <div className="rule-accent" />
         <div className="mx-auto max-w-3xl pb-2 pt-14 text-center md:pt-20">
           <h2 className="display-wonk font-heading text-4xl font-semibold leading-[1.05] tracking-[-0.01em] text-foreground md:text-6xl [text-wrap:balance]">
-            Your next <WordRoll words={["four", "three", "two", "one"]} />{" "}
-            years start at a club meeting
+            Your next <WordRoll words={["four", "three", "two", "one"]} /> years
+            start at a club meeting
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-lg leading-[1.6] text-foreground/75">
             {acceptingCount} clubs are taking new members right now. Go say hi.
