@@ -233,22 +233,22 @@ export default function HeroNetwork({
         r * 1.05,
       );
       if (i === youIndex) {
-        grad.addColorStop(0, "#f4b48c");
-        grad.addColorStop(0.55, "#e8804a");
-        grad.addColorStop(1, "#c05f2b");
+        grad.addColorStop(0, "#ffc9a3");
+        grad.addColorStop(0.55, "#ff8f53");
+        grad.addColorStop(1, "#d4661f");
         return grad;
       }
-      // Warm ink-greys; deeper nodes flatten toward the paper.
+      // Cool navy-greys; deeper nodes flatten toward the ground.
       const light = 205 - node.tone * 26 - depth * 12;
       const dark = 96 - node.tone * 22;
       const fade = 0.45 + depth * 0.55;
       grad.addColorStop(
         0,
-        `rgba(${light}, ${light - 3}, ${light - 12}, ${fade})`,
+        `rgba(${light - 12}, ${light - 5}, ${light}, ${fade})`,
       );
       grad.addColorStop(
         1,
-        `rgba(${dark}, ${dark + 4}, ${dark + 16}, ${fade})`,
+        `rgba(${dark}, ${dark + 8}, ${dark + 24}, ${fade})`,
       );
       return grad;
     }
@@ -266,7 +266,7 @@ export default function HeroNetwork({
       for (const [i, j] of edges) {
         const depth = ((sz[i] + sz[j]) / 2 + 1) / 2;
         const alpha = 0.05 + depth * 0.16;
-        ctx.strokeStyle = `rgba(26, 31, 46, ${alpha.toFixed(3)})`;
+        ctx.strokeStyle = `rgba(49, 66, 95, ${alpha.toFixed(3)})`;
         ctx.beginPath();
         ctx.moveTo(sx[i], sy[i]);
         ctx.lineTo(sx[j], sy[j]);
@@ -287,8 +287,8 @@ export default function HeroNetwork({
             sy[i],
             r * 3.4,
           );
-          glow.addColorStop(0, "rgba(232, 128, 74, 0.3)");
-          glow.addColorStop(1, "rgba(232, 128, 74, 0)");
+          glow.addColorStop(0, "rgba(255, 143, 83, 0.32)");
+          glow.addColorStop(1, "rgba(255, 143, 83, 0)");
           ctx.fillStyle = glow;
           ctx.beginPath();
           ctx.arc(sx[i], sy[i], r * 3.4, 0, Math.PI * 2);
@@ -301,7 +301,7 @@ export default function HeroNetwork({
         ctx.fill();
 
         if (i === hovered) {
-          ctx.strokeStyle = "rgba(26, 31, 46, 0.75)";
+          ctx.strokeStyle = "rgba(20, 28, 42, 0.75)";
           ctx.lineWidth = 1.5;
           ctx.beginPath();
           ctx.arc(sx[i], sy[i], r + 3, 0, Math.PI * 2);
@@ -311,7 +311,7 @@ export default function HeroNetwork({
       }
 
       // Label you.
-      ctx.fillStyle = "#a84a12";
+      ctx.fillStyle = "#b5501a";
       ctx.font =
         '600 12px ui-sans-serif, -apple-system, "Helvetica Neue", Arial, sans-serif';
       ctx.fillText("you", sx[youIndex] + sr[youIndex] + 6, sy[youIndex] + 4);

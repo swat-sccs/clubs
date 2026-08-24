@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 const MONOGRAM_GRADIENTS = [
   "from-[#31425f] to-[#5a729c]",
   "from-[#1d2b47] to-[#31425f]",
-  "from-[#bf5f2c] to-[#e8804a]",
+  "from-[#d4661f] to-[#ff8f53]",
   "from-[#3d5177] to-[#7189b3]",
 ];
 
