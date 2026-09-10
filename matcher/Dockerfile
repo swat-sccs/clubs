@@ -5,7 +5,7 @@ RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /matcher .
 
-FROM alpine:3.22.5
+FROM alpine:3.24.1
 RUN addgroup -S matcher && adduser -S -G matcher matcher
 COPY --from=build --chown=matcher:matcher /matcher /matcher
 USER matcher
