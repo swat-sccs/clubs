@@ -25,7 +25,7 @@ Built and run by [SCCS](https://sccs.swarthmore.edu). Live at
 ## Stack
 
 Next.js 16 (App Router), React 19, Tailwind 4, Auth.js with Keycloak,
-Prisma on Postgres 16, with MinIO for club logos and feed photos. Club matching is a small Go service (`matcher/`) that
+Prisma on Postgres 16, with SeaweedFS for club logos and feed photos. Club matching is a small Go service (`matcher/`) that
 caches club embeddings in Postgres and ranks by cosine similarity. Bun for
 package management. Runs in Docker behind SCCS's Traefik.
 

@@ -13,8 +13,9 @@ goes through SCCS Keycloak.
   on eagle port **3001** (container port 3000), then seeds the club table from
   `lib/clubs.json` if it is empty.
 - `clubs-db` container: Postgres 16, data in the named volume `clubs-dbdata`.
-- `minio` container: private S3-compatible image storage for club logos and
-  feed photos, with data in the NFS-backed `clubs-miniodata` volume.
+- `seaweedfs` container: private, single-node SeaweedFS object storage for club
+  logos and feed photos. Its S3 endpoint is internal to Compose and its data is
+  stored in the NFS-backed `clubs-seaweeddata` volume.
 - `clubs-matcher` container: Go service for `/match`. Embeds club profiles via
   the TEI server on loon (`EMBEDDINGS_URL`, campus network only) and caches
   the vectors in the `ClubEmbedding` table. The app reaches it at
@@ -51,10 +52,8 @@ docker compose up -d --build
   Keycloak below
 - `KEYCLOAK_ADMIN_GROUP`: Keycloak group allowed to review requests; defaults
   to `sccs-staff`
-- `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD`: MinIO administration credentials.
-  The web application never receives these values.
-- `S3_ACCESS_KEY_ID` / `S3_SECRET_ACCESS_KEY`: separate, randomly generated
-  credentials for the bucket-scoped application user created below
+- `S3_ACCESS_KEY_ID` / `S3_SECRET_ACCESS_KEY`: dedicated, randomly generated
+  credentials shared only by the web app and the private SeaweedFS service
 - `S3_REGION` / `S3_BUCKET_NAME`: optional storage settings; the defaults are
   `us-east-1` and `club-uploads`.
 - `RATE_LIMIT_SECRET`: a separate random value (`openssl rand -hex 32`)
@@ -73,34 +72,57 @@ and rejects it from every other source. Keep `TRUST_PROXY_HEADERS=false` until
 that rule is active; anonymous rate limiting intentionally relies on the
 trusted proxy's client-address header.
 
-## MinIO bucket and least-privileged user (one-time)
+## SeaweedFS object storage
 
-MinIO has no host port in production. Start it and the database first:
+SeaweedFS runs its single-node `mini` profile and automatically creates
+`S3_BUCKET_NAME`. It has no host port in production. Before a fresh deployment,
+create the NFS export path `/volumes/clubs-seaweeddata`; Compose mounts it as
+the `clubs-seaweeddata` volume.
+
+The SeaweedFS and MinIO disk formats are unrelated. Never point SeaweedFS at
+the old `clubs-miniodata` volume. If this installation already contains MinIO
+objects, copy them through the two S3 APIs before removing the old container.
+After pulling this change, leave the existing MinIO container running and
+start only SeaweedFS:
 
 ```bash
-docker compose up -d minio clubs-db
+docker compose up -d seaweedfs
 ```
 
-The supplied policy is scoped to `club-uploads`. If `S3_BUCKET_NAME` differs,
-update both resource ARNs in `deploy/minio-clubs-app-policy.json`. Then run:
+Copy and verify every object with rclone. The old MinIO application credentials
+already in `S3_ACCESS_KEY_ID` and `S3_SECRET_ACCESS_KEY` need `List`, `Read`, and
+`Write` access to the configured bucket:
 
 ```bash
 docker run --rm --network clubs_default --env-file .env \
   --entrypoint /bin/sh \
-  -v "$PWD/deploy/minio-clubs-app-policy.json:/policy.json:ro" \
-  quay.io/minio/mc:RELEASE.2025-08-13T08-35-41Z -c '
+  rclone/rclone:1.74.2 -c '
     set -eu
-    mc alias set local http://minio:9000 "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD"
-    mc mb --ignore-existing "local/$S3_BUCKET_NAME"
-    mc admin user add local "$S3_ACCESS_KEY_ID" "$S3_SECRET_ACCESS_KEY"
-    mc admin policy create local clubs-app /policy.json
-    mc admin policy attach local clubs-app --user "$S3_ACCESS_KEY_ID"
+    export RCLONE_CONFIG_OLD_TYPE=s3
+    export RCLONE_CONFIG_OLD_PROVIDER=Minio
+    export RCLONE_CONFIG_OLD_ENDPOINT=http://minio:9000
+    export RCLONE_CONFIG_OLD_ACCESS_KEY_ID="$S3_ACCESS_KEY_ID"
+    export RCLONE_CONFIG_OLD_SECRET_ACCESS_KEY="$S3_SECRET_ACCESS_KEY"
+    export RCLONE_CONFIG_NEW_TYPE=s3
+    export RCLONE_CONFIG_NEW_PROVIDER=SeaweedFS
+    export RCLONE_CONFIG_NEW_ENDPOINT=http://seaweedfs:8333
+    export RCLONE_CONFIG_NEW_ACCESS_KEY_ID="$S3_ACCESS_KEY_ID"
+    export RCLONE_CONFIG_NEW_SECRET_ACCESS_KEY="$S3_SECRET_ACCESS_KEY"
+    rclone copy "old:$S3_BUCKET_NAME" "new:$S3_BUCKET_NAME" --progress
+    rclone check "old:$S3_BUCKET_NAME" "new:$S3_BUCKET_NAME" --size-only
   '
 ```
 
-The pinned community MinIO release is no longer actively maintained. Keep it
-private and plan migration to a maintained S3-compatible service. Back up and
-test restoration of both the Postgres and object-storage volumes.
+Only after `rclone check` succeeds, start the full stack and remove the orphaned
+MinIO container:
+
+```bash
+docker compose up -d --build --remove-orphans
+```
+
+Keep the old `clubs-miniodata` volume until the new service and backups have
+been verified. Back up and test restoration of both Postgres and the
+`clubs-seaweeddata` volume.
 
 ## Keycloak client (one-time, admin console)
 
