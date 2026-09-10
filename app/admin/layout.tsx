@@ -1,4 +1,3 @@
-import AdminNav from "@/components/AdminNav";
 import { requireAdmin } from "@/lib/authorization";
 
 export default async function AdminLayout({
@@ -6,12 +5,5 @@ export default async function AdminLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   await requireAdmin("/admin");
 
-  return (
-    <div className="flex flex-1 flex-col">
-      <header className="mx-auto w-full max-w-7xl px-4  sm:px-6 lg:px-8">
-        <AdminNav />
-      </header>
-      {children}
-    </div>
-  );
+  return <div className="flex min-h-0 flex-1 flex-col">{children}</div>;
 }

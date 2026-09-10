@@ -11,10 +11,19 @@ import { cn } from "@/lib/utils";
 const navLinks = [
   { href: "/clubs", label: "Clubs" },
   { href: "/match", label: "Match" },
-  { href: "/faq", label: "FAQ" },
+  { href: "/feed", label: "Feed" },
+];
+
+const adminLinks = [
+  { href: "/admin", label: "Overview" },
+  { href: "/admin/requests", label: "Requests" },
+  { href: "/admin/assignments", label: "Users & clubs" },
+  { href: "/admin/activity", label: "Activity" },
 ];
 
 function linkIsActive(pathname: string, href: string) {
+  if (href === "/admin") return pathname === href;
+  if (href.startsWith("/admin/")) return pathname.startsWith(href);
   if (href === "/clubs") {
     return pathname === "/clubs" || pathname.startsWith("/clubs/");
   }
@@ -24,13 +33,13 @@ function linkIsActive(pathname: string, href: string) {
 const Header = ({
   userName,
   isAdmin,
-  hasManagedClubs,
 }: {
   userName: string | null;
   isAdmin: boolean;
-  hasManagedClubs: boolean;
 }) => {
   const pathname = usePathname();
+  const isAdminSection = pathname.startsWith("/admin");
+  const activeNavLinks = isAdminSection ? adminLinks : navLinks;
   const [menuOpen, setMenuOpen] = useState(false);
   const accountMenuRef = useRef<HTMLDetailsElement>(null);
 
@@ -70,14 +79,27 @@ const Header = ({
             className="size-12 rounded-xl sm:size-14"
             preload
           />
-          <span className="font-heading text-2xl font-bold tracking-tight text-black sm:text-3xl lg:text-4xl">
+          <span
+            className={cn(
+              "font-heading text-2xl font-bold tracking-tight text-black sm:text-3xl lg:text-4xl",
+              isAdminSection && "hidden lg:inline",
+            )}
+          >
             Swat&nbsp;Clubs
           </span>
+          {isAdminSection && (
+            <span className="animate-in rounded-full bg-sccs px-2.5 py-1 text-xs font-bold tracking-wide text-white fade-in zoom-in-95 duration-300">
+              Admin
+            </span>
+          )}
         </Link>
 
         {/* Desktop nav */}
-        <div className="hidden items-center gap-8 md:flex">
-          {navLinks.map(({ href, label }) => {
+        <div
+          key={isAdminSection ? "admin-navigation" : "public-navigation"}
+          className="hidden animate-in items-center gap-6 fade-in slide-in-from-right-3 duration-300 md:flex lg:gap-8"
+        >
+          {activeNavLinks.map(({ href, label }) => {
             const isActive = linkIsActive(pathname, href);
             return (
               <Link
@@ -95,7 +117,7 @@ const Header = ({
             );
           })}
 
-          {userName && (hasManagedClubs || isAdmin) && (
+          {!isAdminSection && userName && (
             <Link
               href="/my-clubs"
               className={cn(
@@ -123,7 +145,7 @@ const Header = ({
                 >
                   Add a club
                 </Link>
-                {isAdmin && (
+                {isAdmin && !isAdminSection && (
                   <Link
                     href="/admin"
                     onClick={closeAccountMenu}
@@ -192,24 +214,38 @@ const Header = ({
           className="animate-in border-t border-border bg-background fade-in slide-in-from-top-2 duration-200 md:hidden"
         >
           <div className="mx-auto flex max-w-7xl flex-col px-4 py-2 sm:px-6">
-            {navLinks.map(({ href, label }) => {
-              const isActive = linkIsActive(pathname, href);
-              return (
-                <Link
-                  key={href}
-                  href={href}
-                  className={cn(
-                    "border-b border-border py-3.5 text-lg transition-colors",
-                    isActive
-                      ? "font-semibold text-foreground"
-                      : "font-medium text-foreground/70 hover:text-foreground",
-                  )}
-                >
-                  {label}
-                </Link>
-              );
-            })}
-            {userName && (hasManagedClubs || isAdmin) && (
+            {isAdminSection && (
+              <p className="py-2 text-xs font-bold tracking-wider text-sccs-ember uppercase">
+                Administration
+              </p>
+            )}
+            <div
+              key={
+                isAdminSection
+                  ? "admin-mobile-navigation"
+                  : "public-mobile-navigation"
+              }
+              className="flex animate-in flex-col fade-in slide-in-from-right-2 duration-300"
+            >
+              {activeNavLinks.map(({ href, label }) => {
+                const isActive = linkIsActive(pathname, href);
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    className={cn(
+                      "border-b border-border py-3.5 text-lg transition-colors",
+                      isActive
+                        ? "font-semibold text-foreground"
+                        : "font-medium text-foreground/70 hover:text-foreground",
+                    )}
+                  >
+                    {label}
+                  </Link>
+                );
+              })}
+            </div>
+            {!isAdminSection && userName && (
               <Link
                 href="/my-clubs"
                 className={cn(
@@ -228,7 +264,7 @@ const Header = ({
             >
               {userName ? "Add a club" : "Login"}
             </Link>
-            {userName && isAdmin && (
+            {userName && isAdmin && !isAdminSection && (
               <Link
                 href="/admin"
                 className="border-b border-border py-3.5 text-lg font-medium text-foreground/70"

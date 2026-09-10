@@ -51,8 +51,7 @@ export default async function LoginPage(props: PageProps<"/login">) {
         ) : (
           <>
             <p className="mt-4 text-lg text-muted-foreground">
-              Use your SCCS account. It&#39;s the only door; there are no separate
-              passwords here.
+              Some features require you to sign in with your SCCS account.
             </p>
             <form
               className="mt-8"

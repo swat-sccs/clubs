@@ -3,7 +3,6 @@ import { Geist_Mono, Raleway } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/db";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -35,14 +34,6 @@ export default async function RootLayout({
   // Display only; every mutation and protected page re-checks the session
   // itself.
   const session = await auth();
-  const hasManagedClubs = session?.user?.id
-    ? Boolean(
-        await prisma.clubEditor.findFirst({
-          where: { userId: session.user.id },
-          select: { id: true },
-        }),
-      )
-    : false;
   return (
     <html
       lang="en"
@@ -54,11 +45,23 @@ export default async function RootLayout({
         "font-sans",
       )}
     >
+      <head>
+        {/* Privacy-friendly analytics by Plausible */}
+        <script
+          async
+          src="https://plausible.sccs.swarthmore.edu/js/pa-j74xOoT2bxp0YTUZwe_wQ.js"
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init()",
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col">
         <Header
           userName={session?.user?.name ?? session?.user?.email ?? null}
           isAdmin={session?.user?.isAdmin ?? false}
-          hasManagedClubs={hasManagedClubs}
         />
         <div className="flex flex-1 flex-col">{children}</div>
         <Footer />
