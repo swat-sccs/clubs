@@ -60,20 +60,15 @@ bunx prisma migrate dev --name what-you-changed
 
 Migrations run automatically on deploy.
 
-## Deployment
-
-`DEPLOY.md` has the Docker Compose runbook, environment variables, storage
-setup, and Keycloak client configuration.
-
 ## Repo tour
 
-| Path | What's there |
-| --- | --- |
-| `app/` | Public club routes plus creation, claim, edit, “My clubs,” and admin workflows |
-| `matcher/` | Go service: embeds clubs via TEI, serves cosine-ranked matches |
-| `components/` | UI, including the filter rail (`Navbar`) and `ClubsExplorer` |
-| `lib/clubs.ts` | Club types, profile constants, search index builders |
-| `lib/data.ts` | Database reads |
-| `app/admin/requests/` | Admin review queue and moderation actions |
-| `prisma/` | Schema and migrations |
-| `lib/clubs.json` | The original scraped directory, now just seed data |
+| Path                  | What's there                                                                   |
+| --------------------- | ------------------------------------------------------------------------------ |
+| `app/`                | Public club routes plus creation, claim, edit, “My clubs,” and admin workflows |
+| `matcher/`            | Go service: embeds clubs via TEI, serves cosine-ranked matches                 |
+| `components/`         | UI, including the filter rail (`Navbar`) and `ClubsExplorer`                   |
+| `lib/clubs.ts`        | Club types, profile constants, search index builders                           |
+| `lib/data.ts`         | Database reads                                                                 |
+| `app/admin/requests/` | Admin review queue and moderation actions                                      |
+| `prisma/`             | Schema and migrations                                                          |
+| `lib/clubs.json`      | The original scraped directory, now just seed data                             |
