@@ -57,7 +57,7 @@ export default async function AdminActivityPage(
           Audit log
         </h2>
         <p className="mt-2 text-muted-foreground">
-          Append-only history of profile changes and access grants.
+          Append-only history of profile changes, moderation decisions, and access changes.
         </p>
         <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-card">
           {activity.length === 0 ? (
@@ -86,9 +86,13 @@ export default async function AdminActivityPage(
                     </time>
                   </div>
                   <p className="mt-3 text-foreground/85">{entry.summary}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    By {entry.actor ?? "System"}
-                  </p>
+                  <div className="mt-3 rounded-lg bg-muted/60 px-3 py-2 text-sm">
+                    <span className="font-semibold text-foreground">Executed by </span>
+                    <span className="text-foreground/85">{entry.actor ?? "System"}</span>
+                    {entry.actorEmail && entry.actorEmail !== entry.actor && (
+                      <span className="text-muted-foreground"> · {entry.actorEmail}</span>
+                    )}
+                  </div>
                 </li>
               ))}
             </ol>

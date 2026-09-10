@@ -36,7 +36,7 @@ export default function AdminAssignmentSearch({
   }, [committedQuery, query, router]);
 
   return (
-    <div role="search" className="mt-6 max-w-2xl">
+    <div role="search" className="w-full">
       <label htmlFor="assignment-search" className="sr-only">
         Search clubs and assigned users
       </label>
@@ -47,7 +47,7 @@ export default function AdminAssignmentSearch({
           type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder="Search club, user, username, or email"
+          placeholder="Search club, user name, or email"
           autoComplete="off"
           className="h-11 min-w-0 flex-1 rounded-xl border border-input bg-card px-4 text-base outline-none transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-3 focus:ring-ring/30"
         />

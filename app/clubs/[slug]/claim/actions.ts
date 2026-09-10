@@ -37,6 +37,7 @@ export async function claimClubAsAdmin(slug: string, formData: FormData) {
           name: session.user.name,
           email: session.user.email,
           username: session.user.username,
+          role: "OWNER",
         },
       });
       await tx.clubClaimRequest.updateMany({
@@ -57,9 +58,10 @@ export async function claimClubAsAdmin(slug: string, formData: FormData) {
         data: {
           clubId: club.id,
           clubName: club.name,
-          action: "EDITOR_GRANTED",
+          action: "OWNER_GRANTED",
           actorId: session.user.id,
           actor: owner,
+          actorEmail: session.user.email,
           summary: "Claimed ownership as an administrator.",
         },
       });
