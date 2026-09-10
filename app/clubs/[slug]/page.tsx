@@ -57,7 +57,9 @@ export default async function ClubPage(props: PageProps<"/clubs/[slug]">) {
         },
       })
     : null;
-  const canEdit = Boolean(session?.user.isAdmin || access?.editors.length);
+  const isAdmin = session?.user.isAdmin ?? false;
+  const isAssignedEditor = Boolean(access?.editors.length);
+  const canEdit = isAdmin || isAssignedEditor;
   const claimPending = Boolean(access?.claimRequests.length);
 
   type ContactItem = {
@@ -142,19 +144,29 @@ export default async function ClubPage(props: PageProps<"/clubs/[slug]">) {
         ))}
       </div>
 
-      <div className="mt-6 animate-fade-rise animation-delay-100">
-        {canEdit ? (
+      <div className="mt-6 flex animate-fade-rise flex-wrap gap-2 animation-delay-100">
+        {canEdit && (
           <Link
             href={`/clubs/${slug}/edit`}
             className="inline-flex h-10 items-center gap-2 rounded-xl bg-sccs-orange px-4 font-semibold text-sccs-ink"
           >
             <Pencil className="size-4" /> Edit club page
           </Link>
-        ) : claimPending ? (
+        )}
+        {isAdmin && !isAssignedEditor && (
+          <Link
+            href={`/clubs/${slug}/claim`}
+            className="inline-flex h-10 items-center gap-2 rounded-xl border border-foreground px-4 font-medium text-foreground hover:bg-foreground hover:text-background"
+          >
+            <ShieldCheck className="size-4" /> Claim as owner
+          </Link>
+        )}
+        {!canEdit && claimPending && (
           <span className="inline-flex h-10 items-center gap-2 rounded-xl border border-border px-4 text-sm font-medium text-muted-foreground">
             <ShieldCheck className="size-4" /> Claim awaiting review
           </span>
-        ) : (
+        )}
+        {!canEdit && !claimPending && (
           <Link
             href={`/clubs/${slug}/claim`}
             className="inline-flex h-10 items-center gap-2 rounded-xl border border-foreground px-4 font-medium text-foreground hover:bg-foreground hover:text-background"

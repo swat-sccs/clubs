@@ -4,7 +4,7 @@ import { CheckCircle2 } from "lucide-react";
 import ClaimClubForm from "@/components/ClaimClubForm";
 import { requireUser } from "@/lib/authorization";
 import { prisma } from "@/lib/db";
-import { submitClaimRequest } from "./actions";
+import { claimClubAsAdmin, submitClaimRequest } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -31,13 +31,14 @@ export default async function ClaimClubPage(
     },
   });
   if (!club) redirect("/clubs");
-  if (session.user.isAdmin || club.editors.length > 0) {
+  if (club.editors.length > 0) {
     redirect(`/clubs/${slug}/edit`);
   }
 
   const searchParams = await props.searchParams;
   const submitted = searchParams.submitted === "1" || club.claimRequests.length > 0;
   const action = submitClaimRequest.bind(null, slug);
+  const adminClaimAction = claimClubAsAdmin.bind(null, slug);
 
   return (
     <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-10 sm:px-6">
@@ -47,7 +48,27 @@ export default async function ClaimClubPage(
       <h1 className="mt-6 font-heading text-3xl font-bold text-foreground">
         Claim {club.name}
       </h1>
-      {submitted ? (
+      {session.user.isAdmin ? (
+        <div className="mt-8 rounded-xl border border-border bg-card p-6">
+          <CheckCircle2 className="size-8 text-sccs" />
+          <h2 className="mt-3 font-heading text-xl font-semibold">
+            Claim this club as its owner
+          </h2>
+          <p className="mt-2 leading-7 text-muted-foreground">
+            Your administrator role already permits edits. Claiming adds this
+            club to your personal “My clubs” list and records you as an assigned
+            owner.
+          </p>
+          <form action={adminClaimAction} className="mt-5">
+            <button
+              type="submit"
+              className="inline-flex h-11 items-center rounded-xl bg-sccs-orange px-5 font-semibold text-sccs-ink"
+            >
+              Claim as owner
+            </button>
+          </form>
+        </div>
+      ) : submitted ? (
         <div className="mt-8 rounded-xl border border-border bg-card p-6">
           <CheckCircle2 className="size-8 text-sccs" />
           <h2 className="mt-3 font-heading text-xl font-semibold">Claim awaiting review</h2>

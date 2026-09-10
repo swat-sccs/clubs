@@ -95,7 +95,7 @@ const Header = ({
             );
           })}
 
-          {userName && hasManagedClubs && (
+          {userName && (hasManagedClubs || isAdmin) && (
             <Link
               href="/my-clubs"
               className={cn(
@@ -209,7 +209,7 @@ const Header = ({
                 </Link>
               );
             })}
-            {userName && hasManagedClubs && (
+            {userName && (hasManagedClubs || isAdmin) && (
               <Link
                 href="/my-clubs"
                 className={cn(

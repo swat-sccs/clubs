@@ -2,10 +2,84 @@
 
 import { redirect } from "next/navigation";
 import { Prisma } from "@prisma/client";
-import { requireUser } from "@/lib/authorization";
+import { revalidatePath } from "next/cache";
+import { requireAdmin, requireUser } from "@/lib/authorization";
 import { prisma } from "@/lib/db";
 
 export type ClaimRequestState = { error: string | null };
+
+export async function claimClubAsAdmin(slug: string, formData: FormData) {
+  void formData;
+
+  const session = await requireAdmin(`/clubs/${slug}/claim`);
+  const club = await prisma.club.findUnique({
+    where: { slug },
+    select: {
+      id: true,
+      name: true,
+      editors: {
+        where: { userId: session.user.id },
+        select: { id: true },
+        take: 1,
+      },
+    },
+  });
+  if (!club) redirect("/clubs");
+  if (club.editors.length > 0) redirect(`/clubs/${slug}/edit`);
+
+  const owner = session.user.name ?? session.user.email ?? session.user.username;
+  try {
+    await prisma.$transaction(async (tx) => {
+      await tx.clubEditor.create({
+        data: {
+          clubId: club.id,
+          userId: session.user.id,
+          name: session.user.name,
+          email: session.user.email,
+          username: session.user.username,
+        },
+      });
+      await tx.clubClaimRequest.updateMany({
+        where: {
+          clubId: club.id,
+          requesterId: session.user.id,
+          status: "PENDING",
+        },
+        data: {
+          status: "APPROVED",
+          pendingKey: null,
+          reviewedById: session.user.id,
+          reviewedBy: owner,
+          reviewedAt: new Date(),
+        },
+      });
+      await tx.clubAuditLog.create({
+        data: {
+          clubId: club.id,
+          clubName: club.name,
+          action: "EDITOR_GRANTED",
+          actorId: session.user.id,
+          actor: owner,
+          summary: "Claimed ownership as an administrator.",
+        },
+      });
+    });
+  } catch (error) {
+    if (
+      !(error instanceof Prisma.PrismaClientKnownRequestError) ||
+      error.code !== "P2002"
+    ) {
+      throw error;
+    }
+  }
+
+  revalidatePath("/my-clubs");
+  revalidatePath(`/clubs/${slug}`);
+  revalidatePath("/admin");
+  revalidatePath("/admin/assignments");
+  revalidatePath("/admin/activity");
+  redirect(`/clubs/${slug}`);
+}
 
 export async function submitClaimRequest(
   slug: string,

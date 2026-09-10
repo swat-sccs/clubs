@@ -13,22 +13,17 @@ export const metadata = {
 
 export default async function MyClubsPage() {
   const session = await requireUser("/my-clubs");
-  const clubs = session.user.isAdmin
-    ? await prisma.club.findMany({
-        orderBy: { position: "asc" },
-        select: { id: true, slug: true, name: true, description: true },
-      })
-    : (
-        await prisma.clubEditor.findMany({
-          where: { userId: session.user.id },
-          orderBy: { club: { position: "asc" } },
-          select: {
-            club: {
-              select: { id: true, slug: true, name: true, description: true },
-            },
-          },
-        })
-      ).map(({ club }) => club);
+  const clubs = (
+    await prisma.clubEditor.findMany({
+      where: { userId: session.user.id },
+      orderBy: { club: { position: "asc" } },
+      select: {
+        club: {
+          select: { id: true, slug: true, name: true, description: true },
+        },
+      },
+    })
+  ).map(({ club }) => club);
 
   return (
     <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-10 sm:px-6 lg:px-8">
@@ -36,14 +31,14 @@ export default async function MyClubsPage() {
         My clubs
       </h1>
       <p className="mt-2 text-lg text-muted-foreground">
-        Club pages you have permission to update.
+        Club pages assigned to your SCCS account.
       </p>
 
       {clubs.length === 0 ? (
         <div className="mt-8 rounded-xl border border-dashed border-border p-6">
           <p className="text-muted-foreground">
-            You do not manage any club pages yet. Open an existing club to
-            submit a claim, or request a new club page.
+            You have not claimed or been assigned any club pages yet. Open an
+            existing club to claim it, or request a new club page.
           </p>
           <Link href="/clubs" className="mt-4 inline-block font-medium text-sccs underline">
             Browse clubs

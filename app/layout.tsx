@@ -37,12 +37,10 @@ export default async function RootLayout({
   const session = await auth();
   const hasManagedClubs = session?.user?.id
     ? Boolean(
-        session.user.isAdmin
-          ? await prisma.club.findFirst({ select: { id: true } })
-          : await prisma.clubEditor.findFirst({
-              where: { userId: session.user.id },
-              select: { id: true },
-            }),
+        await prisma.clubEditor.findFirst({
+          where: { userId: session.user.id },
+          select: { id: true },
+        }),
       )
     : false;
   return (
