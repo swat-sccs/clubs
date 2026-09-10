@@ -1,6 +1,7 @@
 import { prisma } from "./db";
 import type { Club } from "./clubs";
-import { publicClubVisibilityWhere } from "./data";
+import { publicClubVisibilityWhere, toClub } from "./data";
+import { assertRateLimit, requestRateLimitIdentifier } from "./rate-limit";
 
 export type ClubMatch = {
   club: Club;
@@ -23,17 +24,28 @@ export async function matchClubs(
 ): Promise<ClubMatch[]> {
   const matcherUrl = process.env.MATCHER_URL;
   if (!matcherUrl) throw new Error("MATCHER_URL is not configured");
+  await assertRateLimit({
+    action: "club-match",
+    identifier: await requestRateLimitIdentifier(),
+    limit: 10,
+    windowMs: 60_000,
+  });
 
   const response = await fetch(`${matcherUrl}/match`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ query, limit }),
     cache: "no-store",
+    signal: AbortSignal.timeout(40_000),
   });
   if (!response.ok) {
     throw new Error(`matcher returned ${response.status}`);
   }
-  const { matches } = (await response.json()) as MatcherResponse;
+  const payload: unknown = await response.json();
+  if (!isMatcherResponse(payload)) {
+    throw new Error("matcher returned an invalid response");
+  }
+  const { matches } = payload;
   if (matches.length === 0) return [];
 
   const rows = await prisma.club.findMany({
@@ -49,24 +61,27 @@ export async function matchClubs(
     const row = byId.get(m.clubId);
     if (!row) continue;
     result.push({
-      club: {
-        id: row.id,
-        slug: row.slug,
-        name: row.name,
-        description: row.description,
-        tags: row.tags,
-        size: row.size,
-        isAcceptingMembers: row.isAcceptingMembers,
-        membershipProcess: row.membershipProcess,
-        recruitingCycle: row.recruitingCycle,
-        instagram: row.instagram,
-        email: row.email,
-        website: row.website,
-        meetingInfo: row.meetingInfo,
-        hasLogo: Boolean(row.logoObjectKey),
-      } as Club,
+      club: toClub(row),
       score: m.score,
     });
   }
   return result;
+}
+
+function isMatcherResponse(value: unknown): value is MatcherResponse {
+  if (!value || typeof value !== "object") return false;
+  const matches = (value as { matches?: unknown }).matches;
+  return (
+    Array.isArray(matches) &&
+    matches.length <= 25 &&
+    matches.every(
+      (match) =>
+        Boolean(match) &&
+        typeof match === "object" &&
+        typeof (match as { clubId?: unknown }).clubId === "string" &&
+        (match as { clubId: string }).clubId.length <= 128 &&
+        typeof (match as { name?: unknown }).name === "string" &&
+        Number.isFinite((match as { score?: unknown }).score),
+    )
+  );
 }

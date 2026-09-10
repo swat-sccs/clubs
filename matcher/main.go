@@ -10,13 +10,17 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"math"
 	"net/http"
 	"os"
 	"sort"
+	"strconv"
 	"strings"
+	"sync"
 	"time"
+	"unicode/utf8"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -28,12 +32,17 @@ const (
 	defaultLimit   = 8
 	maxLimit       = 25
 	maxQueryLen    = 2000
+	maxRequestBody = 8 << 10
+	maxEmbedBody   = 16 << 20
 )
 
 type server struct {
-	db       *pgxpool.Pool
-	embedURL string
-	client   *http.Client
+	db                  *pgxpool.Pool
+	embedURL            string
+	client              *http.Client
+	matchSlots          chan struct{}
+	refreshMu           sync.Mutex
+	visibilityGraceDays int
 }
 
 func main() {
@@ -53,20 +62,37 @@ func main() {
 	defer db.Close()
 
 	s := &server{
-		db:       db,
-		embedURL: strings.TrimRight(embedURL, "/"),
-		client:   &http.Client{Timeout: 30 * time.Second},
+		db:                  db,
+		embedURL:            strings.TrimRight(embedURL, "/"),
+		client:              &http.Client{Timeout: 30 * time.Second},
+		matchSlots:          make(chan struct{}, 4),
+		visibilityGraceDays: envInt("CLUB_VISIBILITY_GRACE_DAYS", 14, 1, 90),
 	}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /match", s.handleMatch)
-	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, _ *http.Request) {
+	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
+		ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
+		defer cancel()
+		if err := s.db.Ping(ctx); err != nil {
+			httpError(w, http.StatusServiceUnavailable, "database unavailable")
+			return
+		}
 		w.WriteHeader(http.StatusOK)
 	})
 
 	addr := ":8080"
 	log.Printf("matcher listening on %s (embeddings: %s)", addr, s.embedURL)
-	log.Fatal(http.ListenAndServe(addr, mux))
+	httpServer := &http.Server{
+		Addr:              addr,
+		Handler:           mux,
+		ReadHeaderTimeout: 5 * time.Second,
+		ReadTimeout:       10 * time.Second,
+		WriteTimeout:      45 * time.Second,
+		IdleTimeout:       60 * time.Second,
+		MaxHeaderBytes:    16 << 10,
+	}
+	log.Fatal(httpServer.ListenAndServe())
 }
 
 type matchRequest struct {
@@ -81,13 +107,29 @@ type match struct {
 }
 
 func (s *server) handleMatch(w http.ResponseWriter, r *http.Request) {
+	select {
+	case s.matchSlots <- struct{}{}:
+		defer func() { <-s.matchSlots }()
+	default:
+		w.Header().Set("Retry-After", "5")
+		httpError(w, http.StatusTooManyRequests, "matcher is busy")
+		return
+	}
+
+	r.Body = http.MaxBytesReader(w, r.Body, maxRequestBody)
 	var req matchRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&req); err != nil {
 		httpError(w, http.StatusBadRequest, "invalid JSON body")
 		return
 	}
+	if err := decoder.Decode(&struct{}{}); err != io.EOF {
+		httpError(w, http.StatusBadRequest, "request must contain one JSON object")
+		return
+	}
 	req.Query = strings.TrimSpace(req.Query)
-	if req.Query == "" || len(req.Query) > maxQueryLen {
+	if req.Query == "" || utf8.RuneCountInString(req.Query) > maxQueryLen {
 		httpError(w, http.StatusBadRequest, "query must be 1-2000 characters")
 		return
 	}
@@ -121,13 +163,13 @@ func (s *server) handleMatch(w http.ResponseWriter, r *http.Request) {
 		   OR (
 		       c."visibilityOverride" IS NULL
 		       AND (
-		           c."createdAt" >= now() - interval '14 days'
+			c."createdAt" >= now() - make_interval(days => $1)
 		           OR EXISTS (
 		               SELECT 1 FROM "ClubEditor" editor
 		               WHERE editor."clubId" = c."id"
 		           )
 		       )
-		   )`)
+		   )`, s.visibilityGraceDays)
 	if err != nil {
 		log.Printf("load embeddings: %v", err)
 		httpError(w, http.StatusInternalServerError, "database error")
@@ -147,6 +189,11 @@ func (s *server) handleMatch(w http.ResponseWriter, r *http.Request) {
 		m.Score = cosine(queryVec, vec)
 		matches = append(matches, m)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("iterate embeddings: %v", err)
+		httpError(w, http.StatusInternalServerError, "database error")
+		return
+	}
 	sort.Slice(matches, func(i, j int) bool { return matches[i].Score > matches[j].Score })
 	if len(matches) > req.Limit {
 		matches = matches[:req.Limit]
@@ -159,11 +206,28 @@ func (s *server) handleMatch(w http.ResponseWriter, r *http.Request) {
 // refreshEmbeddings embeds every club whose row is newer than its cached
 // embedding (or has none). A no-op on the common path.
 func (s *server) refreshEmbeddings(ctx context.Context) error {
+	s.refreshMu.Lock()
+	defer s.refreshMu.Unlock()
+
 	rows, err := s.db.Query(ctx, `
 		SELECT c."id", c."name", c."description", c."tags"
 		FROM "Club" c
 		LEFT JOIN "ClubEmbedding" e ON e."clubId" = c."id"
-		WHERE e."clubId" IS NULL OR e."updatedAt" < c."updatedAt"`)
+		WHERE (
+			c."visibilityOverride" = true
+			OR (
+				c."visibilityOverride" IS NULL
+				AND (
+					c."createdAt" >= now() - make_interval(days => $1)
+					OR EXISTS (
+						SELECT 1 FROM "ClubEditor" editor
+						WHERE editor."clubId" = c."id"
+					)
+				)
+			)
+		)
+		AND (e."clubId" IS NULL OR e."updatedAt" < c."updatedAt")`,
+		s.visibilityGraceDays)
 	if err != nil {
 		return fmt.Errorf("query stale clubs: %w", err)
 	}
@@ -180,6 +244,10 @@ func (s *server) refreshEmbeddings(ctx context.Context) error {
 		}
 		text := name + "\n" + strings.Join(tags, ", ") + "\n" + description
 		stale = append(stale, club{id: id, text: text})
+	}
+	if err := rows.Err(); err != nil {
+		rows.Close()
+		return fmt.Errorf("iterate stale clubs: %w", err)
 	}
 	rows.Close()
 	if len(stale) == 0 {
@@ -241,7 +309,7 @@ func (s *server) embed(ctx context.Context, texts []string) ([][]float64, error)
 			Embedding []float64 `json:"embedding"`
 		} `json:"data"`
 	}
-	if err := json.NewDecoder(resp.Body).Decode(&parsed); err != nil {
+	if err := json.NewDecoder(io.LimitReader(resp.Body, maxEmbedBody)).Decode(&parsed); err != nil {
 		return nil, err
 	}
 	if len(parsed.Data) != len(texts) {
@@ -249,9 +317,25 @@ func (s *server) embed(ctx context.Context, texts []string) ([][]float64, error)
 	}
 	vecs := make([][]float64, len(parsed.Data))
 	for i, d := range parsed.Data {
+		if len(d.Embedding) == 0 || len(d.Embedding) > 8192 {
+			return nil, fmt.Errorf("embedding %d has invalid dimensions", i)
+		}
+		for _, value := range d.Embedding {
+			if math.IsNaN(value) || math.IsInf(value, 0) {
+				return nil, fmt.Errorf("embedding %d contains a non-finite value", i)
+			}
+		}
 		vecs[i] = d.Embedding
 	}
 	return vecs, nil
+}
+
+func envInt(name string, fallback, minimum, maximum int) int {
+	value, err := strconv.Atoi(os.Getenv(name))
+	if err != nil || value < minimum || value > maximum {
+		return fallback
+	}
+	return value
 }
 
 func cosine(a, b []float64) float64 {
