@@ -27,7 +27,7 @@ Built and run by [SCCS](https://sccs.swarthmore.edu). Live at
 Next.js 16 (App Router), React 19, Tailwind 4, Auth.js with Keycloak,
 Prisma on Postgres 16, with SeaweedFS for club logos and feed photos. Club matching is a small Go service (`matcher/`) that
 caches club embeddings in Postgres and ranks by cosine similarity. Bun for
-package management. Runs in Docker behind SCCS's Traefik.
+package management. Runs with Docker Compose.
 
 The club table is seeded once from `lib/clubs.json` on first boot against an
 empty database, then the database is the source of truth. Deploys never
@@ -62,9 +62,8 @@ Migrations run automatically on deploy.
 
 ## Deployment
 
-Docker compose on the SCCS `eagle` VM, routed through Traefik on `gull`.
-`DEPLOY.md` has the full runbook: environment variables, the Keycloak client,
-the Traefik route, and DNS.
+`DEPLOY.md` has the Docker Compose runbook, environment variables, storage
+setup, and Keycloak client configuration.
 
 ## Repo tour
 

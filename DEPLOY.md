@@ -1,16 +1,15 @@
 # Deploying Swat Clubs
 
-Target: `https://clubs.sccs.swarthmore.edu`, following the same pattern as
-planner and SwatGPT: the app runs via docker compose on `eagle`
-(130.58.218.151), Traefik on `gull` terminates TLS and routes to it, and login
-goes through SCCS Keycloak.
+Target: `https://clubs.sccs.swarthmore.edu`. The app runs with Docker Compose,
+is published through the deployment environment's HTTPS reverse proxy, and
+uses SCCS Keycloak for login.
 
 ## Architecture
 
 - `clubs-migrate` container: one-shot Prisma migration job. The web service
   starts only after it succeeds.
-- `clubs` container: non-root, read-only Next.js 16 standalone app. It listens
-  on eagle port **3001** (container port 3000), then seeds the club table from
+- `clubs` container: non-root, read-only Next.js 16 standalone app. It serves
+  port 3000 inside the Compose network, then seeds the club table from
   `lib/clubs.json` if it is empty.
 - `clubs-db` container: Postgres 16, data in the named volume `clubs-dbdata`.
 - `seaweedfs` container: private, single-node SeaweedFS object storage for club
@@ -30,7 +29,7 @@ goes through SCCS Keycloak.
   (`createdBy`/`updatedBy` = display label and the corresponding `*Id` fields
   use the normalized Keycloak `preferred_username`, with subject fallback).
 
-## On eagle
+## Deployment
 
 ```bash
 git clone https://github.com/swat-sccs/clubs.git ~/clubs
@@ -57,8 +56,8 @@ docker compose up -d --build
 - `S3_REGION` / `S3_BUCKET_NAME`: optional storage settings; the defaults are
   `us-east-1` and `club-uploads`.
 - `RATE_LIMIT_SECRET`: a separate random value (`openssl rand -hex 32`)
-- `TRUST_PROXY_HEADERS=true`: safe only while the firewall restriction above
-  prevents clients from bypassing Traefik
+- `TRUST_PROXY_HEADERS=true`: use only when the app is reachable exclusively
+  through a trusted reverse proxy; otherwise leave it `false`
 - `CLUB_VISIBILITY_GRACE_DAYS`: shared by the web and matcher services; keep the
   default of 14 unless the product rule changes
 - `NSFW_PORN_THRESHOLD`, `NSFW_HENTAI_THRESHOLD`, `NSFW_SEXY_THRESHOLD`, and
@@ -67,11 +66,6 @@ docker compose up -d --build
 
 Redeploy after a push to main: `git pull && docker compose up -d --build`.
 
-Before the first deployment, verify eagle's firewall allows TCP 3001 from gull
-and rejects it from every other source. Keep `TRUST_PROXY_HEADERS=false` until
-that rule is active; anonymous rate limiting intentionally relies on the
-trusted proxy's client-address header.
-
 ## SeaweedFS object storage
 
 SeaweedFS runs its single-node `mini` profile and automatically creates
@@ -79,50 +73,21 @@ SeaweedFS runs its single-node `mini` profile and automatically creates
 create the NFS export path `/volumes/clubs-seaweeddata`; Compose mounts it as
 the `clubs-seaweeddata` volume.
 
-The SeaweedFS and MinIO disk formats are unrelated. Never point SeaweedFS at
-the old `clubs-miniodata` volume. If this installation already contains MinIO
-objects, copy them through the two S3 APIs before removing the old container.
-After pulling this change, leave the existing MinIO container running and
-start only SeaweedFS:
+This deployment intentionally starts with an empty object store. Compose uses a
+new `clubs-seaweeddata` volume and defines no import, migration, or copy job for
+the old MinIO data. Do not rename or remap the old `clubs-miniodata` volume to
+the SeaweedFS service because their on-disk formats are incompatible.
 
-```bash
-docker compose up -d seaweedfs
-```
-
-Copy and verify every object with rclone. The old MinIO application credentials
-already in `S3_ACCESS_KEY_ID` and `S3_SECRET_ACCESS_KEY` need `List`, `Read`, and
-`Write` access to the configured bucket:
-
-```bash
-docker run --rm --network clubs_default --env-file .env \
-  --entrypoint /bin/sh \
-  rclone/rclone:1.74.2 -c '
-    set -eu
-    export RCLONE_CONFIG_OLD_TYPE=s3
-    export RCLONE_CONFIG_OLD_PROVIDER=Minio
-    export RCLONE_CONFIG_OLD_ENDPOINT=http://minio:9000
-    export RCLONE_CONFIG_OLD_ACCESS_KEY_ID="$S3_ACCESS_KEY_ID"
-    export RCLONE_CONFIG_OLD_SECRET_ACCESS_KEY="$S3_SECRET_ACCESS_KEY"
-    export RCLONE_CONFIG_NEW_TYPE=s3
-    export RCLONE_CONFIG_NEW_PROVIDER=SeaweedFS
-    export RCLONE_CONFIG_NEW_ENDPOINT=http://seaweedfs:8333
-    export RCLONE_CONFIG_NEW_ACCESS_KEY_ID="$S3_ACCESS_KEY_ID"
-    export RCLONE_CONFIG_NEW_SECRET_ACCESS_KEY="$S3_SECRET_ACCESS_KEY"
-    rclone copy "old:$S3_BUCKET_NAME" "new:$S3_BUCKET_NAME" --progress
-    rclone check "old:$S3_BUCKET_NAME" "new:$S3_BUCKET_NAME" --size-only
-  '
-```
-
-Only after `rclone check` succeeds, start the full stack and remove the orphaned
-MinIO container:
+When switching an existing installation, start the full stack and remove the
+now-unused MinIO container:
 
 ```bash
 docker compose up -d --build --remove-orphans
 ```
 
-Keep the old `clubs-miniodata` volume until the new service and backups have
-been verified. Back up and test restoration of both Postgres and the
-`clubs-seaweeddata` volume.
+The old `clubs-miniodata` volume is not mounted or modified and can be removed
+separately whenever desired. Back up and test restoration of both Postgres and
+the `clubs-seaweeddata` volume.
 
 ## Keycloak client (one-time, admin console)
 
@@ -141,35 +106,6 @@ and swatgpt clients live in), create a confidential OIDC client:
   `AUTH_KEYCLOAK_ID=clubs` and
   `AUTH_KEYCLOAK_ISSUER=https://auth.sccs.swarthmore.edu/realms/master`, then
   `docker compose up -d` to restart with the new env.
-
-## Traefik on gull (one-time, needs sudo on gull)
-
-Drop this file as `/srv/traefik/dynamic/clubs.yml` (the dynamic provider
-watches the directory; no restart needed). Same shape as
-`/srv/traefik/dynamic/swatgpt.yml`:
-
-```yaml
-http:
-  routers:
-    clubs:
-      rule: Host(`clubs.sccs.swarthmore.edu`)
-      entryPoints:
-        - https
-      tls:
-        certResolver: letsEncrypt
-      service: clubs
-  services:
-    clubs:
-      loadBalancer:
-        servers:
-          - url: "http://130.58.218.151:3001"
-```
-
-## DNS (one-time, on tern)
-
-Add `clubs.sccs.swarthmore.edu` as a CNAME to `gull.sccs.swarthmore.edu` in
-the sccs.swarthmore.edu zone and bump the serial (same as the existing
-`chat` and `plan` records).
 
 ## Local development
 
