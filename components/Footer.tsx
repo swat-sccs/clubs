@@ -8,10 +8,13 @@ const footerLinks = [
   { href: "/clubs", label: "Clubs" },
   { href: "/match", label: "Match" },
   { href: "/faq", label: "FAQ" },
+  { href: "/terms", label: "Terms" },
 ];
 
 const Footer = () => {
   const pathname = usePathname();
+  if (pathname.startsWith("/admin") || pathname === "/clubs") return null;
+
   const isClubDetailPage = /^\/clubs\/(?!new(?:\/|$))[^/]+\/?$/.test(pathname);
 
   if (isClubDetailPage) {
@@ -21,14 +24,18 @@ const Footer = () => {
           <div className="rule-accent" />
           <div className="flex flex-col items-start justify-between gap-2 py-5 text-sm text-muted-foreground md:flex-row md:items-center">
             <p>The student organization directory of Swarthmore College.</p>
-            <p>
-              Set with care by{" "}
+            <p className="flex flex-wrap gap-x-3">
+              <span>Set with care by{" "}
               <a
                 href="https://sccs.swarthmore.edu"
                 className="font-medium text-foreground/80 underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
               >
                 SCCS
               </a>
+              </span>
+              <Link href="/terms" className="font-medium text-foreground/80 underline decoration-border underline-offset-4">
+                Terms
+              </Link>
             </p>
           </div>
         </div>
