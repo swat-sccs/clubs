@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16.15-alpine3.23
+        env:
+          POSTGRES_USER: clubs
+          POSTGRES_PASSWORD: clubs
+          POSTGRES_DB: clubs
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U clubs -d clubs"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://clubs:clubs@127.0.0.1:5432/clubs
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+      - uses: actions/setup-go@v5
+        with:
+          go-version: 1.25.4
+          cache-dependency-path: matcher/go.sum
+      - run: bun install --frozen-lockfile
+      - run: bunx prisma migrate deploy
+      - run: bun run check
+      - run: bun audit --audit-level=critical
+      - name: Production build
+        env:
+          AUTH_SECRET: build-only-secret-build-only-secret
+          RATE_LIMIT_SECRET: build-only-rate-limit-secret
+          MATCHER_URL: http://127.0.0.1:8080
+        run: bun run build
