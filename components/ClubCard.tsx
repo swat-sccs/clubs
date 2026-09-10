@@ -2,16 +2,21 @@ import Link from "next/link";
 import { Bookmark, CheckCircle2, Users, XCircle } from "lucide-react";
 import type { Club } from "@/lib/clubs";
 import { cn } from "@/lib/utils";
-import ClubMonogram from "@/components/ClubMonogram";
+import ClubAvatar from "@/components/ClubAvatar";
+import FollowButton from "@/components/FollowButton";
 
 function ClubCard({
   club,
   isBookmarked,
   onToggleBookmark,
+  isFollowing,
+  isAuthenticated,
 }: {
   club: Club;
   isBookmarked?: boolean;
   onToggleBookmark?: () => void;
+  isFollowing: boolean;
+  isAuthenticated: boolean;
 }) {
   return (
     <article className="group flex flex-col gap-4 rounded-2xl border border-border bg-card p-5 transition-all duration-200 hover:-translate-y-1 hover:border-sccs/25 hover:shadow-lg hover:shadow-sccs/8 sm:p-6">
@@ -20,32 +25,46 @@ function ClubCard({
           href={`/clubs/${club.slug}`}
           className="flex min-w-0 items-start gap-3.5 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
         >
-          <ClubMonogram name={club.name} className="size-12 text-lg" />
+          <ClubAvatar
+            id={club.id}
+            name={club.name}
+            hasLogo={club.hasLogo}
+            className="size-12 text-lg"
+          />
           <h3 className="min-w-0 pt-1 font-heading text-xl font-bold leading-snug text-foreground underline-offset-4 [text-wrap:balance] group-hover:underline">
             {club.name}
           </h3>
         </Link>
-        {onToggleBookmark && (
-          <button
-            type="button"
-            onClick={onToggleBookmark}
-            aria-label={isBookmarked ? "Remove bookmark" : "Add bookmark"}
-            aria-pressed={isBookmarked}
-            className={cn(
-              "flex size-10 shrink-0 items-center justify-center rounded-xl border transition-all duration-200 active:scale-90",
-              isBookmarked
-                ? "border-sccs/30 bg-sccs-orange/15 text-sccs dark:text-sccs-ember"
-                : "border-border text-muted-foreground hover:border-sccs/30 hover:bg-sccs-orange/15 hover:text-sccs dark:hover:text-sccs-ember"
-            )}
-          >
-            <Bookmark
+        <div className="flex shrink-0 items-center gap-1.5">
+          <FollowButton
+            clubId={club.id}
+            initialFollowing={isFollowing}
+            isAuthenticated={isAuthenticated}
+            nextPath="/clubs"
+            compact
+          />
+          {onToggleBookmark && (
+            <button
+              type="button"
+              onClick={onToggleBookmark}
+              aria-label={isBookmarked ? "Remove bookmark" : "Add bookmark"}
+              aria-pressed={isBookmarked}
               className={cn(
-                "size-5 transition-transform duration-200",
-                isBookmarked && "animate-bookmark-pop fill-current"
+                "flex size-8 shrink-0 items-center justify-center rounded-xl border transition-all duration-200 active:scale-90",
+                isBookmarked
+                  ? "border-sccs/30 bg-sccs-orange/15 text-sccs dark:text-sccs-ember"
+                  : "border-border text-muted-foreground hover:border-sccs/30 hover:bg-sccs-orange/15 hover:text-sccs dark:hover:text-sccs-ember"
               )}
-            />
-          </button>
-        )}
+            >
+              <Bookmark
+                className={cn(
+                  "size-4 transition-transform duration-200",
+                  isBookmarked && "animate-bookmark-pop fill-current"
+                )}
+              />
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-2">

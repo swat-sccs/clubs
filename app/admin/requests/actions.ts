@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/authorization";
 import { prisma } from "@/lib/db";
+import { postTextHash } from "@/lib/post-moderation";
 import { uniquifySlug } from "@/lib/slug";
 
 function idFrom(formData: FormData) {
@@ -13,7 +14,7 @@ function idFrom(formData: FormData) {
 }
 
 function reviewIdentity(session: Awaited<ReturnType<typeof requireAdmin>>) {
-  return session.user.name ?? session.user.email ?? session.user.username;
+  return session.user.name ?? session.user.email;
 }
 
 function finishModeration(publicClubChanged = false) {
@@ -39,15 +40,35 @@ export async function moderateCreationRequest(formData: FormData) {
   const reviewer = reviewIdentity(session);
 
   if (decision === "reject") {
-    await prisma.clubCreationRequest.updateMany({
-      where: { id: requestId, status: "PENDING" },
-      data: {
-        status: "REJECTED",
-        reviewedById: session.user.id,
-        reviewedBy: reviewer,
-        reviewedAt: new Date(),
-        pendingKey: null,
-      },
+    await prisma.$transaction(async (tx) => {
+      const rejected = await tx.clubCreationRequest.updateMany({
+        where: { id: requestId, status: "PENDING" },
+        data: {
+          status: "REJECTED",
+          reviewedById: session.user.id,
+          reviewedBy: reviewer,
+          reviewedAt: new Date(),
+          pendingKey: null,
+        },
+      });
+      if (rejected.count === 0) return;
+      const request = await tx.clubCreationRequest.findUniqueOrThrow({
+        where: { id: requestId },
+      });
+      const requester =
+        request.requesterName ??
+        request.requesterEmail ??
+        "an SCCS user";
+      await tx.clubAuditLog.create({
+        data: {
+          clubName: request.name,
+          action: "CREATION_REJECTED",
+          actorId: session.user.id,
+          actor: reviewer,
+          actorEmail: session.user.email,
+          summary: `Rejected the new-club request from ${requester}.`,
+        },
+      });
     });
     finishModeration();
   }
@@ -114,6 +135,7 @@ export async function moderateCreationRequest(formData: FormData) {
           name: request.requesterName,
           email: request.requesterEmail,
           username: request.requesterUsername,
+          role: "OWNER",
         },
       });
       await tx.clubCreationRequest.update({
@@ -124,13 +146,11 @@ export async function moderateCreationRequest(formData: FormData) {
         data: {
           clubId: club.id,
           clubName: club.name,
-          action: "CREATED",
-          actorId: request.requesterId,
-          actor:
-            request.requesterName ??
-            request.requesterEmail ??
-            request.requesterUsername,
-          summary: "Published from an approved new-club request.",
+          action: "CREATION_APPROVED",
+          actorId: session.user.id,
+          actor: reviewer,
+          actorEmail: session.user.email,
+          summary: `Approved ${request.requesterName ?? request.requesterEmail ?? "an SCCS user"}'s request, published the club, and granted Owner access.`,
         },
       });
       return slug;
@@ -159,15 +179,37 @@ export async function moderateClaimRequest(formData: FormData) {
   const reviewer = reviewIdentity(session);
 
   if (decision === "reject") {
-    await prisma.clubClaimRequest.updateMany({
-      where: { id: requestId, status: "PENDING" },
-      data: {
-        status: "REJECTED",
-        reviewedById: session.user.id,
-        reviewedBy: reviewer,
-        reviewedAt: new Date(),
-        pendingKey: null,
-      },
+    await prisma.$transaction(async (tx) => {
+      const rejected = await tx.clubClaimRequest.updateMany({
+        where: { id: requestId, status: "PENDING" },
+        data: {
+          status: "REJECTED",
+          reviewedById: session.user.id,
+          reviewedBy: reviewer,
+          reviewedAt: new Date(),
+          pendingKey: null,
+        },
+      });
+      if (rejected.count === 0) return;
+      const request = await tx.clubClaimRequest.findUniqueOrThrow({
+        where: { id: requestId },
+        include: { club: { select: { name: true } } },
+      });
+      const requester =
+        request.requesterName ??
+        request.requesterEmail ??
+        "an SCCS user";
+      await tx.clubAuditLog.create({
+        data: {
+          clubId: request.clubId,
+          clubName: request.club.name,
+          action: "CLAIM_REJECTED",
+          actorId: session.user.id,
+          actor: reviewer,
+          actorEmail: session.user.email,
+          summary: `Rejected ${requester}'s access claim.`,
+        },
+      });
     });
     finishModeration();
   }
@@ -200,6 +242,7 @@ export async function moderateClaimRequest(formData: FormData) {
         name: request.requesterName,
         email: request.requesterEmail,
         username: request.requesterUsername,
+        role: "EDITOR",
       },
       update: {
         name: request.requesterName,
@@ -214,18 +257,94 @@ export async function moderateClaimRequest(formData: FormData) {
     const editorName =
       request.requesterName ??
       request.requesterEmail ??
-      request.requesterUsername ??
       "an SCCS user";
     await tx.clubAuditLog.create({
       data: {
         clubId: request.clubId,
         clubName: club.name,
-        action: "EDITOR_GRANTED",
+        action: "CLAIM_APPROVED",
         actorId: session.user.id,
         actor: reviewer,
-        summary: `Granted edit access to ${editorName}.`,
+        actorEmail: session.user.email,
+        summary: `Approved the access claim from ${editorName} and granted Editor access.`,
       },
     });
   });
+  finishModeration();
+}
+
+export async function moderatePost(formData: FormData) {
+  const session = await requireAdmin();
+  const postId = idFrom(formData);
+  const decision = formData.get("decision");
+  const note = String(formData.get("note") ?? "").trim();
+  if (
+    !postId ||
+    (decision !== "approve" && decision !== "deny") ||
+    note.length > 1000
+  ) {
+    redirect("/admin/requests?error=Invalid%20post%20moderation%20request");
+  }
+  const reviewer = reviewIdentity(session);
+
+  const clubSlug = await prisma.$transaction(async (tx) => {
+    const claimed = await tx.clubPost.updateMany({
+      where: { id: postId, moderationStatus: "PENDING_REVIEW" },
+      data:
+        decision === "approve"
+          ? {
+              moderationStatus: "PUBLISHED",
+              moderationReason: null,
+              moderationNote: null,
+              imageModerationFlagged: false,
+              moderationReviewedById: session.user.id,
+              moderationReviewedBy: reviewer,
+              moderationReviewedAt: new Date(),
+            }
+          : {
+              moderationStatus: "DENIED",
+              moderationNote: note || null,
+              moderationReviewedById: session.user.id,
+              moderationReviewedBy: reviewer,
+              moderationReviewedAt: new Date(),
+            },
+    });
+    if (claimed.count === 0) return null;
+
+    const post = await tx.clubPost.findUniqueOrThrow({
+      where: { id: postId },
+      include: { club: { select: { id: true, slug: true, name: true } } },
+    });
+    if (decision === "approve") {
+      await tx.clubPost.update({
+        where: { id: post.id },
+        data: {
+          approvedTextHash: postTextHash(post.title, post.subtitle),
+          approvedImageObjectKey: post.imageObjectKey,
+        },
+      });
+    }
+    await tx.clubAuditLog.create({
+      data: {
+        clubId: post.club.id,
+        clubName: post.club.name,
+        action: decision === "approve" ? "POST_APPROVED" : "POST_DENIED",
+        actorId: session.user.id,
+        actor: reviewer,
+        actorEmail: session.user.email,
+        summary:
+          decision === "approve"
+            ? `Approved the post “${post.title}” for publication.`
+            : `Denied the post “${post.title}”${note ? ` with note: ${note}` : "."}`,
+      },
+    });
+    return post.club.slug;
+  });
+
+  if (clubSlug) {
+    revalidatePath("/feed");
+    revalidatePath(`/clubs/${clubSlug}`);
+    revalidatePath(`/my-clubs/${clubSlug}/posts`);
+  }
   finishModeration();
 }

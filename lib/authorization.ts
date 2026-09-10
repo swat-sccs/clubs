@@ -18,8 +18,12 @@ export async function requireAdmin(nextPath = "/admin/requests") {
   return session;
 }
 
-export async function requireClubEditor(clubId: string, slug: string) {
-  const session = await requireUser(`/clubs/${slug}/edit`);
+export async function requireClubEditor(
+  clubId: string,
+  slug: string,
+  nextPath = `/clubs/${slug}/edit`,
+) {
+  const session = await requireUser(nextPath);
   if (!session.user.isAdmin) {
     const editor = await prisma.clubEditor.findUnique({
       where: { clubId_userId: { clubId, userId: session.user.id } },

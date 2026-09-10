@@ -3,20 +3,29 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   AtSign,
+  CalendarDays,
   CheckCircle2,
   Clock,
   ExternalLink,
   Mail,
+  MapPin,
   Pencil,
   ShieldCheck,
   Users,
   XCircle,
 } from "lucide-react";
-import ClubMonogram from "@/components/ClubMonogram";
+import ClubAvatar from "@/components/ClubAvatar";
+import ClubLogoUpload from "@/components/ClubLogoUpload";
+import FollowButton from "@/components/FollowButton";
 import { auth } from "@/lib/auth";
 import { getClubBySlug } from "@/lib/data";
 import { prisma } from "@/lib/db";
 import { instagramHref, websiteHref } from "@/lib/contact";
+import {
+  campusNow,
+  formatCompactEventDate,
+  formatEventTime,
+} from "@/lib/events";
 
 export const dynamic = "force-dynamic";
 
@@ -35,11 +44,6 @@ export async function generateMetadata(
 export default async function ClubPage(props: PageProps<"/clubs/[slug]">) {
   const { slug } = await props.params;
   const session = await auth();
-  const club = await getClubBySlug(slug, {
-    includeHidden: session?.user.isAdmin ?? false,
-  });
-  if (!club) notFound();
-
   const access = session?.user?.id
     ? await prisma.club.findUnique({
         where: { slug },
@@ -54,13 +58,43 @@ export default async function ClubPage(props: PageProps<"/clubs/[slug]">) {
             select: { id: true },
             take: 1,
           },
+          followers: {
+            where: { userId: session.user.id },
+            select: { id: true },
+            take: 1,
+          },
         },
       })
     : null;
   const isAdmin = session?.user.isAdmin ?? false;
   const isAssignedEditor = Boolean(access?.editors.length);
+  const club = await getClubBySlug(slug, {
+    includeHidden: isAdmin || isAssignedEditor,
+  });
+  if (!club) notFound();
+
   const canEdit = isAdmin || isAssignedEditor;
   const claimPending = Boolean(access?.claimRequests.length);
+  const now = campusNow();
+  const upcomingEvents = await prisma.clubPost.findMany({
+    where: {
+      clubId: club.id,
+      moderationStatus: "PUBLISHED",
+      OR: [
+        { eventDate: { gt: now.date } },
+        { eventDate: now.date, eventTime: { gte: now.time } },
+      ],
+    },
+    orderBy: [{ eventDate: "asc" }, { eventTime: "asc" }],
+    take: 3,
+    select: {
+      id: true,
+      title: true,
+      eventDate: true,
+      eventTime: true,
+      location: true,
+    },
+  });
 
   type ContactItem = {
     key: string;
@@ -113,7 +147,7 @@ export default async function ClubPage(props: PageProps<"/clubs/[slug]">) {
   }
 
   return (
-    <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-10 sm:px-6 lg:px-8">
+    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-10 sm:px-6 lg:px-8">
       <p className="animate-fade-rise text-sm font-medium text-muted-foreground">
         <Link
           href="/clubs"
@@ -123,8 +157,25 @@ export default async function ClubPage(props: PageProps<"/clubs/[slug]">) {
         </Link>
       </p>
 
-      <div className="mt-6 flex animate-fade-rise items-start gap-4 animation-delay-100">
-        <ClubMonogram name={club.name} className="size-16 text-2xl" />
+      <div className="mt-6 grid gap-10 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start">
+      <div className="min-w-0">
+      <div className="flex animate-fade-rise items-start gap-4 animation-delay-100">
+        {canEdit ? (
+          <ClubLogoUpload
+            id={club.id}
+            slug={slug}
+            name={club.name}
+            hasLogo={club.hasLogo}
+            className="size-16 text-2xl"
+          />
+        ) : (
+          <ClubAvatar
+            id={club.id}
+            name={club.name}
+            hasLogo={club.hasLogo}
+            className="size-16 text-2xl"
+          />
+        )}
         <div className="min-w-0">
           <h1 className="font-heading text-3xl font-bold text-foreground md:text-4xl [text-wrap:balance]">
             {club.name}
@@ -145,6 +196,12 @@ export default async function ClubPage(props: PageProps<"/clubs/[slug]">) {
       </div>
 
       <div className="mt-6 flex animate-fade-rise flex-wrap gap-2 animation-delay-100">
+        <FollowButton
+          clubId={club.id}
+          initialFollowing={Boolean(access?.followers.length)}
+          isAuthenticated={Boolean(session?.user?.id)}
+          nextPath={`/clubs/${slug}`}
+        />
         {canEdit && (
           <Link
             href={`/clubs/${slug}/edit`}
@@ -262,6 +319,53 @@ export default async function ClubPage(props: PageProps<"/clubs/[slug]">) {
           </ul>
         )}
       </section>
+      </div>
+
+      <aside className="animate-fade-rise animation-delay-300 lg:sticky lg:top-28">
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <div className="flex items-center gap-2">
+            <CalendarDays className="size-5 text-sccs" />
+            <h2 className="font-heading text-lg font-bold text-foreground">
+              Upcoming events
+            </h2>
+          </div>
+          {upcomingEvents.length === 0 ? (
+            <p className="mt-4 text-sm leading-6 text-muted-foreground">
+              This club has no upcoming events posted yet.
+            </p>
+          ) : (
+            <ol className="mt-4 divide-y divide-border">
+              {upcomingEvents.map((event) => (
+                <li key={event.id} className="py-4 first:pt-0 last:pb-0">
+                  <Link
+                    href={`/posts/${event.id}`}
+                    className="group block rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+                  >
+                    <h3 className="font-heading font-semibold leading-snug text-foreground group-hover:underline">
+                      {event.title}
+                    </h3>
+                    <p className="mt-2 flex items-center gap-1.5 text-sm font-medium text-sccs">
+                      <Clock className="size-3.5" />
+                      {formatCompactEventDate(event.eventDate)} · {formatEventTime(event.eventTime)}
+                    </p>
+                    <p className="mt-1 flex items-start gap-1.5 text-sm text-muted-foreground">
+                      <MapPin className="mt-0.5 size-3.5 shrink-0" />
+                      <span className="line-clamp-2">{event.location}</span>
+                    </p>
+                  </Link>
+                </li>
+              ))}
+            </ol>
+          )}
+          <Link
+            href="/feed"
+            className="mt-5 inline-flex text-sm font-semibold text-sccs underline decoration-sccs-orange/60 decoration-2 underline-offset-4"
+          >
+            View full feed →
+          </Link>
+        </div>
+      </aside>
+      </div>
     </main>
   );
 }

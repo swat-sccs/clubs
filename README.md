@@ -14,6 +14,10 @@ Built and run by [SCCS](https://sccs.swarthmore.edu). Live at
 - Anyone with an SCCS account can request a club at `/clubs/new` or claim an
   existing club page. SCCS administrators review both kinds of requests before
   a club is published or edit access is granted.
+- Club owners and editors can publish event posts with optional photos to
+  `/feed`. Anyone can RSVP once per browser, with the count stored in Postgres.
+- NSFWJS and an English profanity matcher check new and edited posts. Flagged
+  content stays private until an SCCS administrator approves or denies it.
 - `/match` takes a free-text description of what you're into and ranks clubs
   by cosine similarity between your text and each club's profile, embedded
   with `gte-modernbert-base` on SCCS's TEI server.
@@ -21,7 +25,7 @@ Built and run by [SCCS](https://sccs.swarthmore.edu). Live at
 ## Stack
 
 Next.js 16 (App Router), React 19, Tailwind 4, Auth.js with Keycloak,
-Prisma on Postgres 16. Club matching is a small Go service (`matcher/`) that
+Prisma on Postgres 16, with MinIO for club logos and feed photos. Club matching is a small Go service (`matcher/`) that
 caches club embeddings in Postgres and ranks by cosine similarity. Bun for
 package management. Runs in Docker behind SCCS's Traefik.
 

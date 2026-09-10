@@ -111,7 +111,15 @@ function toggleInSet<T>(set: Set<T>, value: T): Set<T> {
   return next;
 }
 
-function ClubsExplorerContent({ clubs }: { clubs: Club[] }) {
+function ClubsExplorerContent({
+  clubs,
+  isAuthenticated,
+  followedClubIds,
+}: {
+  clubs: Club[];
+  isAuthenticated: boolean;
+  followedClubIds: string[];
+}) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -137,6 +145,18 @@ function ClubsExplorerContent({ clubs }: { clubs: Club[] }) {
     new Set()
   );
   const [filtersOpen, setFiltersOpen] = useState(false);
+
+  useEffect(() => {
+    const previousHtmlOverflow = document.documentElement.style.overflow;
+    const previousBodyOverflow = document.body.style.overflow;
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.documentElement.style.overflow = previousHtmlOverflow;
+      document.body.style.overflow = previousBodyOverflow;
+    };
+  }, []);
 
   const searchIndex = useMemo(() => buildSearchIndex(clubs), [clubs]);
   const searchIndexAlphabetical = useMemo(
@@ -351,7 +371,7 @@ function ClubsExplorerContent({ clubs }: { clubs: Club[] }) {
   };
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl items-start gap-10 px-4 py-8 sm:px-6 md:py-10 lg:h-[calc(100dvh-4.5rem)] lg:items-stretch lg:overflow-hidden lg:px-8">
+    <div className="mx-auto flex h-[calc(100dvh-5rem-1px)] w-full max-w-7xl items-stretch gap-10 overflow-hidden px-4 pt-8 sm:h-[calc(100dvh-6rem-1px)] sm:px-6 md:pt-10 lg:px-8">
       {/* Desktop filter rail */}
       <aside className="hidden w-64 shrink-0 lg:block">
         <div className="h-full overflow-y-auto overscroll-contain pr-1 pb-4">
@@ -359,7 +379,7 @@ function ClubsExplorerContent({ clubs }: { clubs: Club[] }) {
         </div>
       </aside>
 
-      <div className="min-w-0 flex-1 lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:pr-1 lg:pb-8">
+      <div className="min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain pr-1 pb-8">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <h1 className="animate-fade-rise font-heading text-3xl font-bold text-foreground md:text-4xl">
@@ -511,6 +531,8 @@ function ClubsExplorerContent({ clubs }: { clubs: Club[] }) {
                 club={club}
                 isBookmarked={isClubBookmarked(club, bookmarkedClubs)}
                 onToggleBookmark={() => toggleBookmark(club)}
+                isFollowing={followedClubIds.includes(club.id)}
+                isAuthenticated={isAuthenticated}
               />
             ))}
           </div>
@@ -520,12 +542,24 @@ function ClubsExplorerContent({ clubs }: { clubs: Club[] }) {
   );
 }
 
-export default function ClubsExplorer({ clubs }: { clubs: Club[] }) {
+export default function ClubsExplorer({
+  clubs,
+  isAuthenticated,
+  followedClubIds,
+}: {
+  clubs: Club[];
+  isAuthenticated: boolean;
+  followedClubIds: string[];
+}) {
   // useSearchParams needs a Suspense boundary so the rest of the route can
   // still be prerendered.
   return (
     <Suspense>
-      <ClubsExplorerContent clubs={clubs} />
+      <ClubsExplorerContent
+        clubs={clubs}
+        isAuthenticated={isAuthenticated}
+        followedClubIds={followedClubIds}
+      />
     </Suspense>
   );
 }

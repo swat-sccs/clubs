@@ -1,25 +1,22 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/authorization";
 import { prisma } from "@/lib/db";
-import { UNCLAIMED_CLUB_GRACE_PERIOD_DAYS } from "@/lib/data";
+import { publicClubVisibilityWhere } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
   await requireAdmin("/admin");
-  const hiddenCutoff = new Date();
-  hiddenCutoff.setDate(
-    hiddenCutoff.getDate() - UNCLAIMED_CLUB_GRACE_PERIOD_DAYS,
-  );
 
-  const [clubCount, editorCount, pendingCreations, pendingClaims, hiddenCount, activity] =
+  const [clubCount, editorCount, pendingCreations, pendingClaims, pendingPosts, hiddenCount, activity] =
     await Promise.all([
       prisma.club.count(),
       prisma.clubEditor.count(),
       prisma.clubCreationRequest.count({ where: { status: "PENDING" } }),
       prisma.clubClaimRequest.count({ where: { status: "PENDING" } }),
+      prisma.clubPost.count({ where: { moderationStatus: "PENDING_REVIEW" } }),
       prisma.club.count({
-        where: { editors: { none: {} }, createdAt: { lt: hiddenCutoff } },
+        where: { NOT: publicClubVisibilityWhere() },
       }),
       prisma.clubAuditLog.findMany({
         orderBy: { createdAt: "desc" },
@@ -38,8 +35,8 @@ export default async function AdminPage() {
   const cards = [
     ["Clubs", clubCount],
     ["Editor assignments", editorCount],
-    ["Pending requests", pendingCreations + pendingClaims],
-    ["Hidden unclaimed", hiddenCount],
+    ["Pending approvals", pendingCreations + pendingClaims + pendingPosts],
+    ["Hidden clubs", hiddenCount],
   ] as const;
 
   return (
@@ -60,7 +57,7 @@ export default async function AdminPage() {
           <div>
             <h2 className="font-heading text-2xl font-semibold">Recent activity</h2>
             <p className="mt-1 text-muted-foreground">
-              Club profile changes and access grants.
+              Club changes, moderation decisions, and access updates.
             </p>
           </div>
           <Link href="/admin/activity" className="font-semibold text-sccs underline">

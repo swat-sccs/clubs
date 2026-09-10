@@ -11,6 +11,8 @@ goes through SCCS Keycloak.
   port 3000). Runs `prisma migrate deploy` on boot, then seeds the club table
   from `lib/clubs.json` if it is empty.
 - `clubs-db` container: Postgres 16, data in the named volume `clubs-dbdata`.
+- `minio` container: private S3-compatible image storage for club logos and
+  feed photos, with data in the NFS-backed `clubs-miniodata` volume.
 - `clubs-matcher` container: Go service for `/match`. Embeds club profiles via
   the TEI server on loon (`EMBEDDINGS_URL`, campus network only) and caches
   the vectors in the `ClubEmbedding` table. The app reaches it at
@@ -43,6 +45,13 @@ docker compose up -d --build
   Keycloak below
 - `KEYCLOAK_ADMIN_GROUP`: Keycloak group allowed to review requests; defaults
   to `sccs-staff`
+- `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD`: MinIO credentials. Use a long,
+  random production password. The S3 endpoint is configured internally by Compose.
+- `S3_REGION` / `S3_BUCKET_NAME`: optional storage settings; the defaults are
+  `us-east-1` and `club-uploads`.
+- `NSFW_PORN_THRESHOLD`, `NSFW_HENTAI_THRESHOLD`, `NSFW_SEXY_THRESHOLD`, and
+  `NSFW_COMBINED_THRESHOLD`: optional NSFWJS review thresholds. Defaults are in
+  `.env.example`; lower values send more images to administrator review.
 
 Redeploy after a push to main: `git pull && docker compose up -d --build`.
 
