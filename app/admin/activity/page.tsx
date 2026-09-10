@@ -1,4 +1,6 @@
 import Link from "next/link";
+import AdminAuditLog from "@/components/AdminAuditLog";
+import { getAuditLogPage } from "@/lib/audit-log";
 import { requireAdmin } from "@/lib/authorization";
 import { prisma } from "@/lib/db";
 
@@ -14,8 +16,11 @@ function pageNumber(value: string | string[] | undefined) {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
 }
 
-function activityHref(page: number) {
-  return page > 1 ? `/admin/activity?updatedPage=${page}` : "/admin/activity";
+function activityHref(updatedPage: number) {
+  const params = new URLSearchParams();
+  if (updatedPage > 1) params.set("updatedPage", String(updatedPage));
+  const query = params.toString();
+  return query ? `/admin/activity?${query}` : "/admin/activity";
 }
 
 export default async function AdminActivityPage(
@@ -24,31 +29,27 @@ export default async function AdminActivityPage(
   await requireAdmin("/admin/activity");
   const searchParams = await props.searchParams;
   const requestedPage = pageNumber(searchParams.updatedPage);
-  const [activity, updatedCount] = await Promise.all([
-    prisma.clubAuditLog.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 200,
-      include: { club: { select: { slug: true } } },
-    }),
-    prisma.club.count(),
-  ]);
+  const updatedCount = await prisma.club.count();
   const updatedTotalPages = Math.max(
     1,
     Math.ceil(updatedCount / UPDATED_PAGE_SIZE),
   );
   const updatedPage = Math.min(requestedPage, updatedTotalPages);
-  const recentlyUpdated = await prisma.club.findMany({
-    orderBy: { updatedAt: "desc" },
-    skip: (updatedPage - 1) * UPDATED_PAGE_SIZE,
-    take: UPDATED_PAGE_SIZE,
-    select: {
-      id: true,
-      slug: true,
-      name: true,
-      updatedAt: true,
-      updatedBy: true,
-    },
-  });
+  const [activity, recentlyUpdated] = await Promise.all([
+    getAuditLogPage(),
+    prisma.club.findMany({
+      orderBy: { updatedAt: "desc" },
+      skip: (updatedPage - 1) * UPDATED_PAGE_SIZE,
+      take: UPDATED_PAGE_SIZE,
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        updatedAt: true,
+        updatedBy: true,
+      },
+    }),
+  ]);
 
   return (
     <main className="mx-auto grid w-full max-w-7xl flex-1 gap-8 px-4 pb-16 pt-8 sm:px-6 lg:grid-cols-[1.35fr_0.65fr] lg:px-8">
@@ -59,45 +60,7 @@ export default async function AdminActivityPage(
         <p className="mt-2 text-muted-foreground">
           Append-only history of profile changes, moderation decisions, and access changes.
         </p>
-        <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-card">
-          {activity.length === 0 ? (
-            <p className="p-6 text-muted-foreground">No activity recorded yet.</p>
-          ) : (
-            <ol className="divide-y divide-border">
-              {activity.map((entry) => (
-                <li key={entry.id} className="p-5">
-                  <div className="flex flex-wrap items-start justify-between gap-2">
-                    <div>
-                      <p className="font-heading font-semibold text-foreground">
-                        {entry.club ? (
-                          <Link href={`/clubs/${entry.club.slug}`} className="hover:underline">
-                            {entry.clubName}
-                          </Link>
-                        ) : (
-                          entry.clubName
-                        )}
-                      </p>
-                      <p className="mt-1 text-sm font-semibold tracking-wide text-sccs-ember uppercase">
-                        {entry.action.replaceAll("_", " ")}
-                      </p>
-                    </div>
-                    <time className="text-sm text-muted-foreground">
-                      {entry.createdAt.toLocaleString()}
-                    </time>
-                  </div>
-                  <p className="mt-3 text-foreground/85">{entry.summary}</p>
-                  <div className="mt-3 rounded-lg bg-muted/60 px-3 py-2 text-sm">
-                    <span className="font-semibold text-foreground">Executed by </span>
-                    <span className="text-foreground/85">{entry.actor ?? "System"}</span>
-                    {entry.actorEmail && entry.actorEmail !== entry.actor && (
-                      <span className="text-muted-foreground"> · {entry.actorEmail}</span>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ol>
-          )}
-        </div>
+        <AdminAuditLog initialPage={activity} />
       </section>
 
       <aside>

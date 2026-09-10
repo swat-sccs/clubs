@@ -8,8 +8,57 @@ import {
   moderateCreationRequest,
 } from "./actions";
 import { formatEventDate, formatEventTime } from "@/lib/events";
+import ConfirmActionButton from "@/components/ConfirmActionButton";
 
 export const dynamic = "force-dynamic";
+const PAGE_SIZE = 25;
+
+function firstValue(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function pageNumber(value: string | string[] | undefined) {
+  const parsed = Number.parseInt(firstValue(value) ?? "1", 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
+}
+
+function requestPageHref(
+  key: "postPage" | "creationPage" | "claimPage",
+  page: number,
+  pages: { postPage: number; creationPage: number; claimPage: number },
+) {
+  const params = new URLSearchParams();
+  for (const [name, value] of Object.entries({ ...pages, [key]: page })) {
+    if (value > 1) params.set(name, String(value));
+  }
+  const query = params.toString();
+  return query ? `/admin/requests?${query}` : "/admin/requests";
+}
+
+function Pagination({
+  pageKey,
+  currentPage,
+  totalPages,
+  pages,
+}: {
+  pageKey: "postPage" | "creationPage" | "claimPage";
+  currentPage: number;
+  totalPages: number;
+  pages: { postPage: number; creationPage: number; claimPage: number };
+}) {
+  if (totalPages <= 1) return null;
+  return (
+    <nav className="mt-5 flex items-center justify-between" aria-label="Request pages">
+      {currentPage > 1 ? (
+        <Link href={requestPageHref(pageKey, currentPage - 1, pages)}>← Previous</Link>
+      ) : <span />}
+      <span className="text-sm text-muted-foreground">{currentPage} / {totalPages}</span>
+      {currentPage < totalPages ? (
+        <Link href={requestPageHref(pageKey, currentPage + 1, pages)}>Next →</Link>
+      ) : <span />}
+    </nav>
+  );
+}
 
 function requesterLabel(request: {
   requesterName: string | null;
@@ -39,13 +88,14 @@ function ModerationButtons({
       >
         Approve
       </button>
-      <button
+      <ConfirmActionButton
         name="decision"
         value="reject"
+        confirmation="Reject this request? This decision will be recorded in the audit log."
         className="h-10 rounded-xl border border-border px-4 font-medium text-foreground hover:bg-muted"
       >
         Reject
-      </button>
+      </ConfirmActionButton>
     </form>
   );
 }
@@ -54,25 +104,48 @@ export default async function AdminRequestsPage(
   props: PageProps<"/admin/requests">,
 ) {
   await requireAdmin();
+  const searchParams = await props.searchParams;
+  const requestedPages = {
+    postPage: pageNumber(searchParams.postPage),
+    creationPage: pageNumber(searchParams.creationPage),
+    claimPage: pageNumber(searchParams.claimPage),
+  };
+  const [creationCount, claimCount, postCount] = await Promise.all([
+    prisma.clubCreationRequest.count(),
+    prisma.clubClaimRequest.count(),
+    prisma.clubPost.count({ where: { moderationStatus: "PENDING_REVIEW" } }),
+  ]);
+  const totals = {
+    creationPage: Math.max(1, Math.ceil(creationCount / PAGE_SIZE)),
+    claimPage: Math.max(1, Math.ceil(claimCount / PAGE_SIZE)),
+    postPage: Math.max(1, Math.ceil(postCount / PAGE_SIZE)),
+  };
+  const pages = {
+    creationPage: Math.min(requestedPages.creationPage, totals.creationPage),
+    claimPage: Math.min(requestedPages.claimPage, totals.claimPage),
+    postPage: Math.min(requestedPages.postPage, totals.postPage),
+  };
   const [creationRequests, claimRequests, postRequests] = await Promise.all([
     prisma.clubCreationRequest.findMany({
       orderBy: [{ status: "asc" }, { createdAt: "desc" }],
-      take: 100,
+      skip: (pages.creationPage - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
       include: { club: { select: { slug: true } } },
     }),
     prisma.clubClaimRequest.findMany({
       orderBy: [{ status: "asc" }, { createdAt: "desc" }],
-      take: 100,
+      skip: (pages.claimPage - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
       include: { club: { select: { name: true, slug: true } } },
     }),
     prisma.clubPost.findMany({
       where: { moderationStatus: "PENDING_REVIEW" },
       orderBy: { createdAt: "asc" },
-      take: 100,
+      skip: (pages.postPage - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
       include: { club: { select: { name: true, slug: true } } },
     }),
   ]);
-  const searchParams = await props.searchParams;
   const error = Array.isArray(searchParams.error)
     ? searchParams.error[0]
     : searchParams.error;
@@ -193,13 +266,14 @@ export default async function AdminRequestsPage(
                       >
                         Approve and publish
                       </button>
-                      <button
+                      <ConfirmActionButton
                         name="decision"
                         value="deny"
+                        confirmation="Deny this post? It will remain unavailable until an editor changes and resubmits it."
                         className="h-10 rounded-xl border border-destructive/30 px-4 font-medium text-destructive hover:bg-destructive/5"
                       >
                         Deny
-                      </button>
+                      </ConfirmActionButton>
                     </div>
                   </form>
                 </div>
@@ -207,6 +281,7 @@ export default async function AdminRequestsPage(
             </article>
           ))}
         </div>
+        <Pagination pageKey="postPage" currentPage={pages.postPage} totalPages={totals.postPage} pages={pages} />
       </section>
 
       <section className="mt-12">
@@ -251,6 +326,7 @@ export default async function AdminRequestsPage(
             </article>
           ))}
         </div>
+        <Pagination pageKey="creationPage" currentPage={pages.creationPage} totalPages={totals.creationPage} pages={pages} />
       </section>
 
       <section className="mt-12">
@@ -281,6 +357,7 @@ export default async function AdminRequestsPage(
             </article>
           ))}
         </div>
+        <Pagination pageKey="claimPage" currentPage={pages.claimPage} totalPages={totals.claimPage} pages={pages} />
       </section>
     </main>
   );
