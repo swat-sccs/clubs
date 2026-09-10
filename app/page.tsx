@@ -50,7 +50,7 @@ export default async function Home() {
     <main className="flex flex-1 flex-col">
       {/* ---------- Hero ---------- */}
       <section className="hero-aurora border-b border-border">
-        <div className="mx-auto grid min-h-[calc(100svh-4rem)] w-full max-w-7xl grid-cols-1 content-center gap-x-16 gap-y-14 px-4 py-10 sm:px-6 md:min-h-[calc(100svh-4.5rem)] md:py-12 lg:grid-cols-[1fr_24rem] lg:px-8">
+        <div className="mx-auto grid min-h-[calc(100svh-4rem)] w-full max-w-[88rem] grid-cols-1 content-center gap-x-12 gap-y-14 px-4 py-10 sm:px-6 md:min-h-[calc(100svh-4.5rem)] md:py-12 lg:grid-cols-[minmax(20rem,1fr)_36rem] lg:px-8">
           <div className="max-w-[46rem]">
             <p className="animate-fade-rise text-[0.8rem] font-semibold tracking-[0.18em] text-foreground uppercase">
               Swarthmore College · {clubs.length} student organizations
@@ -92,7 +92,7 @@ export default async function Home() {
             <figure>
               <HeroNetwork
                 nodes={crowdNodes}
-                className="h-80 w-full touch-none sm:h-96 lg:h-[26rem]"
+                className="aspect-square w-full touch-none"
               />
               <figcaption className="mt-2 text-center font-heading text-lg italic text-foreground/75">
                 Somewhere in here, your people.

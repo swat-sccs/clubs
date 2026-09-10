@@ -10,7 +10,7 @@ export type CrowdNode = {
   count: number;
 };
 
-const SPHERE_FILL = 0.74; // sphere radius as a fraction of the half-extent
+const SPHERE_FILL = 0.82; // sphere radius as a fraction of the half-extent
 const ROTATION_SPEED = 0.1; // radians / second
 const TILT = -0.42;
 const PERSPECTIVE = 3.2;
