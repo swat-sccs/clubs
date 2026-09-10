@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CalendarDays, Clock3, MapPin } from "lucide-react";
+import { CalendarDays, Clock3, Flag, MapPin, ShieldX } from "lucide-react";
+import { takeDownPost } from "./actions";
 import ClubAvatar from "@/components/ClubAvatar";
+import ConfirmActionButton from "@/components/ConfirmActionButton";
 import FollowButton from "@/components/FollowButton";
 import RsvpButton from "@/components/RsvpButton";
 import { auth } from "@/lib/auth";
@@ -181,6 +183,27 @@ export default async function PostPage(props: PageProps<"/posts/[postId]">) {
                 count={post.rsvpCount}
                 rsvped={post.rsvps.length > 0}
               />
+            </div>
+            <div className="mt-5 flex flex-wrap gap-4 text-sm">
+              <a
+                href={`mailto:staff@sccs.swarthmore.edu?subject=${encodeURIComponent(`Swat Clubs report: ${post.title}`)}&body=${encodeURIComponent(`I am reporting this post: /posts/${post.id}\n\nReason:`)}`}
+                className="inline-flex items-center gap-1.5 font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+              >
+                <Flag className="size-4" /> Report this post
+              </a>
+              {session?.user.isAdmin && (
+                <form action={takeDownPost}>
+                  <input type="hidden" name="postId" value={post.id} />
+                  <ConfirmActionButton
+                    name="confirm"
+                    value="remove"
+                    confirmation="Remove this published post from public view?"
+                    className="inline-flex items-center gap-1.5 font-semibold text-destructive underline-offset-4 hover:underline"
+                  >
+                    <ShieldX className="size-4" /> Take down post
+                  </ConfirmActionButton>
+                </form>
+              )}
             </div>
           </div>
         </div>

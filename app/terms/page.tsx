@@ -25,13 +25,16 @@ export default function TermsPage() {
           may approve or deny posts to keep the directory welcoming and useful.
         </p>
         <p>
-          If a decision seems wrong, contact{" "}
+          Report inappropriate content, or appeal a moderation decision, by contacting{" "}
           <a href="mailto:staff@sccs.swarthmore.edu" className="font-semibold text-sccs underline">
             staff@sccs.swarthmore.edu
           </a>
           .
         </p>
       </div>
+      <p className="mt-5 text-muted-foreground">
+        See the <Link href="/privacy" className="font-semibold text-sccs underline">privacy notice</Link> for information about account data, RSVPs, moderation, analytics, and retention.
+      </p>
       <Link href="/feed" className="mt-8 inline-block font-semibold text-sccs underline">
         ← Back to the feed
       </Link>

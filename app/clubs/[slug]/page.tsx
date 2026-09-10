@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   Clock,
   ExternalLink,
+  Flag,
   Mail,
   MapPin,
   Pencil,
@@ -319,6 +320,12 @@ export default async function ClubPage(props: PageProps<"/clubs/[slug]">) {
           </ul>
         )}
       </section>
+      <a
+        href={`mailto:staff@sccs.swarthmore.edu?subject=${encodeURIComponent(`Swat Clubs report: ${club.name}`)}&body=${encodeURIComponent(`I am reporting this club page: /clubs/${club.slug}\n\nReason:`)}`}
+        className="mt-8 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+      >
+        <Flag className="size-4" /> Report this club page
+      </a>
       </div>
 
       <aside className="animate-fade-rise animation-delay-300 lg:sticky lg:top-28">

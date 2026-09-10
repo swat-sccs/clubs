@@ -9,6 +9,7 @@ const footerLinks = [
   { href: "/match", label: "Match" },
   { href: "/faq", label: "FAQ" },
   { href: "/terms", label: "Terms" },
+  { href: "/privacy", label: "Privacy" },
 ];
 
 const Footer = () => {
@@ -35,6 +36,9 @@ const Footer = () => {
               </span>
               <Link href="/terms" className="font-medium text-foreground/80 underline decoration-border underline-offset-4">
                 Terms
+              </Link>
+              <Link href="/privacy" className="font-medium text-foreground/80 underline decoration-border underline-offset-4">
+                Privacy
               </Link>
             </p>
           </div>
