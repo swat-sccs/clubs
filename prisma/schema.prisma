@@ -14,6 +14,17 @@ enum RequestStatus {
   REJECTED
 }
 
+enum ClubAccessRole {
+  OWNER
+  EDITOR
+}
+
+enum PostModerationStatus {
+  PENDING_REVIEW
+  PUBLISHED
+  DENIED
+}
+
 model Club {
   id                 String   @id @default(cuid())
   // Display order: seed order for imported clubs, insertion order after that.
@@ -27,10 +38,15 @@ model Club {
   membershipProcess  String
   recruitingCycle    String
 
-  instagram   String?
-  email       String?
-  website     String?
-  meetingInfo String?
+  instagram     String?
+  email         String?
+  website       String?
+  meetingInfo   String?
+  logoObjectKey String?
+
+  // Null follows the automatic visibility rule for unclaimed clubs. Admins
+  // can explicitly publish (true) or hide (false) a club.
+  visibilityOverride Boolean?
 
   // Keycloak subject / email / display name of the SCCS account that
   // created or last edited the club. Null for seeded rows.
@@ -47,15 +63,78 @@ model Club {
   claimRequests   ClubClaimRequest[]
   creationRequest ClubCreationRequest?
   auditLogs       ClubAuditLog[]
+  posts           ClubPost[]
+  followers       ClubFollow[]
+}
+
+model ClubFollow {
+  id        String   @id @default(cuid())
+  clubId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
+
+  @@unique([clubId, userId])
+  @@index([userId, createdAt])
+}
+
+model ClubPost {
+  id             String  @id @default(cuid())
+  clubId         String
+  title          String
+  subtitle       String
+  imageObjectKey String?
+  eventDate      String
+  eventTime      String
+  location       String
+  rsvpCount      Int     @default(0)
+
+  moderationStatus       PostModerationStatus @default(PUBLISHED)
+  moderationReason       String?
+  moderationNote         String?
+  imageModerationFlagged Boolean              @default(false)
+  approvedTextHash       String?
+  approvedImageObjectKey String?
+  moderationReviewedById String?
+  moderationReviewedBy   String?
+  moderationReviewedAt   DateTime?
+
+  authorId   String
+  authorName String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  club  Club       @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  rsvps PostRsvp[]
+
+  @@index([createdAt])
+  @@index([moderationStatus, createdAt])
+  @@index([clubId, createdAt])
+  @@index([eventDate, eventTime])
+}
+
+model PostRsvp {
+  id            String   @id @default(cuid())
+  postId        String
+  browserIdHash String
+  createdAt     DateTime @default(now())
+
+  post ClubPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, browserIdHash])
+  @@index([browserIdHash])
 }
 
 model ClubEditor {
-  id       String  @id @default(cuid())
+  id       String         @id @default(cuid())
   clubId   String
   userId   String
   name     String?
   email    String?
   username String?
+  role     ClubAccessRole @default(EDITOR)
 
   grantedAt DateTime @default(now())
 
@@ -135,8 +214,9 @@ model ClubAuditLog {
   action   String
   summary  String
 
-  actorId String?
-  actor   String?
+  actorId    String?
+  actor      String?
+  actorEmail String?
 
   createdAt DateTime @default(now())
 

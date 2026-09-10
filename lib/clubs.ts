@@ -31,6 +31,7 @@ export const RECRUITING_CYCLES = [
 export type RecruitingCycle = (typeof RECRUITING_CYCLES)[number];
 
 export type Club = {
+  id: string;
   slug: string;
   name: string;
   description: string;
@@ -43,12 +44,19 @@ export type Club = {
   email: string | null;
   website: string | null;
   meetingInfo: string | null;
+  hasLogo: boolean;
 };
 
 /** Shape of the original seed JSON (no slug or contact fields). */
 export type SeedClub = Omit<
   Club,
-  "slug" | "instagram" | "email" | "website" | "meetingInfo"
+  | "id"
+  | "slug"
+  | "instagram"
+  | "email"
+  | "website"
+  | "meetingInfo"
+  | "hasLogo"
 >;
 
 // Clubs now live in Postgres (see lib/data.ts), so nothing here can be

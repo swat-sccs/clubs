@@ -5,6 +5,7 @@ import { TAGS, type Tag } from "./tags";
 
 function toClub(row: ClubRow): Club {
   return {
+    id: row.id,
     slug: row.slug,
     name: row.name,
     description: row.description,
@@ -19,10 +20,29 @@ function toClub(row: ClubRow): Club {
     email: row.email,
     website: row.website,
     meetingInfo: row.meetingInfo,
+    hasLogo: Boolean(row.logoObjectKey),
   };
 }
 
 export const UNCLAIMED_CLUB_GRACE_PERIOD_DAYS = 14;
+
+type ClubVisibilityFields = Pick<
+  ClubRow,
+  "createdAt" | "visibilityOverride"
+> & {
+  editors: readonly unknown[];
+};
+
+export function isClubPublic(
+  club: ClubVisibilityFields,
+  now = new Date(),
+): boolean {
+  if (club.visibilityOverride !== null) return club.visibilityOverride;
+
+  const cutoff = new Date(now);
+  cutoff.setDate(cutoff.getDate() - UNCLAIMED_CLUB_GRACE_PERIOD_DAYS);
+  return club.editors.length > 0 || club.createdAt >= cutoff;
+}
 
 export function publicClubVisibilityWhere(
   now = new Date(),
@@ -31,8 +51,14 @@ export function publicClubVisibilityWhere(
   cutoff.setDate(cutoff.getDate() - UNCLAIMED_CLUB_GRACE_PERIOD_DAYS);
   return {
     OR: [
-      { editors: { some: {} } },
-      { createdAt: { gte: cutoff } },
+      { visibilityOverride: true },
+      {
+        visibilityOverride: null,
+        OR: [
+          { editors: { some: {} } },
+          { createdAt: { gte: cutoff } },
+        ],
+      },
     ],
   };
 }

@@ -50,6 +50,7 @@ export async function matchClubs(
     if (!row) continue;
     result.push({
       club: {
+        id: row.id,
         slug: row.slug,
         name: row.name,
         description: row.description,
@@ -62,6 +63,7 @@ export async function matchClubs(
         email: row.email,
         website: row.website,
         meetingInfo: row.meetingInfo,
+        hasLogo: Boolean(row.logoObjectKey),
       } as Club,
       score: m.score,
     });

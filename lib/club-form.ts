@@ -9,7 +9,7 @@ import {
 } from "@/lib/clubs";
 import { TAGS, type Tag } from "@/lib/tags";
 
-type ClubFields = Omit<Club, "slug">;
+type ClubFields = Omit<Club, "id" | "slug" | "hasLogo">;
 
 function oneOf<T extends string>(
   values: readonly T[],
