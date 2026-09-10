@@ -40,7 +40,7 @@ export default function FAQPage() {
               <Link href="/clubs" className="font-medium text-sccs underline">
                 full directory
               </Link>
-              . Search by name, and filter by tags, council, size, membership
+              . Search by name, and filter by tags, size, membership
               process, and recruiting cycle.
             </li>
             <li>
@@ -69,7 +69,7 @@ export default function FAQPage() {
           <p className="mt-3 text-base leading-7 text-foreground/85">
             You don&apos;t, unless you want to add a club. Browsing, search,
             bookmarks, and matching all work signed out. Login is your SCCS
-            account through Keycloak; there are no separate passwords here.
+            account.
           </p>
         </section>
 
@@ -79,21 +79,12 @@ export default function FAQPage() {
           </h2>
           <p className="mt-3 text-base leading-7 text-foreground/85">
             Anyone with an SCCS account can{" "}
-            <Link
-              href="/clubs/new"
-              className="font-medium text-sccs underline"
-            >
+            <Link href="/clubs/new" className="font-medium text-sccs underline">
               add a club
             </Link>
-            . It is listed under your name, so keep it honest. If the club
-            already has a page, don&apos;t create a second one; email{" "}
-            <a
-              href="mailto:sccs@sccs.swarthmore.edu"
-              className="font-medium text-sccs underline decoration-sccs-orange/50 decoration-2 underline-offset-4 transition-colors hover:decoration-sccs-orange"
-            >
-              sccs@sccs.swarthmore.edu
-            </a>{" "}
-            and we&apos;ll help get the existing page updated.
+            . The submission stays private until an SCCS administrator approves
+            it. If the club already has a page, claim that page instead of
+            creating a duplicate.
           </p>
         </section>
 
@@ -102,15 +93,10 @@ export default function FAQPage() {
             How do I edit a club page?
           </h2>
           <p className="mt-3 text-base leading-7 text-foreground/85">
-            In-app editing is not available yet. If you run a club and the
-            description, tags, or contact info is wrong, email{" "}
-            <a
-              href="mailto:sccs@sccs.swarthmore.edu"
-              className="font-medium text-sccs underline decoration-sccs-orange/50 decoration-2 underline-offset-4 transition-colors hover:decoration-sccs-orange"
-            >
-              sccs@sccs.swarthmore.edu
-            </a>
-            .
+            Open the club&apos;s page and choose <strong>Claim this club</strong>.
+            Tell us your role and why you should manage the page. After an SCCS
+            administrator approves the claim, the page will show an edit button
+            whenever you are signed in.
           </p>
         </section>
 
@@ -122,18 +108,15 @@ export default function FAQPage() {
             We&apos;re working toward a complete directory, but some groups are
             still missing or listed under a name you wouldn&apos;t search for.
             If you run the club,{" "}
-            <Link
-              href="/clubs/new"
-              className="font-medium text-sccs underline"
-            >
+            <Link href="/clubs/new" className="font-medium text-sccs underline">
               add it here
             </Link>
             . Otherwise, tell us at{" "}
             <a
-              href="mailto:sccs@sccs.swarthmore.edu"
+              href="mailto:staff@sccs.swarthmore.edu"
               className="font-medium text-sccs underline decoration-sccs-orange/50 decoration-2 underline-offset-4 transition-colors hover:decoration-sccs-orange"
             >
-              sccs@sccs.swarthmore.edu
+              staff@sccs.swarthmore.edu
             </a>
             .
           </p>
@@ -144,9 +127,9 @@ export default function FAQPage() {
             How are clubs ordered?
           </h2>
           <p className="mt-3 text-base leading-7 text-foreground/85">
-            By default, clubs are shown in our recommended order. You can
-            switch to alphabetical order, or sort bookmarked clubs first, using
-            the Ordering filter on the Clubs page.
+            By default, clubs are shown in our recommended order. You can switch
+            to alphabetical order, or sort bookmarked clubs first, using the
+            Ordering filter on the Clubs page.
           </p>
         </section>
 
@@ -167,31 +150,6 @@ export default function FAQPage() {
         </section>
 
         <hr className="border-border" />
-
-        <section>
-          <h2 className="font-heading text-2xl font-semibold text-sccs [text-wrap:balance]">
-            Special Thanks
-          </h2>
-          <p className="mt-3 text-base leading-7 text-foreground/85">
-            Thank you to the organizations below for their support in launching
-            Swat Clubs.
-          </p>
-          <div className="mt-6 flex flex-wrap items-center gap-3">
-            {[
-              "Student Council",
-              "SCCS",
-              "Office of Student Engagement",
-              "Student Activities Committee",
-            ].map((org) => (
-              <span
-                key={org}
-                className="rounded-full border border-border bg-card px-4 py-1.5 text-sm font-medium text-sccs"
-              >
-                {org}
-              </span>
-            ))}
-          </div>
-        </section>
       </div>
     </div>
   );

@@ -1,20 +1,5 @@
 import { TAGS, type Tag } from "./tags";
 
-export const SWARTHMORE_AFFILIATIONS = [
-  "Club Sports Council",
-  "Community Service & Outreach Council",
-  "Health & Wellness Council",
-  "Identity & Cultural Affairs Council",
-  "Performing & Visual Arts Council",
-  "Political & Advocacy Council",
-  "Pre-Professional & Academic Council",
-  "Publications & Media Council",
-  "Special Interest & Recreation Council",
-  "Spiritual & Religious Council",
-] as const;
-
-export type SwarthmoreAffiliation = (typeof SWARTHMORE_AFFILIATIONS)[number];
-
 export const CLUB_SIZES = [
   "less than 10 members",
   "less than 20 members",
@@ -50,7 +35,6 @@ export type Club = {
   name: string;
   description: string;
   tags: Tag[];
-  affiliation: SwarthmoreAffiliation;
   size: ClubSize;
   isAcceptingMembers: boolean;
   membershipProcess: MembershipProcess;
@@ -73,7 +57,6 @@ export type SeedClub = Omit<
 
 export type ClubStats = {
   tagCounts: ReadonlyMap<Tag, number>;
-  affiliationCounts: ReadonlyMap<SwarthmoreAffiliation, number>;
   sizeCounts: ReadonlyMap<ClubSize, number>;
   membershipProcessCounts: ReadonlyMap<MembershipProcess, number>;
   recruitingCycleCounts: ReadonlyMap<RecruitingCycle, number>;
@@ -82,9 +65,6 @@ export type ClubStats = {
 
 export function buildClubStats(clubs: readonly Club[]): ClubStats {
   const tagCounts = new Map<Tag, number>(TAGS.map((tag) => [tag, 0]));
-  const affiliationCounts = new Map<SwarthmoreAffiliation, number>(
-    SWARTHMORE_AFFILIATIONS.map((affiliation) => [affiliation, 0])
-  );
   const sizeCounts = new Map<ClubSize, number>(
     CLUB_SIZES.map((size) => [size, 0])
   );
@@ -100,10 +80,6 @@ export function buildClubStats(clubs: readonly Club[]): ClubStats {
     for (const tag of club.tags) {
       tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
     }
-    affiliationCounts.set(
-      club.affiliation,
-      (affiliationCounts.get(club.affiliation) ?? 0) + 1
-    );
     sizeCounts.set(club.size, (sizeCounts.get(club.size) ?? 0) + 1);
     membershipProcessCounts.set(
       club.membershipProcess,
@@ -118,7 +94,6 @@ export function buildClubStats(clubs: readonly Club[]): ClubStats {
 
   return {
     tagCounts,
-    affiliationCounts,
     sizeCounts,
     membershipProcessCounts,
     recruitingCycleCounts,
@@ -142,7 +117,6 @@ function toSearchEntry(club: Club): ClubSearchEntry {
     searchText: [
       club.name,
       club.description,
-      club.affiliation,
       club.meetingInfo,
       ...club.tags,
     ]

@@ -28,7 +28,6 @@ function MatchCard({ match }: { match: ClubMatch }) {
           {percent}% match
         </span>
       </div>
-      <p className="mt-1 text-sm text-muted-foreground">{club.affiliation}</p>
       <p className="mt-3 leading-[1.6] text-foreground/80">
         {club.description}
       </p>
@@ -89,7 +88,7 @@ export default async function MatchPage(props: PageProps<"/match">) {
         />
         <button
           type="submit"
-          className="mt-3 inline-flex h-12 items-center gap-2 rounded-[3px] bg-sccs-orange px-8 text-base font-semibold text-sccs-ink transition-colors hover:bg-sccs-orange/85"
+          className="mt-3 inline-flex h-12 items-center gap-2 rounded-xl bg-sccs-orange px-8 text-base font-semibold text-sccs-ink transition-colors hover:bg-sccs-orange/85"
         >
           <Search className="size-4.5" />
           Match me

@@ -8,7 +8,6 @@ import type {
   ClubSize,
   MembershipProcess,
   RecruitingCycle,
-  SwarthmoreAffiliation,
 } from "@/lib/clubs";
 import type { Tag as TagValue } from "@/lib/tags";
 import { cn } from "@/lib/utils";
@@ -138,7 +137,6 @@ function toCountOptions(counts: ReadonlyMap<string, number>): CountOption[] {
 
 export type NavbarOptions = {
   tags: CountOption[];
-  affiliations: CountOption[];
   sizes: CountOption[];
   membershipProcesses: CountOption[];
   recruitingCycles: CountOption[];
@@ -152,7 +150,6 @@ export function buildNavbarOptions(clubs: readonly Club[]): NavbarOptions {
   const stats = buildClubStats(clubs);
   return {
     tags: toCountOptions(stats.tagCounts),
-    affiliations: toCountOptions(stats.affiliationCounts),
     sizes: toCountOptions(stats.sizeCounts),
     membershipProcesses: toCountOptions(stats.membershipProcessCounts),
     recruitingCycles: toCountOptions(stats.recruitingCycleCounts),
@@ -326,9 +323,6 @@ type NavbarProps = {
   selectedTags: Set<TagValue>;
   onToggleTag: (tag: string) => void;
   onClearTags: () => void;
-  selectedAffiliations: Set<SwarthmoreAffiliation>;
-  onToggleAffiliation: (affiliation: string) => void;
-  onClearAffiliations: () => void;
   ordering: ClubOrdering;
   onOrderingChange: (ordering: ClubOrdering) => void;
   selectedSizes: Set<ClubSize>;
@@ -350,9 +344,6 @@ const Navbar = ({
   selectedTags,
   onToggleTag,
   onClearTags,
-  selectedAffiliations,
-  onToggleAffiliation,
-  onClearAffiliations,
   ordering,
   onOrderingChange,
   selectedSizes,
@@ -389,20 +380,6 @@ const Navbar = ({
           onToggle={onToggleTag}
           onClear={onClearTags}
           variant="list"
-        />
-      </FilterSection>
-
-      <Separator />
-
-      <FilterSection title="Affiliations">
-        <FilterSearchDropdown
-          placeholder="Search for affiliations"
-          allLabel="All Affiliations"
-          options={options.affiliations}
-          selected={selectedAffiliations}
-          onToggle={onToggleAffiliation}
-          onClear={onClearAffiliations}
-          variant="checkbox"
         />
       </FilterSection>
 

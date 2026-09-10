@@ -2,7 +2,7 @@ import Link from "next/link";
 import HeroNetwork from "@/components/HeroNetwork";
 import WordRoll from "@/components/WordRoll";
 import { CROWD } from "@/components/crowd";
-import { SWARTHMORE_AFFILIATIONS, buildClubStats } from "@/lib/clubs";
+import { buildClubStats } from "@/lib/clubs";
 import { getClubs } from "@/lib/data";
 
 // Club counts come from Postgres, so this page renders per request.
@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 const features = [
   {
     title: "Search & filter",
-    body: "Slice the directory by tags, councils, size, and membership process until only your kind of clubs remain.",
+    body: "Slice the directory by tags, size, and membership process until only your kind of clubs remain.",
   },
   {
     title: "Bookmark favorites",
@@ -68,21 +68,19 @@ export default async function Home() {
             <p className="mt-8 flex max-w-xl animate-fade-rise flex-wrap gap-x-3 gap-y-1 border-y border-border py-2.5 text-[0.85rem] font-medium tracking-[0.14em] text-muted-foreground uppercase animation-delay-300 tabular-nums">
               <span>{clubs.length} clubs</span>
               <span aria-hidden="true">·</span>
-              <span>{SWARTHMORE_AFFILIATIONS.length} councils</span>
-              <span aria-hidden="true">·</span>
               <span>{acceptingCount} taking members</span>
             </p>
 
             <div className="mt-9 flex animate-fade-rise flex-col gap-3 animation-delay-300 sm:flex-row sm:items-center">
               <Link
                 href="/clubs"
-                className="inline-flex h-12 items-center justify-center rounded-[3px] bg-sccs-orange px-8 text-base font-semibold text-sccs-ink transition-colors hover:bg-sccs-orange/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+                className="inline-flex h-12 items-center justify-center rounded-xl bg-sccs-orange px-8 text-base font-semibold text-sccs-ink transition-colors hover:bg-sccs-orange/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
               >
                 Browse all clubs
               </Link>
               <Link
                 href="/faq"
-                className="inline-flex h-12 items-center justify-center rounded-[3px] border border-foreground px-8 text-base font-medium text-foreground transition-colors hover:bg-foreground hover:text-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+                className="inline-flex h-12 items-center justify-center rounded-xl border border-foreground px-8 text-base font-medium text-foreground transition-colors hover:bg-foreground hover:text-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
               >
                 How it works
               </Link>
@@ -105,9 +103,9 @@ export default async function Home() {
       </section>
 
       {/* ---------- Index of interests ---------- */}
-      <section className="mx-auto flex min-h-[calc(100svh-4rem)] w-full max-w-7xl flex-col px-4 pb-16 sm:px-6 md:min-h-[calc(100svh-4.5rem)] md:pb-24 lg:px-8">
+      <section className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
         <SectionLabel label="Index of interests" />
-        <div className="mt-8 grid flex-1 grid-cols-1 content-center gap-x-16 gap-y-8 lg:grid-cols-[minmax(0,24rem)_1fr]">
+        <div className="mt-8 grid grid-cols-1 gap-x-16 gap-y-8 lg:grid-cols-[minmax(0,24rem)_1fr]">
           <div>
             <h2 className="font-heading text-3xl font-semibold text-foreground md:text-4xl [text-wrap:balance]">
               Browse by interest
@@ -154,9 +152,9 @@ export default async function Home() {
       </section>
 
       {/* ---------- Features ---------- */}
-      <section className="mx-auto flex min-h-[calc(100svh-4rem)] w-full max-w-7xl flex-col px-4 pb-16 sm:px-6 md:min-h-[calc(100svh-4.5rem)] md:pb-24 lg:px-8">
+      <section className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
         <SectionLabel label="How it works" />
-        <div className="flex flex-1 flex-col justify-center pb-8">
+        <div className="pt-8">
           <h2 className="font-heading text-3xl font-semibold text-foreground md:text-4xl">
             Made for club hunting
           </h2>
@@ -189,7 +187,7 @@ export default async function Home() {
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
               href="/clubs"
-              className="inline-flex h-12 items-center justify-center rounded-[3px] bg-sccs-orange px-8 text-base font-semibold text-sccs-ink transition-colors hover:bg-sccs-orange/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+              className="inline-flex h-12 items-center justify-center rounded-xl bg-sccs-orange px-8 text-base font-semibold text-sccs-ink transition-colors hover:bg-sccs-orange/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
             >
               Start browsing
             </Link>
