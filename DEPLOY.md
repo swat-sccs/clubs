@@ -33,8 +33,10 @@ docker compose up -d --build
 
 `.env` values:
 
-- `POSTGRES_PASSWORD`: random, `openssl rand -hex 24`
-- `DATABASE_URL`: `postgresql://clubs:<that password>@clubs-db:5432/clubs`
+- `POSTGRES_USER` / `POSTGRES_DB`: database identifiers; the example uses
+  `clubs` for both
+- `POSTGRES_PASSWORD`: random, `openssl rand -hex 24`; Compose uses these three
+  values to construct `DATABASE_URL` inside the app and matcher containers
 - `AUTH_SECRET`: `openssl rand -base64 32`
 - `AUTH_URL`: `https://clubs.sccs.swarthmore.edu`, `AUTH_TRUST_HOST=true`
 - `AUTH_KEYCLOAK_ID` / `AUTH_KEYCLOAK_SECRET` / `AUTH_KEYCLOAK_ISSUER`: see
@@ -93,10 +95,7 @@ the sccs.swarthmore.edu zone and bump the serial (same as the existing
 ## Local development
 
 ```bash
-docker compose -f docker-compose.dev.yml up -d
-cp .env.example .env.local   # DATABASE_URL=postgresql://clubs:clubs@localhost:5432/clubs
-bunx prisma migrate deploy
-bun dev
+docker compose -f docker-compose.dev.yml up --build
 ```
 
 Login against real SCCS Keycloak requires a redirect URI for
