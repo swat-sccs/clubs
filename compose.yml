@@ -13,8 +13,6 @@ services:
       AUTH_KEYCLOAK_ISSUER: "${AUTH_KEYCLOAK_ISSUER:?AUTH_KEYCLOAK_ISSUER must be set in .env}"
       KEYCLOAK_ADMIN_GROUP: "${KEYCLOAK_ADMIN_GROUP:?KEYCLOAK_ADMIN_GROUP must be set in .env}"
       MATCHER_URL: "${MATCHER_URL:?MATCHER_URL must be set in .env}"
-    ports:
-      - "3000:3000"
     depends_on:
       clubs-db:
         condition: service_healthy
@@ -40,7 +38,11 @@ services:
     volumes:
       - clubs-dbdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready --username $$POSTGRES_USER --dbname $$POSTGRES_DB"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready --username $$POSTGRES_USER --dbname $$POSTGRES_DB",
+        ]
       interval: 5s
       timeout: 5s
       retries: 10
