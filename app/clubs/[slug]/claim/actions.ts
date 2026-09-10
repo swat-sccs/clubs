@@ -5,6 +5,11 @@ import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { requireAdmin, requireUser } from "@/lib/authorization";
 import { prisma } from "@/lib/db";
+import {
+  assertRateLimit,
+  RateLimitError,
+  requestRateLimitIdentifier,
+} from "@/lib/rate-limit";
 
 export type ClaimRequestState = { error: string | null };
 
@@ -96,6 +101,20 @@ export async function submitClaimRequest(
   }
   if (explanation.length < 10 || explanation.length > 2000) {
     return { error: "Please provide an explanation between 10 and 2000 characters." };
+  }
+
+  try {
+    await assertRateLimit({
+      action: "club-claim-request",
+      identifier: await requestRateLimitIdentifier(session.user.id),
+      limit: 5,
+      windowMs: 24 * 60 * 60_000,
+    });
+  } catch (error) {
+    if (error instanceof RateLimitError) {
+      return { error: "You have submitted too many claim requests today." };
+    }
+    throw error;
   }
 
   const club = await prisma.club.findUnique({

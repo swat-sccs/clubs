@@ -10,6 +10,11 @@ import {
   normalizeClubName,
 } from "@/lib/club-name-similarity";
 import { prisma } from "@/lib/db";
+import {
+  assertRateLimit,
+  RateLimitError,
+  requestRateLimitIdentifier,
+} from "@/lib/rate-limit";
 
 export type SimilarClub = { slug: string; name: string; description: string };
 export type ClubFormState = {
@@ -32,6 +37,20 @@ export async function createClubRequest(
   const session = await requireUser("/clubs/new");
   const parsed = parseClubFormData(formData);
   if (!parsed.data) return { error: parsed.error };
+
+  try {
+    await assertRateLimit({
+      action: "club-create-request",
+      identifier: await requestRateLimitIdentifier(session.user.id),
+      limit: 10,
+      windowMs: 24 * 60 * 60_000,
+    });
+  } catch (error) {
+    if (error instanceof RateLimitError) {
+      return { error: "You have submitted too many requests today." };
+    }
+    throw error;
+  }
 
   const normalizedName = normalizeClubName(parsed.data.name);
   const [clubs, pendingRequest] = await Promise.all([

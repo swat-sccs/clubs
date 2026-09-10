@@ -258,3 +258,29 @@ model ClubEmbedding {
 
   club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
 }
+
+// Shared fixed-window counters for expensive or abuse-prone public actions.
+// Database-backed counters continue to work when more than one app instance
+// is running.
+model ActionRateLimit {
+  action      String
+  identifier  String
+  windowStart DateTime
+  count       Int      @default(1)
+  expiresAt   DateTime
+
+  @@id([action, identifier, windowStart])
+  @@index([expiresAt])
+}
+
+// Transactional outbox for storage objects that stopped being referenced.
+// Failed S3 deletes remain visible and can be retried safely.
+model PendingObjectDeletion {
+  objectKey String   @id
+  attempts  Int      @default(0)
+  lastError String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([createdAt])
+}

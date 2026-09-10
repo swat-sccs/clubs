@@ -1,9 +1,23 @@
 import { Prisma, type Club as ClubRow } from "@prisma/client";
 import { prisma } from "./db";
-import type { Club } from "./clubs";
+import {
+  CLUB_SIZES,
+  MEMBERSHIP_PROCESSES,
+  RECRUITING_CYCLES,
+  type Club,
+} from "./clubs";
 import { TAGS, type Tag } from "./tags";
 
-function toClub(row: ClubRow): Club {
+function requiredClubValue<T extends string>(
+  values: readonly T[],
+  value: string,
+  field: string,
+): T {
+  if (values.includes(value as T)) return value as T;
+  throw new Error(`Club has an invalid ${field} value`);
+}
+
+export function toClub(row: ClubRow): Club {
   return {
     id: row.id,
     slug: row.slug,
@@ -12,10 +26,18 @@ function toClub(row: ClubRow): Club {
     tags: row.tags.filter((tag): tag is Tag =>
       (TAGS as readonly string[]).includes(tag)
     ),
-    size: row.size as Club["size"],
+    size: requiredClubValue(CLUB_SIZES, row.size, "size"),
     isAcceptingMembers: row.isAcceptingMembers,
-    membershipProcess: row.membershipProcess as Club["membershipProcess"],
-    recruitingCycle: row.recruitingCycle as Club["recruitingCycle"],
+    membershipProcess: requiredClubValue(
+      MEMBERSHIP_PROCESSES,
+      row.membershipProcess,
+      "membership process",
+    ),
+    recruitingCycle: requiredClubValue(
+      RECRUITING_CYCLES,
+      row.recruitingCycle,
+      "recruiting cycle",
+    ),
     instagram: row.instagram,
     email: row.email,
     website: row.website,
@@ -24,7 +46,15 @@ function toClub(row: ClubRow): Club {
   };
 }
 
-export const UNCLAIMED_CLUB_GRACE_PERIOD_DAYS = 14;
+const configuredGracePeriod = Number(
+  process.env.CLUB_VISIBILITY_GRACE_DAYS ?? "14",
+);
+export const UNCLAIMED_CLUB_GRACE_PERIOD_DAYS =
+  Number.isInteger(configuredGracePeriod) &&
+  configuredGracePeriod >= 1 &&
+  configuredGracePeriod <= 90
+    ? configuredGracePeriod
+    : 14;
 
 type ClubVisibilityFields = Pick<
   ClubRow,
