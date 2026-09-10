@@ -5,8 +5,6 @@ services:
       target: runner
     image: clubs:local
     restart: unless-stopped
-    ports:
-      - "${CLUBS_BIND_ADDRESS:?CLUBS_BIND_ADDRESS must be set in .env}:3001:3000"
     environment:
       DATABASE_URL: "postgresql://${POSTGRES_USER:?POSTGRES_USER must be set in .env}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}@clubs-db:5432/${POSTGRES_DB:?POSTGRES_DB must be set in .env}"
       AUTH_SECRET: "${AUTH_SECRET:?AUTH_SECRET must be set in .env}"

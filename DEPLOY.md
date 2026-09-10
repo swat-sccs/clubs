@@ -44,9 +44,7 @@ docker compose up -d --build
   `clubs` for both
 - `POSTGRES_PASSWORD`: random, `openssl rand -hex 24`; Compose uses these three
   values to construct `DATABASE_URL` inside the app and matcher containers
-- `CLUBS_BIND_ADDRESS`: eagle's interface address (`130.58.218.151`). Restrict
-  inbound TCP 3001 on eagle to gull's source address before starting the app;
-  this is required to prevent clients from spoofing proxy headers
+
 - `AUTH_SECRET`: `openssl rand -base64 32`
 - `AUTH_URL`: `https://clubs.sccs.swarthmore.edu`, `AUTH_TRUST_HOST=true`
 - `AUTH_KEYCLOAK_ID` / `AUTH_KEYCLOAK_SECRET` / `AUTH_KEYCLOAK_ISSUER`: see
