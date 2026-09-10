@@ -28,11 +28,11 @@ services:
     environment:
       NODE_ENV: development
       DATABASE_URL: postgresql://${POSTGRES_USER:-clubs}:${POSTGRES_PASSWORD:-clubs}@clubs-dev-db:5432/${POSTGRES_DB:-clubs}
-      S3_ENDPOINT: http://minio:9000
+      S3_ENDPOINT: http://seaweedfs:8333
       S3_REGION: ${S3_REGION:-us-east-1}
       S3_BUCKET_NAME: ${S3_BUCKET_NAME:-club-uploads}
-      S3_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-minioadmin}
-      S3_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-minioadminpassword}
+      S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-clubs-dev}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-clubs-development-secret}
       CLUB_VISIBILITY_GRACE_DAYS: ${CLUB_VISIBILITY_GRACE_DAYS:-14}
       RATE_LIMIT_SECRET: ${RATE_LIMIT_SECRET:-local-development-rate-limit-secret}
       TRUST_PROXY_HEADERS: "false"
@@ -49,28 +49,33 @@ services:
     depends_on:
       clubs-dev-db:
         condition: service_healthy
-      minio:
-        condition: service_started
+      seaweedfs:
+        condition: service_healthy
 
-  minio:
-    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
-    container_name: minio_storage
+  seaweedfs:
+    image: chrislusf/seaweedfs:4.46
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "8333:8333"
     environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadminpassword}
+      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-clubs-dev}
+      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-clubs-development-secret}
+      S3_BUCKET: ${S3_BUCKET_NAME:-club-uploads}
     volumes:
-      - clubs-dev-miniodata:/data
-    command: server /data --console-address ":9001"
+      - clubs-dev-seaweeddata:/data
+    command: ["mini", "-dir=/data"]
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://127.0.0.1:9000/minio/health/live"]
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:9333/cluster/healthz"]
       interval: 5s
       timeout: 5s
       retries: 10
+      start_period: 30s
 
 volumes:
   clubs-dev-dbdata:
   clubs-dev-node_modules:
-  clubs-dev-miniodata:
+  clubs-dev-seaweeddata:

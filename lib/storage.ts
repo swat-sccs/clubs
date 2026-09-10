@@ -31,12 +31,12 @@ function getStorage() {
     bucket: storageSetting("S3_BUCKET_NAME", "club-uploads"),
     client: new S3Client({
       region: storageSetting("S3_REGION", "us-east-1"),
-      endpoint: storageSetting("S3_ENDPOINT", "http://localhost:9000"),
+      endpoint: storageSetting("S3_ENDPOINT", "http://localhost:8333"),
       credentials: {
-        accessKeyId: storageSetting("S3_ACCESS_KEY_ID", "minioadmin"),
+        accessKeyId: storageSetting("S3_ACCESS_KEY_ID", "clubs-dev"),
         secretAccessKey: storageSetting(
           "S3_SECRET_ACCESS_KEY",
-          "minioadminpassword",
+          "clubs-development-secret",
         ),
       },
       forcePathStyle: true,

@@ -18,7 +18,7 @@ services:
       CLUB_VISIBILITY_GRACE_DAYS: "${CLUB_VISIBILITY_GRACE_DAYS:-14}"
       TRUST_PROXY_HEADERS: "${TRUST_PROXY_HEADERS:-false}"
       RATE_LIMIT_SECRET: "${RATE_LIMIT_SECRET:?RATE_LIMIT_SECRET must be set in .env}"
-      S3_ENDPOINT: "http://minio:9000"
+      S3_ENDPOINT: "http://seaweedfs:8333"
       S3_REGION: "${S3_REGION:-us-east-1}"
       S3_BUCKET_NAME: "${S3_BUCKET_NAME:-club-uploads}"
       S3_ACCESS_KEY_ID: "${S3_ACCESS_KEY_ID:?S3_ACCESS_KEY_ID must be set in .env}"
@@ -33,7 +33,7 @@ services:
         condition: service_healthy
       clubs-migrate:
         condition: service_completed_successfully
-      minio:
+      seaweedfs:
         condition: service_healthy
     read_only: true
     tmpfs:
@@ -119,23 +119,27 @@ services:
       timeout: 5s
       retries: 10
 
-  minio:
-    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
-    container_name: minio_storage
+  seaweedfs:
+    image: chrislusf/seaweedfs:4.46
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
     environment:
-      MINIO_ROOT_USER: "${MINIO_ROOT_USER:?MINIO_ROOT_USER must be set in .env}"
-      MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD must be set in .env}"
+      AWS_ACCESS_KEY_ID: "${S3_ACCESS_KEY_ID:?S3_ACCESS_KEY_ID must be set in .env}"
+      AWS_SECRET_ACCESS_KEY: "${S3_SECRET_ACCESS_KEY:?S3_SECRET_ACCESS_KEY must be set in .env}"
+      S3_BUCKET: "${S3_BUCKET_NAME:-club-uploads}"
     volumes:
-      - clubs-miniodata:/data
-    command: server /data --console-address ":9001"
+      - clubs-seaweeddata:/data
+    command: ["mini", "-dir=/data"]
+    read_only: true
+    tmpfs:
+      - /tmp
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://127.0.0.1:9000/minio/health/live"]
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:9333/cluster/healthz"]
       interval: 15s
       timeout: 5s
       retries: 5
+      start_period: 30s
 
 volumes:
   clubs-dbdata:
@@ -144,9 +148,9 @@ volumes:
       type: nfs
       o: nfsvers=4,addr=130.58.218.26,rw,hard,timeo=600,retrans=2
       device: :/volumes/clubs-dbdata
-  clubs-miniodata:
-    name: clubs-miniodata
+  clubs-seaweeddata:
+    name: clubs-seaweeddata
     driver_opts:
       type: nfs
       o: nfsvers=4,addr=130.58.218.26,rw,hard,timeo=600,retrans=2
-      device: :/volumes/clubs-miniodata
+      device: :/volumes/clubs-seaweeddata
