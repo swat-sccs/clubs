@@ -1,5 +1,6 @@
 import { prisma } from "./db";
 import type { Club } from "./clubs";
+import { publicClubVisibilityWhere } from "./data";
 
 export type ClubMatch = {
   club: Club;
@@ -36,7 +37,10 @@ export async function matchClubs(
   if (matches.length === 0) return [];
 
   const rows = await prisma.club.findMany({
-    where: { id: { in: matches.map((m) => m.clubId) } },
+    where: {
+      id: { in: matches.map((m) => m.clubId) },
+      ...publicClubVisibilityWhere(),
+    },
   });
   const byId = new Map(rows.map((row) => [row.id, row]));
 
@@ -50,7 +54,6 @@ export async function matchClubs(
         name: row.name,
         description: row.description,
         tags: row.tags,
-        affiliation: row.affiliation,
         size: row.size,
         isAcceptingMembers: row.isAcceptingMembers,
         membershipProcess: row.membershipProcess,

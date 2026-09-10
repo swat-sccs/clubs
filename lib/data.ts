@@ -1,4 +1,4 @@
-import type { Club as ClubRow } from "@prisma/client";
+import { Prisma, type Club as ClubRow } from "@prisma/client";
 import { prisma } from "./db";
 import type { Club } from "./clubs";
 import { TAGS, type Tag } from "./tags";
@@ -11,7 +11,6 @@ function toClub(row: ClubRow): Club {
     tags: row.tags.filter((tag): tag is Tag =>
       (TAGS as readonly string[]).includes(tag)
     ),
-    affiliation: row.affiliation as Club["affiliation"],
     size: row.size as Club["size"],
     isAcceptingMembers: row.isAcceptingMembers,
     membershipProcess: row.membershipProcess as Club["membershipProcess"],
@@ -23,13 +22,38 @@ function toClub(row: ClubRow): Club {
   };
 }
 
+export const UNCLAIMED_CLUB_GRACE_PERIOD_DAYS = 14;
+
+export function publicClubVisibilityWhere(
+  now = new Date(),
+): Prisma.ClubWhereInput {
+  const cutoff = new Date(now);
+  cutoff.setDate(cutoff.getDate() - UNCLAIMED_CLUB_GRACE_PERIOD_DAYS);
+  return {
+    OR: [
+      { editors: { some: {} } },
+      { createdAt: { gte: cutoff } },
+    ],
+  };
+}
+
 /** All clubs in curated order (seed order, then newest submissions last). */
 export async function getClubs(): Promise<Club[]> {
-  const rows = await prisma.club.findMany({ orderBy: { position: "asc" } });
+  const rows = await prisma.club.findMany({
+    where: publicClubVisibilityWhere(),
+    orderBy: { position: "asc" },
+  });
   return rows.map(toClub);
 }
 
-export async function getClubBySlug(slug: string): Promise<Club | null> {
-  const row = await prisma.club.findUnique({ where: { slug } });
+export async function getClubBySlug(
+  slug: string,
+  options: { includeHidden?: boolean } = {},
+): Promise<Club | null> {
+  const row = options.includeHidden
+    ? await prisma.club.findUnique({ where: { slug } })
+    : await prisma.club.findFirst({
+        where: { slug, ...publicClubVisibilityWhere() },
+      });
   return row ? toClub(row) : null;
 }

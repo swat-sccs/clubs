@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ChevronDown } from "lucide-react";
+import { signOutFromMenu } from "@/app/actions/auth";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
@@ -19,9 +21,31 @@ function linkIsActive(pathname: string, href: string) {
   return pathname === href;
 }
 
-const Header = ({ userName }: { userName: string | null }) => {
+const Header = ({
+  userName,
+  isAdmin,
+  hasManagedClubs,
+}: {
+  userName: string | null;
+  isAdmin: boolean;
+  hasManagedClubs: boolean;
+}) => {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const accountMenuRef = useRef<HTMLDetailsElement>(null);
+
+  function closeAccountMenu() {
+    if (accountMenuRef.current) accountMenuRef.current.open = false;
+  }
+
+  useEffect(() => {
+    function handlePointerDown(event: PointerEvent) {
+      const menu = accountMenuRef.current;
+      if (menu?.open && !menu.contains(event.target as Node)) menu.open = false;
+    }
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, []);
 
   // Close the mobile menu when navigation changes the route.
   const [lastPathname, setLastPathname] = useState(pathname);
@@ -32,19 +56,21 @@ const Header = ({ userName }: { userName: string | null }) => {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background">
-      <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 md:h-[4.5rem] lg:px-8">
+      <nav className="mx-auto flex min-h-20 max-w-7xl items-center justify-between px-4 py-3 sm:min-h-24 sm:px-6 lg:px-8">
         <Link
           href="/"
-          className="flex items-center gap-2.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground sm:gap-3"
+          aria-label="Swat Clubs home"
+          className="flex items-center gap-3 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
         >
           <Image
-            src="/logo.png"
-            width={40}
-            height={40}
-            alt="Swat Clubs logo"
-            className="size-9 md:size-10"
+            src="/sccs-logo.png"
+            width={56}
+            height={56}
+            alt=""
+            className="size-12 rounded-xl sm:size-14"
+            preload
           />
-          <span className="font-heading text-2xl font-bold tracking-tight text-foreground">
+          <span className="font-heading text-2xl font-bold tracking-tight text-black sm:text-3xl lg:text-4xl">
             Swat&nbsp;Clubs
           </span>
         </Link>
@@ -69,12 +95,62 @@ const Header = ({ userName }: { userName: string | null }) => {
             );
           })}
 
-          <Link
-            href="/login"
-            className="flex h-9 items-center rounded-[3px] bg-sccs-orange px-5 text-[0.95rem] font-semibold text-sccs-ink transition-colors hover:bg-sccs-orange/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
-          >
-            {userName ?? "Login"}
-          </Link>
+          {userName && hasManagedClubs && (
+            <Link
+              href="/my-clubs"
+              className={cn(
+                "border-b-2 pb-0.5 text-[0.95rem] font-medium transition-colors",
+                pathname === "/my-clubs"
+                  ? "border-foreground text-foreground"
+                  : "border-transparent text-foreground/65 hover:border-foreground/40 hover:text-foreground",
+              )}
+            >
+              My clubs
+            </Link>
+          )}
+
+          {userName ? (
+            <details ref={accountMenuRef} className="relative">
+              <summary className="flex h-9 cursor-pointer list-none items-center gap-1.5 rounded-xl bg-sccs-orange px-4 text-[0.95rem] font-semibold text-sccs-ink transition-colors hover:bg-sccs-orange/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground [&::-webkit-details-marker]:hidden">
+                {userName}
+                <ChevronDown aria-hidden="true" className="size-4" />
+              </summary>
+              <div className="absolute right-0 top-full mt-2 w-44 rounded-2xl border border-border bg-background p-1 shadow-lg">
+                <Link
+                  href="/clubs/new"
+                  onClick={closeAccountMenu}
+                  className="block rounded-xl px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                >
+                  Add a club
+                </Link>
+                {isAdmin && (
+                  <Link
+                    href="/admin"
+                    onClick={closeAccountMenu}
+                    className="block rounded-xl px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                  >
+                    Admin
+                  </Link>
+                )}
+                <form action={signOutFromMenu}>
+                  <button
+                    type="submit"
+                    onClick={closeAccountMenu}
+                    className="w-full rounded-xl px-3 py-2 text-left text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                  >
+                    Sign out
+                  </button>
+                </form>
+              </div>
+            </details>
+          ) : (
+            <Link
+              href={userName ? "/clubs/new" : "/login"}
+              className="flex h-9 items-center rounded-xl bg-sccs-orange px-5 text-[0.95rem] font-semibold text-sccs-ink transition-colors hover:bg-sccs-orange/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+            >
+              Login
+            </Link>
+          )}
         </div>
 
         {/* Mobile menu button */}
@@ -133,12 +209,33 @@ const Header = ({ userName }: { userName: string | null }) => {
                 </Link>
               );
             })}
+            {userName && hasManagedClubs && (
+              <Link
+                href="/my-clubs"
+                className={cn(
+                  "border-b border-border py-3.5 text-lg transition-colors",
+                  pathname === "/my-clubs"
+                    ? "font-semibold text-foreground"
+                    : "font-medium text-foreground/70 hover:text-foreground",
+                )}
+              >
+                My clubs
+              </Link>
+            )}
             <Link
-              href="/login"
-              className="mb-3 mt-4 flex h-11 items-center justify-center rounded-[3px] bg-sccs-orange text-lg font-semibold text-sccs-ink transition-colors hover:bg-sccs-orange/85"
+              href={userName ? "/clubs/new" : "/login"}
+              className="mb-3 mt-4 flex h-11 items-center justify-center rounded-xl bg-sccs-orange text-lg font-semibold text-sccs-ink transition-colors hover:bg-sccs-orange/85"
             >
-              {userName ?? "Login"}
+              {userName ? "Add a club" : "Login"}
             </Link>
+            {userName && isAdmin && (
+              <Link
+                href="/admin"
+                className="border-b border-border py-3.5 text-lg font-medium text-foreground/70"
+              >
+                Admin
+              </Link>
+            )}
           </div>
         </div>
       )}

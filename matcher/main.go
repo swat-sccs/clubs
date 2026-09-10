@@ -116,7 +116,12 @@ func (s *server) handleMatch(w http.ResponseWriter, r *http.Request) {
 	rows, err := s.db.Query(ctx, `
 		SELECT c."id", c."name", e."vector"
 		FROM "ClubEmbedding" e
-		JOIN "Club" c ON c."id" = e."clubId"`)
+		JOIN "Club" c ON c."id" = e."clubId"
+		WHERE c."createdAt" >= now() - interval '14 days'
+		   OR EXISTS (
+		       SELECT 1 FROM "ClubEditor" editor
+		       WHERE editor."clubId" = c."id"
+		   )`)
 	if err != nil {
 		log.Printf("load embeddings: %v", err)
 		httpError(w, http.StatusInternalServerError, "database error")
