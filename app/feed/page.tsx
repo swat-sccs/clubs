@@ -23,7 +23,7 @@ export default async function FeedPage(props: PageProps<"/feed">) {
     requestedView === "following" && isAuthenticated ? "following" : "all";
   const anchor = campusNow();
   const initialPage = await getFeedPage({
-    offset: 0,
+    cursor: null,
     view: initialView,
     period: "upcoming",
     userId: session?.user?.id ?? null,

@@ -16,6 +16,12 @@ import {
   getOrCreateRsvpBrowserHash,
   readRsvpBrowserHash,
 } from "@/lib/rsvp-browser";
+import {
+  assertRateLimit,
+  opaqueRateLimitIdentifier,
+  RateLimitError,
+  requestRateLimitIdentifier,
+} from "@/lib/rate-limit";
 
 export type RsvpState = {
   count: number;
@@ -32,14 +38,19 @@ export type FollowState = {
 export async function loadFeedPosts(
   view: FeedView,
   period: FeedPeriod,
-  offset: number,
+  cursor: string | null,
   anchorDate: string,
   anchorTime: string,
 ): Promise<FeedPageResult> {
   const session = await auth();
   const userId = session?.user?.id ?? null;
   if (view === "following" && !userId) {
-    return { posts: [], hasMore: false, hasOlderPosts: false };
+    return {
+      posts: [],
+      hasMore: false,
+      hasOlderPosts: false,
+      nextCursor: null,
+    };
   }
   const current = campusNow();
   const safeAnchorDate = /^\d{4}-\d{2}-\d{2}$/.test(anchorDate)
@@ -48,14 +59,33 @@ export async function loadFeedPosts(
   const safeAnchorTime = /^([01]\d|2[0-3]):[0-5]\d$/.test(anchorTime)
     ? anchorTime
     : current.time;
-  const safeOffset = Number.isFinite(offset)
-    ? Math.max(0, Math.floor(offset))
-    : 0;
+  const safeCursor =
+    typeof cursor === "string" && cursor.length > 0 && cursor.length <= 128
+      ? cursor
+      : null;
+  try {
+    await assertRateLimit({
+      action: "feed-page",
+      identifier: await requestRateLimitIdentifier(userId),
+      limit: 120,
+      windowMs: 60_000,
+    });
+  } catch (error) {
+    if (error instanceof RateLimitError) {
+      return {
+        posts: [],
+        hasMore: false,
+        hasOlderPosts: false,
+        nextCursor: null,
+      };
+    }
+    throw error;
+  }
   const browserIdHash = await readRsvpBrowserHash();
   return getFeedPage({
     view: view === "following" ? "following" : "all",
     period: period === "past" ? "past" : "upcoming",
-    offset: safeOffset,
+    cursor: safeCursor,
     userId,
     browserIdHash,
     anchorDate: safeAnchorDate,
@@ -74,6 +104,23 @@ export async function setClubFollow(
       error: "Sign in to follow clubs.",
       requiresAuth: true,
     };
+  }
+  try {
+    await assertRateLimit({
+      action: "club-follow",
+      identifier: await requestRateLimitIdentifier(session.user.id),
+      limit: 60,
+      windowMs: 60 * 60_000,
+    });
+  } catch (error) {
+    if (error instanceof RateLimitError) {
+      return {
+        following: !following,
+        error: "Too many follow changes. Please try again later.",
+        requiresAuth: false,
+      };
+    }
+    throw error;
   }
 
   const club = await prisma.club.findFirst({
@@ -113,8 +160,28 @@ export async function rsvpToPost(
   formData: FormData,
 ): Promise<RsvpState> {
   void formData;
-  if (previous.rsvped) return previous;
   const browserIdHash = await getOrCreateRsvpBrowserHash();
+  try {
+    await Promise.all([
+      assertRateLimit({
+        action: "post-rsvp-browser",
+        identifier: opaqueRateLimitIdentifier("browser", browserIdHash),
+        limit: 20,
+        windowMs: 60 * 60_000,
+      }),
+      assertRateLimit({
+        action: "post-rsvp-address",
+        identifier: await requestRateLimitIdentifier(),
+        limit: 30,
+        windowMs: 60 * 60_000,
+      }),
+    ]);
+  } catch (error) {
+    if (error instanceof RateLimitError) {
+      return { ...previous, error: "Too many RSVP attempts. Try again later." };
+    }
+    throw error;
+  }
   const available = await prisma.clubPost.findFirst({
     where: {
       id: postId,
@@ -128,6 +195,34 @@ export async function rsvpToPost(
   }
 
   try {
+    if (previous.rsvped) {
+      const result = await prisma.$transaction(async (tx) => {
+        const removed = await tx.postRsvp.deleteMany({
+          where: { postId, browserIdHash },
+        });
+        if (removed.count === 0) {
+          return tx.clubPost.findUnique({
+            where: { id: postId },
+            select: { rsvpCount: true },
+          });
+        }
+        await tx.clubPost.updateMany({
+          where: { id: postId, rsvpCount: { gt: 0 } },
+          data: { rsvpCount: { decrement: 1 } },
+        });
+        return tx.clubPost.findUnique({
+          where: { id: postId },
+          select: { rsvpCount: true },
+        });
+      });
+      revalidatePath("/feed");
+      revalidatePath(`/posts/${postId}`);
+      return {
+        count: Math.max(0, result?.rsvpCount ?? previous.count - 1),
+        rsvped: false,
+        error: null,
+      };
+    }
     const post = await prisma.$transaction(async (tx) => {
       await tx.postRsvp.create({ data: { postId, browserIdHash } });
       return tx.clubPost.update({

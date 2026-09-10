@@ -31,10 +31,11 @@ export type FeedPageResult = {
   posts: FeedPost[];
   hasMore: boolean;
   hasOlderPosts: boolean;
+  nextCursor: string | null;
 };
 
 type FeedPageOptions = {
-  offset: number;
+  cursor: string | null;
   view: FeedView;
   period: FeedPeriod;
   userId: string | null;
@@ -44,7 +45,7 @@ type FeedPageOptions = {
 };
 
 export async function getFeedPage({
-  offset,
+  cursor,
   view,
   period,
   userId,
@@ -53,7 +54,12 @@ export async function getFeedPage({
   anchorTime,
 }: FeedPageOptions): Promise<FeedPageResult> {
   if (view === "following" && !userId) {
-    return { posts: [], hasMore: false, hasOlderPosts: false };
+    return {
+      posts: [],
+      hasMore: false,
+      hasOlderPosts: false,
+      nextCursor: null,
+    };
   }
   const followingOnly = view === "following";
   const clubWhere = {
@@ -110,32 +116,33 @@ export async function getFeedPage({
   } as const;
 
   const activeWhere = period === "upcoming" ? upcomingWhere : pastWhere;
-  const [totalCount, olderCount] = await Promise.all([
-    prisma.clubPost.count({ where: activeWhere }),
+  const [pageRows, olderPost] = await Promise.all([
+    prisma.clubPost.findMany({
+      where: activeWhere,
+      orderBy:
+        period === "upcoming"
+          ? [
+              { eventDate: "asc" as const },
+              { eventTime: "asc" as const },
+              { createdAt: "asc" as const },
+              { id: "asc" as const },
+            ]
+          : [
+              { eventDate: "desc" as const },
+              { eventTime: "desc" as const },
+              { createdAt: "desc" as const },
+              { id: "desc" as const },
+            ],
+      ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+      take: FEED_PAGE_SIZE + 1,
+      select,
+    }),
     period === "upcoming"
-      ? prisma.clubPost.count({ where: pastWhere })
-      : Promise.resolve(0),
+      ? prisma.clubPost.findFirst({ where: pastWhere, select: { id: true } })
+      : Promise.resolve(null),
   ]);
-  const rows = await prisma.clubPost.findMany({
-    where: activeWhere,
-    orderBy:
-      period === "upcoming"
-        ? [
-            { eventDate: "asc" as const },
-            { eventTime: "asc" as const },
-            { createdAt: "asc" as const },
-            { id: "asc" as const },
-          ]
-        : [
-            { eventDate: "desc" as const },
-            { eventTime: "desc" as const },
-            { createdAt: "desc" as const },
-            { id: "desc" as const },
-          ],
-    skip: offset,
-    take: FEED_PAGE_SIZE,
-    select,
-  });
+  const hasMore = pageRows.length > FEED_PAGE_SIZE;
+  const rows = hasMore ? pageRows.slice(0, FEED_PAGE_SIZE) : pageRows;
 
   const posts = rows.map((post) => ({
     id: post.id,
@@ -158,7 +165,8 @@ export async function getFeedPage({
 
   return {
     posts,
-    hasMore: offset + posts.length < totalCount,
-    hasOlderPosts: olderCount > 0,
+    hasMore,
+    hasOlderPosts: Boolean(olderPost),
+    nextCursor: hasMore ? (posts.at(-1)?.id ?? null) : null,
   };
 }

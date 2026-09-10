@@ -38,7 +38,7 @@ export default function FeedList({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
-  const offsetRef = useRef(initialPage.posts.length);
+  const cursorRef = useRef<string | null>(initialPage.nextCursor);
   const loadingRef = useRef(false);
   const requestRef = useRef(0);
 
@@ -54,14 +54,14 @@ export default function FeedList({
       loadingRef.current = true;
       setLoading(true);
       setError(null);
-      const offset = reset ? 0 : offsetRef.current;
-      if (reset) offsetRef.current = 0;
+      const cursor = reset ? null : cursorRef.current;
+      if (reset) cursorRef.current = null;
 
       try {
         const page = await loadFeedPosts(
           nextView,
           nextPeriod,
-          offset,
+          cursor,
           anchorDate,
           anchorTime,
         );
@@ -73,7 +73,7 @@ export default function FeedList({
               : page.posts
             : [...current, ...page.posts],
         );
-        offsetRef.current = offset + page.posts.length;
+        cursorRef.current = page.nextCursor;
         setHasMore(page.hasMore);
         setHasOlderPosts(page.hasOlderPosts);
       } catch {

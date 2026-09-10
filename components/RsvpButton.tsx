@@ -23,13 +23,13 @@ export default function RsvpButton({
       <form action={formAction}>
         <button
           type="submit"
-          disabled={pending || state.rsvped}
+          disabled={pending}
           aria-pressed={state.rsvped}
           className={cn(
-            "inline-flex min-h-11 items-center gap-2 rounded-xl px-4 font-semibold transition-colors disabled:cursor-default",
+            "inline-flex min-h-11 items-center gap-2 rounded-xl px-4 font-semibold transition-colors disabled:cursor-wait disabled:opacity-70",
             state.rsvped
               ? "bg-green-600/10 text-green-800"
-              : "bg-sccs-orange text-sccs-ink hover:bg-sccs-orange/85 disabled:opacity-70",
+              : "bg-sccs-orange text-sccs-ink hover:bg-sccs-orange/85",
           )}
         >
           {state.rsvped ? <Check className="size-5" /> : <Users className="size-5" />}
