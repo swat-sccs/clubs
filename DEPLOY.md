@@ -18,7 +18,8 @@ goes through SCCS Keycloak.
   down, `/match` degrades to a friendly error; the rest of the site is
   unaffected.
 - Auth: Auth.js (NextAuth v5) with Keycloak as the only provider. No local
-  accounts. Every club row records who created and last edited it
+  accounts. Membership in the configured Keycloak admin group controls the
+  request queue. Every club row records who created and last edited it
   (`createdBy`/`createdById`/`updatedBy`/`updatedById` = Keycloak name/subject).
 
 ## On eagle
@@ -38,6 +39,8 @@ docker compose up -d --build
 - `AUTH_URL`: `https://clubs.sccs.swarthmore.edu`, `AUTH_TRUST_HOST=true`
 - `AUTH_KEYCLOAK_ID` / `AUTH_KEYCLOAK_SECRET` / `AUTH_KEYCLOAK_ISSUER`: see
   Keycloak below
+- `KEYCLOAK_ADMIN_GROUP`: Keycloak group allowed to review requests; defaults
+  to `sccs-staff`
 
 Redeploy after a push to main: `git pull && docker compose up -d --build`.
 
@@ -51,6 +54,8 @@ and swatgpt clients live in), create a confidential OIDC client:
 - Valid redirect URIs: `https://clubs.sccs.swarthmore.edu/*`
   (the actual callback is `/api/auth/callback/keycloak`)
 - Web origins: `https://clubs.sccs.swarthmore.edu`
+- Include the `groups` and/or `ldap.groups` claims in the access token. Group
+  names may be slash-prefixed; nested group paths are supported.
 - Copy the client secret into `.env` as `AUTH_KEYCLOAK_SECRET`, set
   `AUTH_KEYCLOAK_ID=clubs` and
   `AUTH_KEYCLOAK_ISSUER=https://auth.sccs.swarthmore.edu/realms/master`, then
