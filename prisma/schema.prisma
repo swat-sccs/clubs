@@ -25,6 +25,26 @@ enum PostModerationStatus {
   DENIED
 }
 
+// Local application profile for SCCS users who have completed a sign-in.
+// Authentication remains in Keycloak; this record supports role management
+// and does not contain credentials or session tokens.
+model AppUser {
+  id       String  @id
+  username String? @unique
+  name     String?
+  email    String?
+
+  isDirectoryAdmin Boolean @default(false)
+  isAppAdmin       Boolean @default(false)
+
+  firstSignedInAt DateTime @default(now())
+  lastSignedInAt  DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([lastSignedInAt])
+  @@index([isAppAdmin, lastSignedInAt])
+}
+
 model Club {
   id                 String   @id @default(cuid())
   // Display order: seed order for imported clubs, insertion order after that.
@@ -134,6 +154,8 @@ model ClubEditor {
   name     String?
   email    String?
   username String?
+  // OWNER is the primary-contact designation. Both roles can edit club
+  // content; only application administrators can grant or revoke access.
   role     ClubAccessRole @default(EDITOR)
 
   grantedAt DateTime @default(now())

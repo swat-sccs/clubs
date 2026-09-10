@@ -17,7 +17,8 @@ const navLinks = [
 const adminLinks = [
   { href: "/admin", label: "Overview" },
   { href: "/admin/requests", label: "Requests" },
-  { href: "/admin/assignments", label: "Users & clubs" },
+  { href: "/admin/assignments", label: "Clubs" },
+  { href: "/admin/users", label: "Users" },
   { href: "/admin/activity", label: "Activity" },
 ];
 
