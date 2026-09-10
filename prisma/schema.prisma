@@ -8,6 +8,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model Club {
   id                 String   @id @default(cuid())
   // Display order: seed order for imported clubs, insertion order after that.
@@ -16,7 +22,6 @@ model Club {
   name               String   @unique
   description        String
   tags               String[]
-  affiliation        String
   size               String
   isAcceptingMembers Boolean
   membershipProcess  String
@@ -37,7 +42,108 @@ model Club {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  embedding ClubEmbedding?
+  embedding       ClubEmbedding?
+  editors         ClubEditor[]
+  claimRequests   ClubClaimRequest[]
+  creationRequest ClubCreationRequest?
+  auditLogs       ClubAuditLog[]
+}
+
+model ClubEditor {
+  id       String  @id @default(cuid())
+  clubId   String
+  userId   String
+  name     String?
+  email    String?
+  username String?
+
+  grantedAt DateTime @default(now())
+
+  club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
+
+  @@unique([clubId, userId])
+  @@index([userId])
+}
+
+model ClubCreationRequest {
+  id                 String        @id @default(cuid())
+  status             RequestStatus @default(PENDING)
+  name               String
+  description        String
+  tags               String[]
+  size               String
+  isAcceptingMembers Boolean
+  membershipProcess  String
+  recruitingCycle    String
+  instagram          String?
+  email              String?
+  website            String?
+  meetingInfo        String?
+
+  requesterId       String
+  requesterName     String?
+  requesterEmail    String?
+  requesterUsername String?
+  pendingKey        String? @unique
+
+  reviewedById String?
+  reviewedBy   String?
+  reviewedAt   DateTime?
+
+  clubId String? @unique
+  club   Club?   @relation(fields: [clubId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, createdAt])
+  @@index([requesterId, status])
+}
+
+model ClubClaimRequest {
+  id          String        @id @default(cuid())
+  status      RequestStatus @default(PENDING)
+  clubId      String
+  requesterId String
+  role        String
+  explanation String
+
+  requesterName     String?
+  requesterEmail    String?
+  requesterUsername String?
+  pendingKey        String? @unique
+
+  reviewedById String?
+  reviewedBy   String?
+  reviewedAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
+
+  @@index([status, createdAt])
+  @@index([clubId, requesterId, status])
+}
+
+// Append-only history for administrator visibility into club changes and
+// access grants. The identifying club name is retained if a club is removed.
+model ClubAuditLog {
+  id       String  @id @default(cuid())
+  clubId   String?
+  clubName String
+  action   String
+  summary  String
+
+  actorId String?
+  actor   String?
+
+  createdAt DateTime @default(now())
+
+  club Club? @relation(fields: [clubId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([clubId, createdAt])
 }
 
 // Written and read by the Go matcher service (matcher/), which embeds each

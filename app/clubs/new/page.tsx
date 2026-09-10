@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import ClubForm from "@/components/ClubForm";
+import { createClubRequest } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -14,11 +15,11 @@ export default async function NewClubPage() {
         Add your club
       </h1>
       <p className="mt-2 animate-fade-rise text-lg text-muted-foreground animation-delay-100">
-        Listed under your name ({session.user.name ?? session.user.email}), so
-        keep it honest.
+        Submit a page for admin review. It will stay private until an SCCS
+        administrator approves it.
       </p>
       <div className="mt-8">
-        <ClubForm />
+        <ClubForm action={createClubRequest} />
       </div>
     </main>
   );
