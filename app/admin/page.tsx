@@ -1,14 +1,28 @@
 import Link from "next/link";
+import AdminAnalyticsCharts from "@/components/AdminAnalyticsCharts";
+import {
+  getAdminAnalytics,
+  type AnalyticsRange,
+} from "@/lib/admin-analytics";
 import { requireAdmin } from "@/lib/authorization";
 import { prisma } from "@/lib/db";
 import { publicClubVisibilityWhere } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminPage() {
-  await requireAdmin("/admin");
+function analyticsRange(value: string | string[] | undefined): AnalyticsRange {
+  const selected = Array.isArray(value) ? value[0] : value;
+  if (selected === "60") return 60;
+  if (selected === "90") return 90;
+  return 30;
+}
 
-  const [clubCount, editorCount, pendingCreations, pendingClaims, pendingPosts, hiddenCount, activity] =
+export default async function AdminPage(props: PageProps<"/admin">) {
+  await requireAdmin("/admin");
+  const searchParams = await props.searchParams;
+  const rangeDays = analyticsRange(searchParams.days);
+
+  const [clubCount, editorCount, pendingCreations, pendingClaims, pendingPosts, hiddenCount, activity, analytics] =
     await Promise.all([
       prisma.club.count(),
       prisma.clubEditor.count(),
@@ -30,6 +44,7 @@ export default async function AdminPage() {
           club: { select: { slug: true } },
         },
       }),
+      getAdminAnalytics(rangeDays),
     ]);
 
   const cards = [
@@ -51,6 +66,8 @@ export default async function AdminPage() {
           </div>
         ))}
       </div>
+
+      <AdminAnalyticsCharts analytics={analytics} />
 
       <section className="mt-10 rounded-2xl border border-border bg-card p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
