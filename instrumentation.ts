@@ -6,6 +6,10 @@ export async function register() {
   try {
     const { seedIfEmpty } = await import("./lib/seed");
     await seedIfEmpty();
+    const { retryPendingImageDeletions } = await import(
+      "./lib/storage-cleanup"
+    );
+    await retryPendingImageDeletions();
   } catch (error) {
     console.error("Startup seed check failed:", error);
   }

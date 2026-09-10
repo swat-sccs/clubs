@@ -2,7 +2,6 @@ import "server-only";
 
 import { randomUUID } from "node:crypto";
 import {
-  CreateBucketCommand,
   DeleteObjectCommand,
   GetObjectCommand,
   HeadBucketCommand,
@@ -13,36 +12,46 @@ import sharp from "sharp";
 
 export const IMAGE_MAX_BYTES = 8 * 1024 * 1024;
 
-const bucket = process.env.S3_BUCKET_NAME ?? "club-uploads";
+function storageSetting(name: string, developmentFallback: string) {
+  const value = process.env[name]?.trim();
+  if (value) return value;
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(`${name} must be configured in production`);
+  }
+  return developmentFallback;
+}
 
-export const s3Client = new S3Client({
-  region: process.env.S3_REGION ?? "us-east-1",
-  endpoint: process.env.S3_ENDPOINT ?? "http://localhost:9000",
-  credentials: {
-    accessKeyId: process.env.S3_ACCESS_KEY_ID ?? "minioadmin",
-    secretAccessKey:
-      process.env.S3_SECRET_ACCESS_KEY ?? "minioadminpassword",
-  },
-  forcePathStyle: true,
-});
+let storage:
+  | { bucket: string; client: S3Client }
+  | undefined;
+
+function getStorage() {
+  if (storage) return storage;
+  storage = {
+    bucket: storageSetting("S3_BUCKET_NAME", "club-uploads"),
+    client: new S3Client({
+      region: storageSetting("S3_REGION", "us-east-1"),
+      endpoint: storageSetting("S3_ENDPOINT", "http://localhost:9000"),
+      credentials: {
+        accessKeyId: storageSetting("S3_ACCESS_KEY_ID", "minioadmin"),
+        secretAccessKey: storageSetting(
+          "S3_SECRET_ACCESS_KEY",
+          "minioadminpassword",
+        ),
+      },
+      forcePathStyle: true,
+    }),
+  };
+  return storage;
+}
 
 let bucketReady: Promise<void> | null = null;
 
 async function ensureBucket() {
   if (!bucketReady) {
     bucketReady = (async () => {
-      try {
-        await s3Client.send(new HeadBucketCommand({ Bucket: bucket }));
-      } catch {
-        try {
-          await s3Client.send(new CreateBucketCommand({ Bucket: bucket }));
-        } catch {
-          // Another app instance may have created it between HeadBucket and
-          // CreateBucket. A final head request distinguishes that race from a
-          // real storage/configuration failure.
-          await s3Client.send(new HeadBucketCommand({ Bucket: bucket }));
-        }
-      }
+      const { bucket, client } = getStorage();
+      await client.send(new HeadBucketCommand({ Bucket: bucket }));
     })().catch((error) => {
       bucketReady = null;
       throw error;
@@ -122,14 +131,17 @@ export async function validateImage(
 
 export async function uploadImage(prefix: string, image: ValidatedImage) {
   await ensureBucket();
+  const { bucket, client } = getStorage();
   const key = `${prefix}/${randomUUID()}.${image.extension}`;
-  await s3Client.send(
+  await client.send(
     new PutObjectCommand({
       Bucket: bucket,
       Key: key,
       Body: image.bytes,
       ContentType: image.contentType,
-      CacheControl: "public, max-age=31536000, immutable",
+      // Objects are only served through authorization-aware application
+      // routes, never directly from the storage service.
+      CacheControl: "private, no-store",
     }),
   );
   return key;
@@ -137,9 +149,11 @@ export async function uploadImage(prefix: string, image: ValidatedImage) {
 
 export async function deleteImage(key: string | null | undefined) {
   if (!key) return;
-  await s3Client.send(new DeleteObjectCommand({ Bucket: bucket, Key: key }));
+  const { bucket, client } = getStorage();
+  await client.send(new DeleteObjectCommand({ Bucket: bucket, Key: key }));
 }
 
 export async function getImage(key: string) {
-  return s3Client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
+  const { bucket, client } = getStorage();
+  return client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
 }

@@ -7,12 +7,25 @@ import type { ClubFormState } from "@/app/clubs/new/actions";
 import { requireClubEditor } from "@/lib/authorization";
 import { parseClubFormData } from "@/lib/club-form";
 import { prisma } from "@/lib/db";
-import { deleteImage, uploadImage, validateImage } from "@/lib/storage";
+import { moderatePostImage, moderatePostText } from "@/lib/post-moderation";
+import {
+  assertRateLimit,
+  RateLimitError,
+  requestRateLimitIdentifier,
+} from "@/lib/rate-limit";
+import { uploadImage, validateImage } from "@/lib/storage";
+import {
+  attemptQueuedImageDeletion,
+  discardDetachedImage,
+  queueImageDeletion,
+} from "@/lib/storage-cleanup";
 
 export type ClubLogoState = {
   error: string | null;
   uploaded: boolean;
 };
+
+class ConcurrentClubUpdateError extends Error {}
 
 export async function updateClubLogo(
   slug: string,
@@ -25,10 +38,31 @@ export async function updateClubLogo(
   });
   if (!club) return { error: "That club no longer exists.", uploaded: false };
   const session = await requireClubEditor(club.id, slug);
+  try {
+    await assertRateLimit({
+      action: "club-logo-upload",
+      identifier: await requestRateLimitIdentifier(session.user.id),
+      limit: 10,
+      windowMs: 60 * 60_000,
+    });
+  } catch (error) {
+    if (error instanceof RateLimitError) {
+      return { error: "Too many logo uploads. Try again later.", uploaded: false };
+    }
+    throw error;
+  }
   const validated = await validateImage(formData.get("logo"));
   if (validated.error) return { error: validated.error, uploaded: false };
   if (!validated.image) {
     return { error: "Choose an image to upload.", uploaded: false };
+  }
+  const moderation = await moderatePostImage(validated.image);
+  if (moderation.flagged && !session.user.isAdmin) {
+    return {
+      error:
+        "This logo needs administrator review before it can be published.",
+      uploaded: false,
+    };
   }
 
   const actor = session.user.name ?? session.user.email ?? session.user.username;
@@ -38,16 +72,18 @@ export async function updateClubLogo(
       `clubs/${club.id}/logo`,
       validated.image,
     );
-    await prisma.$transaction([
-      prisma.club.update({
-        where: { id: club.id },
+    await prisma.$transaction(async (tx) => {
+      const updated = await tx.club.updateMany({
+        where: { id: club.id, logoObjectKey: club.logoObjectKey },
         data: {
           logoObjectKey: newLogoObjectKey,
           updatedById: session.user.id,
           updatedBy: actor,
         },
-      }),
-      prisma.clubAuditLog.create({
+      });
+      if (updated.count === 0) throw new ConcurrentClubUpdateError();
+      await queueImageDeletion(tx, club.logoObjectKey);
+      await tx.clubAuditLog.create({
         data: {
           clubId: club.id,
           clubName: club.name,
@@ -57,14 +93,20 @@ export async function updateClubLogo(
           actorEmail: session.user.email,
           summary: "Updated the club logo.",
         },
-      }),
-    ]);
+      });
+    });
   } catch (error) {
-    await deleteImage(newLogoObjectKey).catch(() => undefined);
+    await discardDetachedImage(newLogoObjectKey);
+    if (error instanceof ConcurrentClubUpdateError) {
+      return {
+        error: "The logo changed in another session. Please try again.",
+        uploaded: false,
+      };
+    }
     throw error;
   }
 
-  await deleteImage(club.logoObjectKey).catch(() => undefined);
+  await attemptQueuedImageDeletion(club.logoObjectKey);
   revalidatePath("/");
   revalidatePath("/clubs");
   revalidatePath(`/clubs/${slug}`);
@@ -87,8 +129,39 @@ export async function updateClub(
   });
   if (!club) return { error: "That club no longer exists." };
   const session = await requireClubEditor(club.id, slug);
+  try {
+    await assertRateLimit({
+      action: "club-profile-update",
+      identifier: await requestRateLimitIdentifier(session.user.id),
+      limit: 30,
+      windowMs: 60 * 60_000,
+    });
+  } catch (error) {
+    if (error instanceof RateLimitError) {
+      return { error: "Too many profile updates. Try again later." };
+    }
+    throw error;
+  }
   const parsed = parseClubFormData(formData);
   if (!parsed.data) return { error: parsed.error };
+  const profileModeration = moderatePostText(
+    parsed.data.name,
+    [
+      parsed.data.description,
+      parsed.data.meetingInfo,
+      parsed.data.instagram,
+      parsed.data.email,
+      parsed.data.website,
+    ]
+      .filter(Boolean)
+      .join("\n"),
+  );
+  if (profileModeration.flagged && !session.user.isAdmin) {
+    return {
+      error:
+        "This profile contains language that needs administrator review before publication.",
+    };
+  }
 
   const duplicate = await prisma.club.findFirst({
     where: {

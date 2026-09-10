@@ -12,7 +12,19 @@ import {
   moderateStoredPostImage,
   moderationReason,
 } from "@/lib/post-moderation";
-import { deleteImage, uploadImage, validateImage } from "@/lib/storage";
+import { uploadImage, validateImage } from "@/lib/storage";
+import {
+  attemptQueuedImageDeletion,
+  discardDetachedImage,
+  queueImageDeletion,
+} from "@/lib/storage-cleanup";
+import {
+  assertRateLimit,
+  RateLimitError,
+  requestRateLimitIdentifier,
+} from "@/lib/rate-limit";
+
+class ConcurrentPostUpdateError extends Error {}
 
 export async function updatePost(
   slug: string,
@@ -30,6 +42,19 @@ export async function updatePost(
     slug,
     `/my-clubs/${slug}/posts/${postId}/edit`,
   );
+  try {
+    await assertRateLimit({
+      action: "club-post-update",
+      identifier: await requestRateLimitIdentifier(session.user.id),
+      limit: 30,
+      windowMs: 60 * 60_000,
+    });
+  } catch (error) {
+    if (error instanceof RateLimitError) {
+      return { error: "Too many post updates. Try again later." };
+    }
+    throw error;
+  }
 
   const post = await prisma.clubPost.findFirst({
     where: { id: postId, clubId: club.id },
@@ -41,6 +66,7 @@ export async function updatePost(
       imageModerationFlagged: true,
       approvedTextHash: true,
       approvedImageObjectKey: true,
+      updatedAt: true,
     },
   });
   if (!post) return { error: "That post no longer exists." };
@@ -82,8 +108,8 @@ export async function updatePost(
     const isNewlyPublished =
       !requiresReview && post.moderationStatus !== "PUBLISHED";
     await prisma.$transaction(async (tx) => {
-      await tx.clubPost.update({
-        where: { id: post.id },
+      const updated = await tx.clubPost.updateMany({
+        where: { id: post.id, updatedAt: post.updatedAt },
         data: {
           ...parsed.data,
           moderationStatus: requiresReview ? "PENDING_REVIEW" : "PUBLISHED",
@@ -110,6 +136,10 @@ export async function updatePost(
               : {}),
         },
       });
+      if (updated.count === 0) throw new ConcurrentPostUpdateError();
+      if ((newImageObjectKey || removeImage) && post.imageObjectKey) {
+        await queueImageDeletion(tx, post.imageObjectKey);
+      }
       await tx.clubAuditLog.create({
         data: {
           clubId: club.id,
@@ -133,12 +163,15 @@ export async function updatePost(
       });
     });
   } catch (error) {
-    await deleteImage(newImageObjectKey).catch(() => undefined);
+    await discardDetachedImage(newImageObjectKey);
+    if (error instanceof ConcurrentPostUpdateError) {
+      return { error: "This post changed in another session. Please try again." };
+    }
     throw error;
   }
 
   if ((newImageObjectKey || removeImage) && post.imageObjectKey) {
-    await deleteImage(post.imageObjectKey).catch(() => undefined);
+    await attemptQueuedImageDeletion(post.imageObjectKey);
   }
 
   revalidatePath("/feed");

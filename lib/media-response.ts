@@ -15,7 +15,7 @@ export async function mediaResponse(
         "Content-Type": object.ContentType ?? "application/octet-stream",
         "Cache-Control": options.private
           ? "private, no-store"
-          : (object.CacheControl ?? "public, max-age=31536000, immutable"),
+          : "public, max-age=300, must-revalidate",
         ...(object.ETag ? { ETag: object.ETag } : {}),
       },
     });

@@ -22,6 +22,26 @@ type GlobalWithModerationModel = typeof globalThis & {
 
 const moderationGlobal = globalThis as GlobalWithModerationModel;
 
+const moderationConcurrency = Math.max(
+  1,
+  Math.min(4, Number(process.env.MODERATION_CONCURRENCY ?? "1") || 1),
+);
+let availableModerationSlots = moderationConcurrency;
+const moderationWaiters: Array<() => void> = [];
+
+async function acquireModerationSlot() {
+  if (availableModerationSlots > 0) {
+    availableModerationSlots -= 1;
+  } else {
+    await new Promise<void>((resolve) => moderationWaiters.push(resolve));
+  }
+  return () => {
+    const next = moderationWaiters.shift();
+    if (next) next();
+    else availableModerationSlots += 1;
+  };
+}
+
 function probability(
   predictions: PredictionType[],
   className: PredictionType["className"],
@@ -79,6 +99,7 @@ export function moderatePostText(
 
 export async function moderatePostImage(image: Pick<ValidatedImage, "bytes">) {
   let tensor: tf.Tensor3D | null = null;
+  const release = await acquireModerationSlot();
   try {
     const model = await getNsfwModel();
     const decoded = await sharp(Buffer.from(image.bytes), {
@@ -124,6 +145,7 @@ export async function moderatePostImage(image: Pick<ValidatedImage, "bytes">) {
     };
   } finally {
     tensor?.dispose();
+    release();
   }
 }
 

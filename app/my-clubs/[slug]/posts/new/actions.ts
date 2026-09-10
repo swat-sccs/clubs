@@ -10,7 +10,13 @@ import {
   moderatePostText,
   moderationReason,
 } from "@/lib/post-moderation";
-import { deleteImage, uploadImage, validateImage } from "@/lib/storage";
+import { uploadImage, validateImage } from "@/lib/storage";
+import { discardDetachedImage } from "@/lib/storage-cleanup";
+import {
+  assertRateLimit,
+  RateLimitError,
+  requestRateLimitIdentifier,
+} from "@/lib/rate-limit";
 
 export type PostFormState = { error: string | null };
 
@@ -29,6 +35,19 @@ export async function createPost(
     slug,
     `/my-clubs/${slug}/posts/new`,
   );
+  try {
+    await assertRateLimit({
+      action: "club-post-create",
+      identifier: await requestRateLimitIdentifier(session.user.id),
+      limit: 20,
+      windowMs: 60 * 60_000,
+    });
+  } catch (error) {
+    if (error instanceof RateLimitError) {
+      return { error: "Too many post submissions. Try again later." };
+    }
+    throw error;
+  }
 
   const parsed = parseEventFields(formData);
   if (!parsed.data) return { error: parsed.error };
@@ -91,7 +110,7 @@ export async function createPost(
       });
     });
   } catch (error) {
-    await deleteImage(imageObjectKey).catch(() => undefined);
+    await discardDetachedImage(imageObjectKey);
     throw error;
   }
 

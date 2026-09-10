@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { mediaResponse } from "@/lib/media-response";
-import { auth } from "@/lib/auth";
+import { canEditClub } from "@/lib/authorization";
+import { isClubPublic } from "@/lib/data";
 
 export const runtime = "nodejs";
 
@@ -15,25 +16,20 @@ export async function GET(
       imageObjectKey: true,
       moderationStatus: true,
       clubId: true,
+      club: {
+        select: {
+          createdAt: true,
+          visibilityOverride: true,
+          editors: { select: { id: true }, take: 1 },
+        },
+      },
     },
   });
   if (!post?.imageObjectKey) return new Response(null, { status: 404 });
-  const isPrivate = post.moderationStatus !== "PUBLISHED";
-  if (isPrivate) {
-    const session = await auth();
-    if (!session?.user?.id) return new Response(null, { status: 404 });
-    if (!session.user.isAdmin) {
-      const editor = await prisma.clubEditor.findUnique({
-        where: {
-          clubId_userId: {
-            clubId: post.clubId,
-            userId: session.user.id,
-          },
-        },
-        select: { id: true },
-      });
-      if (!editor) return new Response(null, { status: 404 });
-    }
+  const isPrivate =
+    post.moderationStatus !== "PUBLISHED" || !isClubPublic(post.club);
+  if (isPrivate && !(await canEditClub(post.clubId))) {
+    return new Response(null, { status: 404 });
   }
   return mediaResponse(post.imageObjectKey, { private: isPrivate });
 }
