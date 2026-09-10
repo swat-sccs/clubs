@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "test": "bun test",
     "test:matcher": "cd matcher && go test ./... && go vet ./...",
     "prisma:validate": "DATABASE_URL=postgresql://validation:validation@localhost:5432/validation bunx prisma validate",
