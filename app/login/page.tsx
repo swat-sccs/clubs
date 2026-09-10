@@ -28,7 +28,7 @@ export default async function LoginPage(props: PageProps<"/login">) {
             <div className="mt-8 flex flex-col items-center gap-3">
               <Link
                 href="/clubs/new"
-                className="inline-flex h-12 w-full items-center justify-center rounded-[3px] bg-sccs-orange px-8 text-base font-semibold text-sccs-ink transition-colors hover:bg-sccs-orange/85"
+                className="inline-flex h-12 w-full items-center justify-center rounded-xl bg-sccs-orange px-8 text-base font-semibold text-sccs-ink transition-colors hover:bg-sccs-orange/85"
               >
                 Add a club
               </Link>
@@ -41,7 +41,7 @@ export default async function LoginPage(props: PageProps<"/login">) {
               >
                 <button
                   type="submit"
-                  className="inline-flex h-12 w-full items-center justify-center rounded-[3px] border border-foreground px-8 text-base font-medium text-foreground transition-colors hover:bg-foreground hover:text-background"
+                  className="inline-flex h-12 w-full items-center justify-center rounded-xl border border-foreground px-8 text-base font-medium text-foreground transition-colors hover:bg-foreground hover:text-background"
                 >
                   Sign out
                 </button>
@@ -63,7 +63,7 @@ export default async function LoginPage(props: PageProps<"/login">) {
             >
               <button
                 type="submit"
-                className="inline-flex h-12 w-full items-center justify-center rounded-[3px] bg-sccs-orange px-8 text-base font-semibold text-sccs-ink transition-colors hover:bg-sccs-orange/85"
+                className="inline-flex h-12 w-full items-center justify-center rounded-xl bg-sccs-orange px-8 text-base font-semibold text-sccs-ink transition-colors hover:bg-sccs-orange/85"
               >
                 Continue with SCCS
               </button>

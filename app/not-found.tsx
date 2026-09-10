@@ -16,13 +16,13 @@ export default function NotFound() {
       <div className="mt-8 flex flex-col gap-3 sm:flex-row">
         <Link
           href="/clubs"
-          className="inline-flex h-12 items-center justify-center rounded-[3px] bg-sccs-orange px-8 text-base font-semibold text-sccs-ink transition-colors hover:bg-sccs-orange/85"
+          className="inline-flex h-12 items-center justify-center rounded-xl bg-sccs-orange px-8 text-base font-semibold text-sccs-ink transition-colors hover:bg-sccs-orange/85"
         >
           Browse clubs
         </Link>
         <Link
           href="/"
-          className="inline-flex h-12 items-center justify-center rounded-[3px] border border-foreground px-8 text-base font-medium text-foreground transition-colors hover:bg-foreground hover:text-background"
+          className="inline-flex h-12 items-center justify-center rounded-xl border border-foreground px-8 text-base font-medium text-foreground transition-colors hover:bg-foreground hover:text-background"
         >
           Home
         </Link>
