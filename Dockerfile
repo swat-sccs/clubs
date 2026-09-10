@@ -1,4 +1,4 @@
-FROM node:24.20.0-trixie-slim AS base
+FROM node:26.8-trixie-slim AS base
 
 WORKDIR /app
 RUN apt-get update -y \
@@ -26,7 +26,7 @@ ENV NODE_ENV=production
 USER migrate
 CMD ["bunx", "prisma", "migrate", "deploy"]
 
-FROM node:24.20.0-trixie-slim AS runner
+FROM node:26.8-trixie-slim AS runner
 WORKDIR /app
 RUN apt-get update -y \
     && apt-get install -y --no-install-recommends openssl ca-certificates \
