@@ -20,6 +20,12 @@ export const metadata: Metadata = {
   title: "Swat Clubs",
   description:
     "Discover student organizations at Swarthmore College: browse, search, and bookmark clubs.",
+  applicationName: "Swat Clubs",
+  appleWebApp: {
+    capable: true,
+    title: "Swat Clubs",
+    statusBarStyle: "default",
+  },
 };
 
 export const viewport: Viewport = {
