@@ -1,4 +1,4 @@
-FROM node:26.12.1-trixie-slim AS base
+FROM node:26.13.0-trixie-slim AS base
 
 WORKDIR /app
 RUN apt-get update -y \
@@ -26,7 +26,7 @@ ENV NODE_ENV=production
 USER migrate
 CMD ["bunx", "prisma", "migrate", "deploy"]
 
-FROM node:26.12.1-trixie-slim AS runner
+FROM node:26.13.0-trixie-slim AS runner
 
 WORKDIR /app
 RUN apt-get update -y \
